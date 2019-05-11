@@ -1,9 +1,13 @@
 package com.web.test;
 
+import com.web.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
 
 /**
  * @autor 杨瑞
@@ -13,9 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("localTest")
 public class LocalTestController {
 
+    @Autowired
+    private UserService userService;
+
     @ResponseBody
     @GetMapping("ok")
-    public String ok(){
-        return "ok";
+    public Object ok(){
+        return userService.finds(new HashMap());
     }
 }
