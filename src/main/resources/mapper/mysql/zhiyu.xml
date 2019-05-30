@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.web.dao.mysql.ZhiyuDao">
+    <select id="findZhiyuUser" resultType="java.util.Map">
+        select
+        a.id,
+        a.username,
+        a.nickname,
+        a.realname,
+        a.mobile,
+        a.certificate_no,
+        a.risk_score,
+        h.label AS sex,
+        b.label AS source,
+        c.label AS certificate,
+        d.label AS riskLevel ,
+        g.email,
+        g.birthday,
+        g.company,
+        g.telephone,
+        g.address,
+        g.postcode,
+        g.remarks,
+        e. NAME AS qudao,
+        f.manage_name AS manageName
+        from zy_customer a
+        left join zy_field_list b on a.source= b.value and b.field = "cust_source"
+        left join zy_field_list c on a.certificate_id = c.value and c.field = "certificate"
+        left join zy_field_list d on a.risk_level = d.value and d.field = "risk_level"
+        left join zy_qudao e on a.plat_id = e.id
+        left join zy_platform_detail f on a.manage_id = f.id
+        left join zy_customer_extend g on a.id = g.id
+        left join zy_field_list h on g.sex= h.value and h.field ="sex"
+        order by a.id
+    </select>
+
+<select id="findProducts" resultType="java.util.Map">
+        SELECT
+        a.*,
+        d.label AS proAuth,
+        e.label AS netValueAuth,
+        f.label AS reportAuth,
+        g.label AS rasiLevel,
+        b.label AS rasiStatus,
+        c.label AS receive,
+        h.label AS investmentType,
+      j.label AS bizhong,
+        l.label AS jijinType,
+        k.base_name as baseName
+    FROM
+        zy_product a
+    LEFT JOIN zy_field_list b ON a.raise_status = b.
+    VALUE
+
+    AND b.field = 'raise_status'
+    LEFT JOIN zy_field_list c ON a.bespeak = c.`value`
+    AND c.field = 'bespeak'
+    LEFT JOIN zy_field_list d ON a.product_auth = d.`value`
+    AND d.field = 'product_auth'
+    LEFT JOIN zy_field_list e ON a.net_value_auth = e.`value`
+    AND e.field = 'net_value_auth'
+    LEFT JOIN zy_field_list f ON a.report_auth = f.`value`
+    AND f.field = 'report_auth'
+    LEFT JOIN zy_field_list g ON a.pro_risk_level = g.`value`
+    AND g.field = 'pro_risk_level'
+    LEFT JOIN zy_field_list h ON a.investment_type = h.`value`
+    AND h.field = 'investment_type'
+    LEFT JOIN zy_field_list j ON a.currency_id = j.`value`
+    AND j.field = 'currency'
+    LEFT JOIN zy_product_base k ON a.performance_benchmarking_id = k.id
+    LEFT JOIN zy_field_list l ON a.fund_type = l.`value`
+    AND l.field = 'fund_type'
+    ORDER BY id
+</select>
+
+    <select id="findNetValue" resultType="java.util.Map">
+        select b.pro_name from zy_product_net_value a
+        LEFT join zy_product b on a.product_id=b.id GROUP BY b.pro_name
+    </select>
+    <select id="findNetValueByName" resultType="java.util.Map">
+        select a.* from zy_product_net_value a
+        LEFT join zy_product b on a.product_id=b.id where b.pro_name = #{name}
+    </select>
+
+    <select id="findProFile" resultType="java.util.Map">
+        select b.pro_name from zy_product_file a
+        LEFT join zy_product b on a.product_id=b.id GROUP BY b.pro_name
+    </select>
+    <select id="findProFileByName" resultType="java.util.Map">
+        select a.* from zy_product_file a
+        LEFT join zy_product b on a.product_id=b.id where b.pro_name = #{name}
+    </select>
+
+    <select id="findOrder" resultType="java.util.Map">
+        SELECT
+            a.*, b.pro_name,
+            c.label AS orderStatus,
+            e.label AS orderSource,
+            g.label AS custSource,
+            h. NAME AS qudao,
+            j.manage_name AS manageName,
+            d.username,
+            f.label as tuisong,
+            k.label as moneyUnit
+        FROM
+            zy_order a
+        LEFT JOIN zy_product b ON a.pro_id = b.id
+        LEFT JOIN zy_field_list c ON a.order_status = c.`value`
+        AND c.field = 'order_status'
+        LEFT JOIN zy_customer d ON a.cust_id = d.id
+        LEFT JOIN zy_field_list g ON d.source = g.`value`
+        AND g.field = 'cust_source'
+        LEFT JOIN zy_qudao h ON a.plat_id = h.id
+        LEFT JOIN zy_platform_detail j ON a.manage_id = j.id
+        LEFT JOIN zy_field_list e ON a.order_source = e.`value`
+        AND e.field = 'order_source'
+        LEFT JOIN zy_field_list f ON a.order_is_push = e.`value`
+        AND e.field = 'order_is_push'
+        LEFT JOIN zy_field_list k ON a.initial_unit = k.`value`
+        AND c.field = 'money_unit'
+    </select>
+
+    <select id="findOrderRecard" resultType="java.util.Map">
+        SELECT
+        a.*, b.label AS recordType,
+        c.label as moneyUnit
+        FROM
+            zy_order_record a
+        LEFT JOIN zy_field_list b ON a.type = b.`value`
+        AND b.field = 'record_type'
+        LEFT JOIN zy_field_list c ON a.unit = c.`value`
+        AND c.field = 'money_unit'
+    </select>
+</mapper>

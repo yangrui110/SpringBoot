@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.web.core.crud.mysql.dao.MysqlAjaxCrudDao">
+
+    <!--通过主键查找对应的一条数据-->
+    <select id="findByPK" resultType="java.util.Map">
+        select * from #{entityName} a where
+        <foreach collection="mapData" index="key"  item="data" separator=" and ">
+            a.#{key} = #{data}
+        </foreach>
+    </select>
+    <select id="findAll" resultType="java.util.Map">
+        select ${condition.columns} from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
+        <trim prefix="where">
+            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
+                <if test="value.right !='' and value.right != null">
+                    a.${value.left} ${value.operator} #{value.right}
+                </if>
+            </foreach>
+        </trim>
+        <if test="condition.start!=null and condition.end != null">
+            limit ${condition.start} , ${condition.end}
+        </if>
+    </select>
+
+    <insert id="insert">
+        insert into ${entityName}
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            ${key}
+        </foreach>
+        value
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            #{value}
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update ${entityName} a
+        set
+        <foreach collection="data" separator="," item="value" index="key">
+            a.${key} = #{value}
+        </foreach>
+        where
+        <foreach collection="whereCondition" separator=" and " item="value" index="index">
+            a.${value.left} ${value.operator} #{value.right}
+        </foreach>
+    </update>
+
+    <delete id="delete">
+        delete from ${entityName}
+        where
+        <foreach collection="whereCondition" separator=" and " item="value" index="index">
+            ${value.left} ${value.operator} #{value.right}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="model">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="entity">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="column"/>
+                            <xs:element ref="primary-key"/>
+                        </xs:sequence>
+                        <xs:attributeGroup ref="entity.attrs"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="view-entity">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="member-entity"/>
+                            <xs:element ref="alias-all"/>
+                            <xs:element ref="alias"/>
+                            <xs:element ref="view-link"/>
+                        </xs:sequence>
+                        <xs:attributeGroup ref="viewEntity.attrs"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!--entity标签的子元素-->
+    <xs:element name="column">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="describtion" type="xs:string"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="column.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="primary-key">
+        <xs:complexType>
+            <xs:attributeGroup ref="column.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:attributeGroup name="entity.attrs">
+        <xs:attribute name="tableName" type="xs:string"/>
+        <xs:attribute name="tableAlias" type="xs:string"/>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="column.attrs">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:attributeGroup>
+    <!--view-entity标签下的子元素以及属性-->
+    <xs:element name="member-entity"/>
+    <xs:element name="alias-all">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="exclude"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="aliasAll.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="alias"/>
+    <xs:element name="view-link">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="key-map"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="viewLink.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:attributeGroup name="viewEntity.attrs">
+        <xs:attribute name="tableAlias" type="xs:string"/>
+    </xs:attributeGroup>
+    <!--member-entity属性-->
+    <xs:attributeGroup name="memberEntity.attrs">
+        <xs:attribute name="alias" type="xs:string"/>
+        <xs:attribute name="tableAlias" type="xs:string"/>
+    </xs:attributeGroup>
+    <!--alias标签的属性-->
+    <xs:attributeGroup name="alias.attrs">
+        <xs:attribute name="alias" type="xs:string"/>
+        <xs:attribute name="column" type="xs:string"/>
+        <xs:attribute name="referTable" type="xs:string"/>
+    </xs:attributeGroup>
+    <!--alias-all标签的属性-->
+    <xs:attributeGroup name="aliasAll.attrs">
+        <xs:attribute name="referTable" type="xs:string"/>
+    </xs:attributeGroup>
+    <!--view-link标签的属性-->
+    <xs:attributeGroup name="viewLink.attrs">
+        <xs:attribute name="tableAlias" type="xs:string"/>
+        <xs:attribute name="relTableAlias" type="xs:string"/>
+        <xs:attribute name="relOptional" type="xs:boolean"/>
+    </xs:attributeGroup>
+    <!--key-map标签的属性-->
+    <xs:attributeGroup name="keyMap.attrs">
+        <xs:attribute name="field-name" type="xs:string"/>
+        <xs:attribute name="rel-field-name" type="xs:string"/>
+    </xs:attributeGroup>
+</xs:schema>

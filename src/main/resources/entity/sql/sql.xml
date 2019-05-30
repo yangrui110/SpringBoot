@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--tableName属性不支持驼峰命名规则-->
+<model>
+    <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
+    <entity tableName="[user]" tableAlias="userOne">
+        <!--alias标签是给该列取得别名-->
+        <column name="id">
+            <describtion>编号</describtion>
+        </column>
+        <column name="name">
+            <describtion>姓名</describtion>
+        </column>
+        <column name="age">
+            <describtion>年龄</describtion>
+        </column>
+    </entity>
+    <entity tableName="[teacher]" tableAlias="Teacher">
+        <!--alias标签是给该列取得别名-->
+        <column name="id">
+            <describtion>编号</describtion>
+        </column>
+        <column name="name">
+            <describtion>姓名</describtion>
+        </column>
+        <column name="pros">
+            <describtion>学生编号</describtion>
+        </column>
+    </entity>
+    <entity tableName="[classes]" tableAlias="Classes">
+        <!--alias标签是给该列取得别名-->
+        <column name="user_id">
+            <describtion>学生编号</describtion>
+        </column>
+        <column name="class_name">
+            <describtion>班级名称</describtion>
+        </column>
+        <column name="t_id">
+            <describtion>教师编号</describtion>
+        </column>
+    </entity>
+    <view-entity tableAlias="ClassesView">
+        <member-entity alias="CL" tableAlias="Classes"/>
+        <member-entity alias="TE" tableAlias="Teacher"/>
+        <member-entity alias="UO" tableAlias="userOne"/>
+        <alias alias="cName" column="class_name" referTable="CL"/>
+        <alias alias="tName" column="name" referTable="TE"/>
+        <alias alias="uName" column="name" referTable="UO"/>
+        <alias alias="tId" column="id" referTable="TE"/>
+        <view-link tableAlias="CL" relTableAlias="UO" relOptional="false">
+            <key-map field-name="user_id" rel-field-name="id"/>
+        </view-link>
+        <view-link tableAlias="UO" relTableAlias="TE" relOptional="false">
+            <key-map field-name="id" rel-field-name="pros"/>
+        </view-link>
+    </view-entity>
+</model>

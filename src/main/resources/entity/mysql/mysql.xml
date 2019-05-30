@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--tableName属性不支持驼峰命名规则-->
+<model>
+    <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
+    <entity tableName="user" tableAlias="User">
+        <!--alias标签是给该列取得别名-->
+        <column name="id">
+            <describtion>编号</describtion>
+        </column>
+        <column name="name">
+            <describtion>姓名</describtion>
+        </column>
+        <column name="age">
+            <describtion>年龄</describtion>
+        </column>
+        <column name="vip_time">
+            <describtion>成为会员时间</describtion>
+        </column>
+        <primary-key name="id"/>
+
+    </entity>
+    <entity tableName="teacher" tableAlias="Teacher">
+        <!--alias标签是给该列取得别名-->
+        <column name="id">
+            <describtion>编号</describtion>
+        </column>
+        <column name="name">
+            <describtion>姓名</describtion>
+        </column>
+        <column name="pros">
+            <describtion>学生</describtion>
+        </column>
+        <primary-key name="id"/>
+
+    </entity>
+    <!--定义第一个member-entity为主表-->
+    <view-entity  tableAlias="TSView">
+        <member-entity alias="TE" tableAlias="Teacher"/>
+        <member-entity alias="US" tableAlias="User"/>
+        <alias-all referTable="US">
+            <exclude column="name"/>
+        </alias-all>
+        <alias alias="tName" column="name" referTable="TE"/>
+        <alias alias="tId" column="id" referTable="TE"/>
+        <alias alias="sName" column="name" referTable="US"/>
+        <!--默认左外连接-->
+        <view-link tableAlias="TE" relTableAlias="US" relOptional="false">
+            <key-map field-name="pros" rel-field-name="id"/>
+        </view-link>
+    </view-entity>
+</model>
