@@ -10,6 +10,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -29,18 +31,31 @@ import java.util.Map;
  * <p>读取的实体定义文件都存放在这个类的static变量中</p>
  */
 public class EntityMap {
+
+    private static Logger logger= LoggerFactory.getLogger(EntityMap.class);
     //每一个Map中存放的都是其key和document对象,只可访问该对象
     public static final Map<String,Element> entitys=new HashMap();
 
     //维护表别名和表之间的关系，key=tableAlias,value=tableName
-    public static final Map<String,String> tables=new HashMap<>();
-
+    public static final Map<String,InfoOfEntity> tables=new HashMap<>();
     /**
      * 获取表的对应关系
      * */
     public static String getTableName(String key){
-        String name=tables.get(key);
-        return name;
+        InfoOfEntity entity = tables.get(key);
+        if(entity==null) {
+            logger.info("该表"+key+"未定义");
+            throw new BaseException(304, "该表"+key+"未定义");
+        }
+        return entity.getEntityName();
+    }
+    /**
+     * 判断是否是个视图表
+     * @return 如果是视图，则返回为true
+     * */
+    public static boolean judeIsViewEntity(String entityName){
+        InfoOfEntity entity = tables.get(entityName);
+        return entity.isView();
     }
     /**
      * <p>初始化所有的实体定义xml文件到entitys变量中</p>
@@ -60,10 +75,18 @@ public class EntityMap {
      * 读取一个资源文件到实体中去
      * */
     private static void readOneToMap(Resource resource) throws IOException, DocumentException {
+        //解析实体对应的数据源
+        String path=resource.getURL().getPath();
+        path=path.substring(path.lastIndexOf("classes/entity")+15);
+        StringBuilder builder=new StringBuilder(path.substring(0,path.indexOf("/")));
+        //解析完毕
         String xml= XmlUtil.getXml(resource);
         Map<String,Element> map=readEntity(xml);
         map.forEach((key,value)->{
+            InfoOfEntity entity = tables.get(key);
+            entity.setSource(builder.toString());
             entitys.put(key, value);
+            tables.put(key, entity);
         });
     }
 
@@ -80,9 +103,13 @@ public class EntityMap {
             Attribute ats=element1.attribute("tableName");
             Attribute alias=element1.attribute("tableAlias");
             //需要抛出异常信息
+            InfoOfEntity entity=new InfoOfEntity();
             if("view-entity".equals(element1.getName())) {
                 String al=alias.getValue();
-                tables.put(al,al);
+                entity.setView(true);
+                entity.setEntityName(al);
+                entity.setEntityAlias(al);
+                tables.put(al,entity);
                 map.put(al, element1);
                 continue;
             }
@@ -92,7 +119,14 @@ public class EntityMap {
             if(alias!=null) {
                 key=alias.getValue();
                 if(!StringUtils.isEmpty(key)) {
-                    tables.put(key,ats.getValue());
+                    if(tables.containsKey(key)) {
+                        logger.error("该表{}的别名重复，请检查后输入{}", ats.getValue(), key);
+                        throw new BaseException(304,"该表{}的别名重复，请检查后输入{}");
+                    }
+                    InfoOfEntity entity1=new InfoOfEntity();
+                    entity1.setEntityName(ats.getValue());
+                    entity1.setEntityAlias(key);
+                    tables.put(key,entity1);
                 }
             }
             map.put(key, element1);
@@ -120,6 +154,10 @@ public class EntityMap {
         Element element=getElement(entityName);
         if(element==null)
             throw new BaseException(304, "表名"+entityName+"不存在");
+        if(cons==null)
+            cons=new ArrayList<>();
+        if(orderBy==null)
+            orderBy=new ArrayList<>();
         if("entity".equals(element.getName())){
             return readEntityLabel(entityName, cons, orderBy);
         }
@@ -132,12 +170,12 @@ public class EntityMap {
         ConditionEntity entity=new ConditionEntity();
         Element element=getElement(entityName);
         entity.setColumns(readColumnEntity(element, null,null));
-        entity.setMainTable(tables.get(entityName));
+        entity.setMainTable(getTableName(entityName));
         entity.setMainAlias("a");
         entity.setCons(cons==null?new ArrayList<>():cons);
         StringBuilder builder=new StringBuilder();
         orderBy.forEach((k)->{
-            builder.append(k.getNames()).append(k.getDirect()).append(",");
+            builder.append(k.getNames()).append(" ").append(k.getDirect()).append(",");
         });
         String os="";
         if(builder.length()>0){
@@ -153,11 +191,9 @@ public class EntityMap {
      * */
     public static ConditionEntity  readColumnViewEntity(Element element,List<CEntity> cons, List<COrderBy> orderBy){
         ConditionEntity entity=new ConditionEntity();  //需要返回的条件
-        Map<String,Object> values=new HashMap<>(); //存放列别名和列对应的表之间的关系
-        Map<String,String> keys=new HashMap<>(); //存放列别名和列之间的关系
         //第一遍遍历，获取主表以及key-map值,alias对应tableAlias
         Map<String,String> keyMap=getMemberMap(element);//存放表和表别名之间的对应关系
-        entity.setMainTable(tables.get(keyMap.get("great-main-table")));
+        entity.setMainTable(getTableName(keyMap.get("great-main-table")));
         entity.setMainAlias(keyMap.get("great-main-table-alias"));
         //第二次遍历，获取需要查询的列
         Map<String,ColumnProperty> columns=getViewColumns(element);
@@ -271,10 +307,10 @@ public class EntityMap {
                 relation.setJoin(relOption);
                 relation.setTableMemberAlias(curTable);
                 relation.setTableAlias(keyMap.get(curTable));
-                relation.setTableName(tables.get(keyMap.get(curTable)));
+                relation.setTableName(getTableName(keyMap.get(curTable)));
                 relation.setReferMemberAlias(relTable);
                 relation.setReferTableAlias(keyMap.get(relTable));
-                relation.setReferTable(tables.get(keyMap.get(relTable)));
+                relation.setReferTable(getTableName(keyMap.get(relTable)));
                 List<Element> elements1 = k.elements();
                 elements1.forEach((v)->{
                     String fieldName=v.attributeValue("field-name");
@@ -402,7 +438,7 @@ public class EntityMap {
                 property.setColumn(name);
                 property.setTableMemberAlias(aliasTable);
                 property.setTableAlias(keyMap.get(aliasTable));
-                property.setTableName(tables.get(keyMap.get(aliasTable)));
+                property.setTableName(getTableName(keyMap.get(aliasTable)));
                 if(alias!=null)
                     keys.put(alias, property);
             }else if("alias-all".equals(el.getName())){
@@ -412,7 +448,7 @@ public class EntityMap {
                 excludeColumn(result,el);
                 result.forEach((k,v)->{
                     ColumnProperty property=new ColumnProperty();
-                    property.setTableName(tables.get(keyMap.get(aliasTable)));
+                    property.setTableName(getTableName(keyMap.get(aliasTable)));
                     property.setTableAlias(keyMap.get(aliasTable));
                     property.setTableMemberAlias(aliasTable);
                     property.setAlias(k);

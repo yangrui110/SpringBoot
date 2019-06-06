@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.demo.web.core.crud.sql.dao.SqlAjaxCrudDao">
+<mapper namespace="com.demo.web.core.crud.dao.sql.SqlAjaxCrudDao">
     <!--最小的行数是1-->
     <select id="findAll" resultType="java.util.Map">
         SELECT

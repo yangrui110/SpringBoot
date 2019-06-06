@@ -1,6 +1,7 @@
 package com.demo.config.datasource.source;
 
 import com.demo.config.datasource.MysqlDataSourceConfig;
+import com.demo.config.datasource.condition.MysqlDataSourceCondition;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -8,6 +9,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -19,8 +21,9 @@ import javax.sql.DataSource;
  * @autor 杨瑞
  * @date 2019/5/17 8:53
  */
+@Conditional(MysqlDataSourceCondition.class)
 @Configuration
-@MapperScan(basePackages={"com.demo.web.dao.mysql","com.demo.web.core.crud.mysql.dao"},sqlSessionTemplateRef = "mysqlTemplate")
+@MapperScan(basePackages={"com.demo.web.dao.mysql","com.demo.web.core.crud.dao.mysql"},sqlSessionTemplateRef = "mysqlTemplate")
 public class MysqlSource {
 
     @Autowired

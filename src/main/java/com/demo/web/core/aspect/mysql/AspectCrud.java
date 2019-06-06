@@ -1,7 +1,10 @@
 package com.demo.web.core.aspect.mysql;
 
+import com.demo.config.advice.BaseException;
 import com.demo.web.core.crud.centity.CEntity;
 import com.demo.web.core.crud.centity.COrderBy;
+import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.xmlEntity.EntityMap;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,34 +29,47 @@ public class AspectCrud {
     /***
      * 切面拦截mysql操作
      */
-    @Around(value="execution(public * com.demo.web.core.crud.*.service.*.*(..))")
+    @Around(value="execution(public * com.demo.web.core.crud.service.*.*(..))")
     public Object doCheck(ProceedingJoinPoint point) throws Throwable {
         Object[] args=point.getArgs();
         System.out.println("方法名："+point.getSignature().getName());
-        String orign= (String) args[0];
-
-        for (Object a:args) {
-            if(a instanceof Map) {
-                EntityMap.yanzhengMap((Map<String, Object>) a, orign);
-            }else if(a instanceof List){
-                if(((List) a).size()>0){
-                    if(((List) a).get(0) instanceof CEntity) {
+        if("findAll".equals(point.getSignature().getName())) {
+            for (Object a : args) {
+                if (a instanceof FindEntity) {
+                    String orign = ((FindEntity) a).getEntityName();
+                    List<CEntity> conditions = ((FindEntity) a).getCondition();
+                    if (conditions.size() > 0) {
                         Map map = new HashMap();
-                        ((List) a).forEach((k) -> {
-                            map.put(((CEntity) k).getLeft(), "");
+                        conditions.forEach((k) -> {
+                            map.put(k.getLeft(), "");
                         });
                         EntityMap.yanzhengMap((Map<String, Object>) map, orign);
                     }
+                    ConditionEntity entity = EntityMap.readEntityToCondition(orign, conditions, ((FindEntity) a).getOrderBy());
+                    args[1] = entity;
+                }
+            }
+        }else {
+            //验证更新、删除、插入
+            for(Object arg: args){
+                if(arg instanceof FindEntity){
+                    List<CEntity> conditions = ((FindEntity) arg).getCondition();
+                    String tableAlias=((FindEntity) arg).getEntityName();
+                    if(EntityMap.judeIsViewEntity(tableAlias)){
+                        throw new BaseException(304,"视图表"+tableAlias+"不允许增删改操作");
+                    }
+                    EntityMap.yanzhengMap(((FindEntity) arg).getData(), tableAlias);
+                    if (conditions.size() > 0) {
+                        Map map = new HashMap();
+                        conditions.forEach((k) -> {
+                            map.put(k.getLeft(), "");
+                        });
+                        EntityMap.yanzhengMap((Map<String, Object>) map, tableAlias);
+                    }
+                    //((FindEntity) arg).setEntityName(EntityMap.getTableName(tableAlias));
                 }
             }
         }
-        //当是findAll方法是才会进行列属性转换
-        if(args[1]==null)
-            args[1]=new ArrayList<>();
-        if("findAll".equals(point.getSignature().getName()))
-            args[5] =EntityMap.readEntityToCondition(orign, (List<CEntity>) args[1], (List<COrderBy>) args[4]);
-        args[0]=EntityMap.getTableName(orign);
-
         Object os= point.proceed(args);
         return os;
     }

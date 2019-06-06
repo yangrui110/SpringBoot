@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
-<model>
-    <entity tableName="666" tableAlias="1111">
-        <column name="id">
-            <describtion></describtion>
-        </column>
-    </entity>
-</model>

@@ -48,16 +48,29 @@
         <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:attributeGroup>
     <!--view-entity标签下的子元素以及属性-->
-    <xs:element name="member-entity"/>
+    <xs:element name="member-entity">
+        <xs:complexType>
+            <xs:attributeGroup ref="memberEntity.attrs"/>
+        </xs:complexType>
+    </xs:element>
     <xs:element name="alias-all">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="exclude"/>
+                <xs:element ref="exclude"/>
             </xs:sequence>
             <xs:attributeGroup ref="aliasAll.attrs"/>
         </xs:complexType>
     </xs:element>
-    <xs:element name="alias"/>
+    <xs:element name="exclude">
+        <xs:complexType>
+            <xs:attributeGroup ref="exclude.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="alias">
+        <xs:complexType>
+            <xs:attributeGroup ref="alias.attrs"/>
+        </xs:complexType>
+    </xs:element>
     <xs:element name="view-link">
         <xs:complexType>
             <xs:sequence>
@@ -94,5 +107,9 @@
     <xs:attributeGroup name="keyMap.attrs">
         <xs:attribute name="field-name" type="xs:string"/>
         <xs:attribute name="rel-field-name" type="xs:string"/>
+    </xs:attributeGroup>
+    <!--exclude标签的属性-->
+    <xs:attributeGroup name="exclude.attrs">
+        <xs:attribute name="column"/>
     </xs:attributeGroup>
 </xs:schema>

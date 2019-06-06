@@ -1,14 +1,16 @@
-package com.demo.web.core.crud.sql.dao;
+package com.demo.web.core.crud.dao.sql;
 
 import com.demo.web.core.crud.centity.CEntity;
 import com.demo.web.core.crud.centity.COrderBy;
 import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
-public interface SqlAjaxCrudDao {
+public interface SqlAjaxCrudDao extends BaseDao {
+
 
     /**
      * @param entity 查询条件

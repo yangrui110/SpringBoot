@@ -1,13 +1,14 @@
-package com.demo.web.core.crud.mysql.dao;
+package com.demo.web.core.crud.dao.mysql;
 
 import com.demo.web.core.crud.centity.CEntity;
 import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
-public interface MysqlAjaxCrudDao {
+public interface MysqlAjaxCrudDao extends BaseDao {
 
     Map<String,Object> findByPK(@Param("entityName") String entityName,@Param("mapData") Map<String,Object> mapData);
 
