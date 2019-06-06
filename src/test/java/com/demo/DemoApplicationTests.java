@@ -3,12 +3,9 @@ package com.demo;
 import com.DemoApplication;
 import com.demo.web.core.crud.centity.CEntity;
 import com.demo.web.core.crud.centity.COrderBy;
-import com.demo.web.core.crud.centity.ConditionEntity;
-import com.demo.web.core.crud.mysql.service.MysqlAjaxCrudService;
-import com.demo.web.core.crud.sql.dao.SqlAjaxCrudDao;
-import com.demo.web.core.crud.sql.service.SqlAjaxCrudService;
+import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.dao.mysql.ZhiyuDao;
-import com.demo.web.dao.oracle.OUserDao;
 import org.dom4j.DocumentException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,10 +31,7 @@ public class DemoApplicationTests {
 	private ZhiyuDao zhiyuDao;
 
 	@Autowired
-	private SqlAjaxCrudService sqlAjaxCrudService;
-
-	@Autowired
-	private MysqlAjaxCrudService ajaxCrudService;
+	private BaseServiceImpl baseService;
 
 	@Test
 	public void contextLoads() {
@@ -52,25 +46,42 @@ public class DemoApplicationTests {
 		map.put("age", "90");
 		List list=new ArrayList();
 		CEntity cEntity=new CEntity();
-		cEntity.setLeft("id");
+		cEntity.setLeft("tId");
 		//cEntity.setOperator("=");
 		cEntity.setRight("2");
 		list.add(cEntity);
 		COrderBy cOrderBy=new COrderBy();
 		cOrderBy.setDirect("desc");
-		cOrderBy.setNames("id");
+		cOrderBy.setNames("tId");
 		COrderBy cOrderBy1=new COrderBy();
 		cOrderBy1.setDirect("desc");
-		cOrderBy1.setNames("name");
+		cOrderBy1.setNames("sName");
 		List<COrderBy> orderByList=new ArrayList<>();
 		orderByList.add(cOrderBy);
 		orderByList.add(cOrderBy1);
+		FindEntity entity=new FindEntity();
+		entity.setEntityName("TSView");
+		entity.setCondition(list);
+		entity.setStart(0);
+		entity.setEnd(10);
+		entity.setOrderBy(orderByList);
 		//ajaxCrudService.update("user", map, map2);
 		//ajaxCrudService.delete("user", map);
-		List results=sqlAjaxCrudService.findAll("Teacher",list ,0 ,10 ,orderByList,new ConditionEntity());
+		/*List results=mysqlAjaxCrudService.findAll(entity,new ConditionEntity());
 		results.forEach((r)->{
 			System.out.println(r);
-		});
+		});*/
+		FindEntity entity1=new FindEntity();
+		Map data =new HashMap<>();
+		data.put("name", "zw1");
+		CEntity cEntity1=new CEntity();
+		cEntity1.setLeft("id");cEntity1.setRight("9");
+		List ars=new ArrayList();
+		ars.add(cEntity1);
+		entity1.setEntityName("Teacher");
+		entity1.setData(data);
+		entity1.setCondition(ars);
+		baseService.update(entity1);
 		//ajaxCrudService.insert("user", map);
 	}
 
@@ -103,10 +114,22 @@ public class DemoApplicationTests {
 		map.put("id", "10");
 		//sqlAjaxCrudService.delete("userOne",lists);
 		//System.out.println("插入成功");
-		List user = sqlAjaxCrudService.findAll("ClassesView",lists, 0, 10, list,new ConditionEntity());
-		user.forEach((k)->{
-			System.out.println(k);
-		});
 	}
 
+	@Test
+	public void test4(){
+		Map map=new HashMap();
+		map.put("name", "呵呵呵哒");
+		List<CEntity> entities=new ArrayList<>();
+		CEntity entity=new CEntity();
+		entity.setLeft("id");
+		entity.setRight("1");
+		entities.add(entity);
+		//baseService.update("Teacher", map, entities);
+	}
+
+	@Test
+	public void test5(){
+		System.out.println(-1&"666".hashCode());
+	}
 }
