@@ -12,6 +12,8 @@ import java.util.Map;
 public interface SqlAjaxCrudDao extends BaseDao {
 
 
+    int totalNum(@Param("condition") ConditionEntity entity);
+
     /**
      * @param entity 查询条件
      * */

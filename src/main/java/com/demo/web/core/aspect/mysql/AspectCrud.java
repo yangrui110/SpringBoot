@@ -33,7 +33,7 @@ public class AspectCrud {
     public Object doCheck(ProceedingJoinPoint point) throws Throwable {
         Object[] args=point.getArgs();
         System.out.println("方法名："+point.getSignature().getName());
-        if("findAll".equals(point.getSignature().getName())) {
+        if("findAll".equals(point.getSignature().getName())||"totalNum".equals(point.getSignature().getName())) {
             for (Object a : args) {
                 if (a instanceof FindEntity) {
                     String orign = ((FindEntity) a).getEntityName();

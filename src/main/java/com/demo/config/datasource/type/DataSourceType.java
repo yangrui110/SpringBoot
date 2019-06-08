@@ -12,4 +12,6 @@ public class DataSourceType {
     public static final String ORACLE="oracle";
 
     public static final String SQL="sql";
+
+    private static final String H2="h2";
 }

@@ -25,6 +25,17 @@
         </if>
     </select>
 
+    <select id="totalNum" resultType="int">
+        select count(1) from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
+        <trim prefix="where">
+            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
+                <if test="value.right !='' and value.right != null">
+                    ${value.left} ${value.operator} #{value.right}
+                </if>
+            </foreach>
+        </trim>
+    </select>
+
     <insert id="insert">
         insert into ${entityName}
         <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">

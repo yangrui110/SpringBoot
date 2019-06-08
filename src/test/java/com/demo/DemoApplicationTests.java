@@ -3,6 +3,7 @@ package com.demo;
 import com.DemoApplication;
 import com.demo.web.core.crud.centity.CEntity;
 import com.demo.web.core.crud.centity.COrderBy;
+import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.dao.mysql.ZhiyuDao;
@@ -62,7 +63,7 @@ public class DemoApplicationTests {
 		FindEntity entity=new FindEntity();
 		entity.setEntityName("TSView");
 		entity.setCondition(list);
-		entity.setStart(0);
+		entity.setStart(1);
 		entity.setEnd(10);
 		entity.setOrderBy(orderByList);
 		//ajaxCrudService.update("user", map, map2);
@@ -93,7 +94,7 @@ public class DemoApplicationTests {
 	public void test3(){
 
 		COrderBy orderBy=new COrderBy();
-		orderBy.setNames("tId");
+		orderBy.setNames("id");
 		orderBy.setDirect("desc");
 		COrderBy orderBy1=new COrderBy();
 		orderBy1.setNames("cName");
@@ -101,17 +102,27 @@ public class DemoApplicationTests {
 
 		List<COrderBy> list=new ArrayList<>();
 		list.add(orderBy);
-		list.add(orderBy1);
+		//list.add(orderBy1);
 
 		List<CEntity> lists=new ArrayList<>();
 		CEntity entity=new CEntity();
-		entity.setLeft("cName");
-		entity.setRight("课程4班");
+		entity.setLeft("name");
+		entity.setRight("lisi");
 		lists.add(entity);
 		Map map=new HashMap();
 		map.put("cName", "课程4班");
 		map.put("age", "201");
 		map.put("id", "10");
+		FindEntity entity1=new FindEntity();
+		entity1.setEntityName("userOne");
+		entity1.setCondition(lists);
+		entity1.setOrderBy(list);
+		entity1.setStart(1);
+		entity1.setEnd(10);
+		Object all = baseService.findAll(entity1, new ConditionEntity());
+		System.out.println(all);
+		int totalNum = baseService.totalNum(entity1, new ConditionEntity());
+		System.out.println("总记录数："+totalNum);
 		//sqlAjaxCrudService.delete("userOne",lists);
 		//System.out.println("插入成功");
 	}

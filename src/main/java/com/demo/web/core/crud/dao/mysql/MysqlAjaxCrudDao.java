@@ -12,6 +12,7 @@ public interface MysqlAjaxCrudDao extends BaseDao {
 
     Map<String,Object> findByPK(@Param("entityName") String entityName,@Param("mapData") Map<String,Object> mapData);
 
+    int totalNum(@Param("condition") ConditionEntity entity);
     /**
      * @param entity 查询的条件
      * */

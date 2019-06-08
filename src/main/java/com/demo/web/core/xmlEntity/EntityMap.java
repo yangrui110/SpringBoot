@@ -50,6 +50,15 @@ public class EntityMap {
         return entity.getEntityName();
     }
     /**
+     * 判断传入的实体别名是否为空，如果为空，则抛出异常信息
+     * */
+    public static InfoOfEntity getAndJugeNotEmpty(String key){
+        InfoOfEntity entity1 = tables.get(key);
+        if(entity1==null)
+            throw new BaseException(304,"未定义的实体别名");
+        return entity1;
+    }
+    /**
      * 判断是否是个视图表
      * @return 如果是视图，则返回为true
      * */

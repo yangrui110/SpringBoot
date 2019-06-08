@@ -3,6 +3,7 @@ package com.demo.web.core.crud.service;
 import com.demo.config.datasource.type.DataSourceType;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.centity.PageMake;
 import com.demo.web.core.crud.dao.BaseDao;
 import com.demo.web.core.crud.dao.mysql.MysqlAjaxCrudDao;
 import com.demo.web.core.crud.dao.sql.SqlAjaxCrudDao;
@@ -17,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * @autor 杨瑞
  * @date 2019/6/6 21:56
+ * @describetion 通用的增删改查service类
  */
 @Service
 public class BaseServiceImpl implements ApplicationContextAware {
@@ -27,13 +29,15 @@ public class BaseServiceImpl implements ApplicationContextAware {
         entity.setStart(findEntity.getStart());
         entity.setEnd(findEntity.getEnd());
         BaseDao baseDao;
-        InfoOfEntity entity1 = EntityMap.tables.get(findEntity.getEntityName());
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         if(DataSourceType.MYSQL.equals(entity1.getSource())){
+            PageMake.makeMysqlPage(entity);
             baseDao= currentWebApplicationContext.getBean(MysqlAjaxCrudDao.class);
             return baseDao.findAll(entity);
         }else if(DataSourceType.ORACLE.equals(entity1.getSource())){
             //currentWebApplicationContext.getBean()
         }else if(DataSourceType.SQL.equals(entity1.getSource())){
+            PageMake.makeSqlPage(entity);
             baseDao= currentWebApplicationContext.getBean(SqlAjaxCrudDao.class);
             return baseDao.findAll(entity);
         }
@@ -41,7 +45,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
     }
 
     public void update(FindEntity entity){
-        InfoOfEntity entity1 = EntityMap.tables.get(entity.getEntityName());
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         String entityName=EntityMap.getTableName(entity.getEntityName());
         BaseDao baseDao;
         if(DataSourceType.MYSQL.equals(entity1.getSource())){
@@ -55,7 +59,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
         }
     }
     public void insert(FindEntity entity){
-        InfoOfEntity entity1 = EntityMap.tables.get(entity.getEntityName());
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         String entityName=EntityMap.getTableName(entity.getEntityName());
         BaseDao baseDao;
         if(DataSourceType.MYSQL.equals(entity1.getSource())){
@@ -69,7 +73,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
         }
     }
     public void delete(FindEntity entity){
-        InfoOfEntity entity1 = EntityMap.tables.get(entity.getEntityName());
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         String entityName=EntityMap.getTableName(entity.getEntityName());
         BaseDao baseDao;
         if(DataSourceType.MYSQL.equals(entity1.getSource())){
@@ -81,6 +85,23 @@ public class BaseServiceImpl implements ApplicationContextAware {
             baseDao= currentWebApplicationContext.getBean(SqlAjaxCrudDao.class);
             baseDao.delete(entityName,entity.getCondition());
         }
+    }
+
+    public int totalNum(FindEntity findEntity,ConditionEntity entity){
+        BaseDao baseDao;
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
+        if(DataSourceType.MYSQL.equals(entity1.getSource())){
+            PageMake.makeMysqlPage(entity);
+            baseDao= currentWebApplicationContext.getBean(MysqlAjaxCrudDao.class);
+            return baseDao.totalNum(entity);
+        }else if(DataSourceType.ORACLE.equals(entity1.getSource())){
+            //currentWebApplicationContext.getBean()
+        }else if(DataSourceType.SQL.equals(entity1.getSource())){
+            PageMake.makeSqlPage(entity);
+            baseDao= currentWebApplicationContext.getBean(SqlAjaxCrudDao.class);
+            return baseDao.totalNum(entity);
+        }
+        return 0;
     }
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

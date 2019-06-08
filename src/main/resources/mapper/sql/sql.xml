@@ -18,9 +18,28 @@
             </foreach>
         </trim>
         ) s
-        WHERE
-        RowNumber &gt; #{condition.start}
-        AND RowNumber &lt;= #{condition.end}
+        <trim prefix="where">
+            <if test="condition.start != null and condition.end != null">
+                RowNumber &gt; #{condition.start}
+                AND RowNumber &lt;= #{condition.end}
+            </if>
+        </trim>
+    </select>
+
+    <select id="totalNum" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        ( SELECT ${condition.columns}, ROW_NUMBER () OVER ( ORDER BY ${condition.orderBy}) AS RowNumber FROM ${condition.mainTable} ${condition.mainAlias}
+        ${condition.joins}
+        <trim prefix="where">
+            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
+                <if test="value.right !='' and value.right != null">
+                    ${value.left} ${value.operator} #{value.right}
+                </if>
+            </foreach>
+        </trim>
+        ) s
     </select>
 
     <insert id="insert">

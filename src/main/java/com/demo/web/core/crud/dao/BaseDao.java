@@ -12,6 +12,10 @@ public interface BaseDao {
     Map<String,Object> findByPK(@Param("entityName") String entityName, @Param("mapData") Map<String,Object> mapData);
 
     /**
+     * 符合条件的总记录数
+     * */
+    int totalNum(@Param("condition") ConditionEntity entity);
+    /**
      * @param entity 查询的条件
      * */
     List<Map<String,Object>> findAll(@Param("condition") ConditionEntity entity);

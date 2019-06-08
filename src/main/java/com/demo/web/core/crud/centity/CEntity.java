@@ -5,6 +5,7 @@ import lombok.Data;
 /**
  * @autor 杨瑞
  * @date 2019/5/18 18:02
+ * @describetion 条件基础类
  */
 
 public class CEntity {

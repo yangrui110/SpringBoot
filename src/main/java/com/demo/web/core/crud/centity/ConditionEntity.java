@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * @autor 杨瑞
  * @date 2019/5/21 13:21
+ * @describetion 经过切面拦截后的条件类
  */
 @Data
 public class ConditionEntity {

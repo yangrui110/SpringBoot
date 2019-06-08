@@ -3,6 +3,7 @@ package com.demo.web.core.crud.centity;
 /**
  * @autor 杨瑞
  * @date 2019/5/18 18:34
+ * @describetion 定义排序的基础字段
  */
 public class COrderBy {
     String names;
