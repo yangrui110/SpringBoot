@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<model>
+    <entity tableName="user_login" tableAlias="userLogin">
+        <column name="user_id">
+            <describtion>用户Id</describtion>
+        </column>
+        <column name="login_password">
+            <describtion>登录密码</describtion>
+        </column>
+        <column name="last_login_time">
+            <describtion>最近一次的登陆时间</describtion>
+        </column>
+        <primary-key name="user_id"/>
+    </entity>
+    <view-entity tableAlias="userLoginView">
+        <member-entity tableAlias="userLogin" alias="UL"/>
+        <member-entity tableAlias="User" alias="UO"/>
+        <alias-all referTable="UL">
+            <exclude column="user_id"/>
+            <exclude column="login_password"/>
+        </alias-all>
+        <alias referTable="UL" column="user_id" alias="userId"/>
+        <alias referTable="UO" column="name" alias="userName"/>
+        <view-link tableAlias="UL" relTableAlias="UO" relOptional="true">
+            <key-map rel-field-name="id" field-name="user_id"/>
+        </view-link>
+    </view-entity>
+</model>

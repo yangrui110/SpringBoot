@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="base">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="datasource">
+                    <xs:complexType>
+                        <xs:attributeGroup ref="sourceAttributs"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:attributeGroup name="sourceAttributs">
+        <xs:attribute name="url" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="password" type="xs:string" use="required"/>
+        <xs:attribute name="source-dao-xml-path" type="xs:string" use="required"/>
+        <xs:attribute name="source-bean-xml-path" type="xs:string" use="required"/>
+        <xs:attribute name="dao-base-class-name" type="xs:string" use="required"/>
+        <xs:attribute name="source-dao-path" type="xs:string" use="required"/>
+        <xs:attribute name="source-bean-name" type="xs:string"/>
+        <xs:attribute name="sourceType" type="xs:string" default="mysql"/>
+        <xs:attribute name="driverClassName" type="xs:string"/>
+        <xs:attribute name="max-wait" type="xs:int" default="60000"/>
+        <xs:attribute name="max-active" type="xs:int" default="10"/>
+        <xs:attribute name="min-idle" type="xs:int" default="10"/>
+        <xs:attribute name="test-on-borrow" type="xs:boolean" default="false"/>
+        <xs:attribute name="test-while-idle" type="xs:boolean" default="false"/>
+        <xs:attribute name="test-on-return" type="xs:boolean" default="false"/>
+        <xs:attribute name="validation-query" type="xs:string" default="select 1"/>
+        <xs:attribute name="time-between-eviction-runs-millis" default="60000"/>
+        <xs:attribute name="min-evictable-idle-time-millis" type="xs:int" default="3000"/>
+        <xs:attribute name="pool-prepared-statements" default="true" type="xs:boolean"/>
+        <xs:attribute name="max-pool-prepared-statement-per-connection-size" type="xs:int" default="20"/>
+    </xs:attributeGroup>
+</xs:schema>

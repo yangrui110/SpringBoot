@@ -27,10 +27,10 @@ import java.util.Map;
 @RequestMapping("localTest")
 public class LocalTestController {
 
-    @Autowired
+    //@Autowired
     private UserService userService;
 
-    @Autowired
+    //@Autowired
     private ZhiyuDao zhiyuDao;
     @ResponseBody
     @GetMapping("ok")

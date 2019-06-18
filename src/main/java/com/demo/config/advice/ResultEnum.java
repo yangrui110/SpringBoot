@@ -3,11 +3,7 @@ package com.demo.config.advice;
 public enum ResultEnum {
 
 	OK(200,"调用成功"),
-	ID_NOT_EXIST(201,"Id不能为空"),
-	GROUPID_EMPTY(202,"聊天组Id不能为空"),
-	MEMBER_ID_EMPTY(203,"成员的Id不能为空"),
-	NOT_EMPTY(204,"不能为空"),
-	NOT_ENOUGH_CAR(205,"战斗车不足"),
+	USER_NOT_LOGIN(305,"用户未登录"),
 	ERROR(500,"系统内部错误");
 	public int getCode() {
 		return code;

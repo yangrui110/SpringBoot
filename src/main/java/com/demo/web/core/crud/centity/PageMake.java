@@ -1,5 +1,7 @@
 package com.demo.web.core.crud.centity;
 
+import com.demo.config.datasource.type.DataSourceType;
+
 /**
  * @autor 杨瑞
  * @date 2019/6/8 12:00
@@ -25,5 +27,11 @@ public class PageMake {
             entity.setStart((start-1)*end);
             entity.setEnd(start*end);
         }
+    }
+
+    public static void makePage(ConditionEntity entity,String sourceType){
+        if(DataSourceType.MYSQL.equals(sourceType)){ PageMake.makeMysqlPage(entity); }
+        else if(DataSourceType.ORACLE.equals(sourceType)){ PageMake.makeSqlPage(entity); }
+        else if(DataSourceType.SQL.equals(sourceType)){PageMake.makeSqlPage(entity); }
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<!--tableName属性不支持驼峰命名规则-->
+<model>
+    <entity tableName="MSG" tableAlias="Message">
+        <column name="msg_id">
+            <describtion>消息主键</describtion>
+        </column>
+        <column name="title">
+            <describtion>标题</describtion>
+        </column>
+        <primary-key name="msg_id"/>
+    </entity>
+</model>

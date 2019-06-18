@@ -2,8 +2,8 @@ package com.demo.web.core.crud.centity;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @autor 杨瑞
@@ -17,9 +17,9 @@ public class ConditionEntity {
     private String joins;
     private String mainTable;
     private String mainAlias;
-    private List<CEntity> cons = new ArrayList<>();
+    private String condition;
     private String orderBy;
 
-    private Integer start;
-    private Integer end;
+    private Integer start=1;
+    private Integer end =10;
 }

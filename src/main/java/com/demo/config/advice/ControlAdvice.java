@@ -14,6 +14,7 @@ public class ControlAdvice {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ExceptionEntity handleValidationBodyException(Exception e) {
+        e.printStackTrace();
         if(e instanceof BaseException){
             return ((BaseException)e).getExceptionEntity();
         }

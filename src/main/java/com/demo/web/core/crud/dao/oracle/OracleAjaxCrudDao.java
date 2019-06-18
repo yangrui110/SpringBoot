@@ -1,15 +1,17 @@
-package com.demo.web.core.crud.dao.h2;
+package com.demo.web.core.crud.dao.oracle;
 
 import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
-public interface H2AjaxCrudDao {
+public interface OracleAjaxCrudDao extends BaseDao {
 
     Map<String,Object> findByPK(@Param("entityName") String entityName, @Param("mapData") Map<String, Object> mapData);
 
+    int totalNum(@Param("condition") ConditionEntity entity);
     /**
      * @param entity 查询的条件
      * */

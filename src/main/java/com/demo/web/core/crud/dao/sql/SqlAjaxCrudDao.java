@@ -1,7 +1,5 @@
 package com.demo.web.core.crud.dao.sql;
 
-import com.demo.web.core.crud.centity.CEntity;
-import com.demo.web.core.crud.centity.COrderBy;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
@@ -31,11 +29,11 @@ public interface SqlAjaxCrudDao extends BaseDao {
      * @param mapData 待更新的数据集
      * @param whereCondition where后面的查询条件
      * */
-    void update(@Param("entityName") String entityName,@Param("data") Map<String,Object> mapData,@Param("whereCondition") List<CEntity> whereCondition);
+    void update(@Param("entityName") String entityName,@Param("data") Map<String,Object> mapData,@Param("whereCondition") String whereCondition);
     /**
      * @param entityName 实体文件中定义的表名称
      * @param  whereCondition where后面的查询条件
      * */
-    void delete(@Param("entityName") String entityName,@Param("whereCondition") List<CEntity> whereCondition);
+    void delete(@Param("entityName") String entityName,@Param("whereCondition") String whereCondition);
 
 }

@@ -74,9 +74,14 @@
     <xs:element name="view-link">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="key-map"/>
+                <xs:element ref="key-map"/>
             </xs:sequence>
             <xs:attributeGroup ref="viewLink.attrs"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="key-map">
+        <xs:complexType>
+            <xs:attributeGroup ref="keyMap.attrs"/>
         </xs:complexType>
     </xs:element>
     <xs:attributeGroup name="viewEntity.attrs">

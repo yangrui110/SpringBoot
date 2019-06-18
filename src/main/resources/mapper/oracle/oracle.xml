@@ -2,8 +2,66 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.demo.web.dao.oracle.OUserDao">
-    <select id="finds" resultType="java.util.Map">
-        select a.* from dbo.[user] a
+<mapper namespace="com.demo.web.core.crud.dao.oracle.OracleAjaxCrudDao">
+
+    <!--通过主键查找对应的一条数据-->
+    <select id="findByPK" resultType="java.util.Map">
+        select * from #{entityName} a where
+        <foreach collection="mapData" index="key"  item="data" separator=" and ">
+            a.#{key} = #{data}
+        </foreach>
     </select>
+    <select id="findAll" resultType="java.util.Map">
+        select ${condition.columns}
+        <if test="condition.orderBy != null and condition.orderBy != ''">
+            , row_number() over( order by ${condition.orderBy})
+        </if>
+        from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
+        <trim prefix="where" prefixOverrides="and">
+            <if test="condition.condition!='' and condition.condition!=null">
+                and ${condition.condition}
+            </if>
+            <if test="condition.start != null and condition.start != null">
+                and ROWNUM &gt;= ${condition.start}
+            </if>
+            <if test="condition.end != null and condition.start != null">
+                and ROWNUM &lt;= ${condition.end}
+            </if>
+        </trim>
+
+    </select>
+
+    <select id="totalNum" resultType="int">
+        select count(1) from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
+        <trim prefix="where">
+            ${condition.condition}
+        </trim>
+    </select>
+
+    <insert id="insert">
+        insert into ${entityName}
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            ${key}
+        </foreach>
+        values
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            #{value}
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update ${entityName} a
+        set
+        <foreach collection="data" separator="," item="value" index="key">
+            a.${key} = #{value}
+        </foreach>
+        where
+        ${whereCondition}
+    </update>
+
+    <delete id="delete">
+        delete from ${entityName}
+        where
+        ${whereCondition}
+    </delete>
 </mapper>

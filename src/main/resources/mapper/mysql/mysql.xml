@@ -14,11 +14,12 @@
     <select id="findAll" resultType="java.util.Map">
         select ${condition.columns} from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
         <trim prefix="where">
-            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
+            ${condition.condition}
+            <!--<foreach item="value" index="index" collection="condition.cons" separator=" and " >
                 <if test="value.right !='' and value.right != null">
                     ${value.left} ${value.operator} #{value.right}
                 </if>
-            </foreach>
+            </foreach>-->
         </trim>
         <if test="condition.start!=null and condition.end != null">
             limit ${condition.start} , ${condition.end}
@@ -28,11 +29,7 @@
     <select id="totalNum" resultType="int">
         select count(1) from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
         <trim prefix="where">
-            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
-                <if test="value.right !='' and value.right != null">
-                    ${value.left} ${value.operator} #{value.right}
-                </if>
-            </foreach>
+            ${condition.condition}
         </trim>
     </select>
 
@@ -54,16 +51,12 @@
             a.${key} = #{value}
         </foreach>
         where
-        <foreach collection="whereCondition" separator=" and " item="value" index="index">
-            a.${value.left} ${value.operator} #{value.right}
-        </foreach>
+        ${whereCondition}
     </update>
 
     <delete id="delete">
         delete from ${entityName}
         where
-        <foreach collection="whereCondition" separator=" and " item="value" index="index">
-            ${value.left} ${value.operator} #{value.right}
-        </foreach>
+        ${whereCondition}
     </delete>
 </mapper>

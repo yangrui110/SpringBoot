@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE base SYSTEM "datasource.xsd">
+<base>
+    <datasource url="jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;zeroDateTimeBehavior=convertToNull"
+                name="root"
+                password="123456"
+                source-dao-path="com.demo.web.core.crud.dao.mysql"
+                source-dao-xml-path="classpath:mapper/mysql/*.xml"
+                source-bean-xml-path="classpath:entity/mysql/*.xml"
+                dao-base-class-name="com.demo.web.core.crud.dao.mysql.MysqlAjaxCrudDao"
+                sourceType="mysql"
+    />
+
+    <datasource url="jdbc:sqlserver://127.0.0.1;databaseName =db1"
+                name="sa"
+                password="123456"
+                source-dao-path="com.demo.web.core.crud.dao.sql"
+                source-dao-xml-path="classpath:mapper/sql/*.xml"
+                source-bean-xml-path="classpath:entity/sql/*.xml"
+                dao-base-class-name="com.demo.web.core.crud.dao.sql.SqlAjaxCrudDao"
+                sourceType="sql"
+    />
+    <datasource url="jdbc:oracle:thin:@118.24.153.227:1521:TEST"
+                name="TEST"
+                password="134167"
+                source-dao-path="com.demo.web.core.crud.dao.oracle"
+                source-dao-xml-path="classpath:mapper/oracle/*.xml"
+                source-bean-xml-path="classpath:entity/oracle/*.xml"
+                dao-base-class-name="com.demo.web.core.crud.dao.oracle.OracleAjaxCrudDao"
+                sourceType="oracle"
+                validation-query="select 1 FROM DUAL"
+    />
+</base>

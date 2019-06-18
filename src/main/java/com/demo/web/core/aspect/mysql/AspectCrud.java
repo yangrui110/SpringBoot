@@ -1,21 +1,23 @@
 package com.demo.web.core.aspect.mysql;
 
 import com.demo.config.advice.BaseException;
-import com.demo.web.core.crud.centity.CEntity;
-import com.demo.web.core.crud.centity.COrderBy;
+import com.demo.config.datasource.dynamic.SelfTransaction;
+import com.demo.config.datasource.type.DataSourceType;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.centity.PageMake;
 import com.demo.web.core.xmlEntity.EntityMap;
-import org.aspectj.lang.JoinPoint;
+import com.demo.web.core.xmlEntity.InfoOfEntity;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,8 +26,9 @@ import java.util.Map;
  */
 @Component
 @Aspect
-public class AspectCrud {
+public class AspectCrud implements ApplicationContextAware {
 
+    private ApplicationContext applicationContext;
     /***
      * 切面拦截mysql操作
      */
@@ -37,46 +40,72 @@ public class AspectCrud {
             for (Object a : args) {
                 if (a instanceof FindEntity) {
                     String orign = ((FindEntity) a).getEntityName();
-                    List<CEntity> conditions = ((FindEntity) a).getCondition();
-                    if (conditions.size() > 0) {
+                    Map conditions = ((FindEntity) a).getCondition();
+                    /*if (conditions.size() > 0) {
                         Map map = new HashMap();
                         conditions.forEach((k) -> {
                             map.put(k.getLeft(), "");
                         });
                         EntityMap.yanzhengMap((Map<String, Object>) map, orign);
-                    }
+                    }*/
                     ConditionEntity entity = EntityMap.readEntityToCondition(orign, conditions, ((FindEntity) a).getOrderBy());
+                    entity.setStart(((FindEntity)a).getStart());
+                    entity.setEnd(((FindEntity)a).getEnd());
                     args[1] = entity;
+                    //构造分页条件
+                    PageMake.makePage(entity, EntityMap.getAndJugeNotEmpty(((FindEntity) a).getEntityName()).getConfig().getSourceType());
                 }
             }
         }else {
             //验证更新、删除、插入
             for(Object arg: args){
                 if(arg instanceof FindEntity){
-                    List<CEntity> conditions = ((FindEntity) arg).getCondition();
+                    Map conditions = ((FindEntity) arg).getCondition();
                     String tableAlias=((FindEntity) arg).getEntityName();
                     if(EntityMap.judeIsViewEntity(tableAlias)){
                         throw new BaseException(304,"视图表"+tableAlias+"不允许增删改操作");
                     }
-                    EntityMap.yanzhengMap(((FindEntity) arg).getData(), tableAlias);
-                    if (conditions.size() > 0) {
+                    //处理其它的操作
+                    EntityMap.dealUpCondition((FindEntity) arg);
+                    //EntityMap.yanzhengMap(((FindEntity) arg).getData(), tableAlias);
+                    /*if (conditions.size() > 0) {
                         Map map = new HashMap();
                         conditions.forEach((k) -> {
                             map.put(k.getLeft(), "");
                         });
                         EntityMap.yanzhengMap((Map<String, Object>) map, tableAlias);
-                    }
-                    //((FindEntity) arg).setEntityName(EntityMap.getTableName(tableAlias));
+                    }*/
                 }
             }
         }
-        Object os= point.proceed(args);
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(((FindEntity) args[0]).getEntityName());
+        DataSourceTransactionManager manager = (DataSourceTransactionManager) applicationContext.getBean(entity1.getConfig().getSourceBeanName()+"manager");
+        TransactionStatus status = SelfTransaction.begin(manager);
+        Object os= null;
+        try {
+            os = point.proceed(args);
+        } catch (Throwable throwable) {
+            SelfTransaction.rollBack(manager, status);
+            throwable.printStackTrace();
+            throw throwable;
+        }
+        SelfTransaction.commit(manager, status);
         return os;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext=applicationContext;
     }
 
     /***
      * 切面拦截sql操作
      * */
 
+    private static void changeTableName(ConditionEntity entity,String sourceType){
+        if(DataSourceType.ORACLE.equals(sourceType))
+            entity.setMainTable("\""+entity.getMainTable()+"\"");
+
+    }
 
 }

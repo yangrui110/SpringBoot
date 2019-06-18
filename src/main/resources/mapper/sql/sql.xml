@@ -11,11 +11,7 @@
         ( SELECT ${condition.columns}, ROW_NUMBER () OVER ( ORDER BY ${condition.orderBy}) AS RowNumber FROM ${condition.mainTable} ${condition.mainAlias}
         ${condition.joins}
         <trim prefix="where">
-            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
-                <if test="value.right !='' and value.right != null">
-                    ${value.left} ${value.operator} #{value.right}
-                </if>
-            </foreach>
+            ${condition.condition}
         </trim>
         ) s
         <trim prefix="where">
@@ -33,17 +29,13 @@
         ( SELECT ${condition.columns}, ROW_NUMBER () OVER ( ORDER BY ${condition.orderBy}) AS RowNumber FROM ${condition.mainTable} ${condition.mainAlias}
         ${condition.joins}
         <trim prefix="where">
-            <foreach item="value" index="index" collection="condition.cons" separator=" and " >
-                <if test="value.right !='' and value.right != null">
-                    ${value.left} ${value.operator} #{value.right}
-                </if>
-            </foreach>
+            ${condition.condition}
         </trim>
         ) s
     </select>
 
     <insert id="insert">
-        insert into [${entityName}]
+        insert into ${entityName}
         <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
             ${key}
         </foreach>
@@ -54,22 +46,18 @@
     </insert>
 
     <update id="update">
-        update [${entityName}]
+        update ${entityName}
         set
         <foreach collection="data" separator="," item="value" index="key">
-            #{key} = #{value}
+            ${key} = #{value}
         </foreach>
         where
-        <foreach collection="whereCondition" separator=" and " item="value" index="index">
-            #{value.left} ${value.operator} #{value.right}
-        </foreach>
+        ${whereCondition}
     </update>
 
     <delete id="delete">
-        delete from [${entityName}]
+        delete from ${entityName}
         where
-        <foreach collection="whereCondition" separator=" and " item="value" index="index">
-            [${value.left}] ${value.operator} #{value.right}
-        </foreach>
+        ${whereCondition}
     </delete>
 </mapper>

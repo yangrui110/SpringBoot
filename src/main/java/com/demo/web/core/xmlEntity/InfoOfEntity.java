@@ -1,5 +1,6 @@
 package com.demo.web.core.xmlEntity;
 
+import com.demo.config.datasource.dynamic.InfoOfDruidDataSourceConfig;
 import lombok.Data;
 
 /**
@@ -10,10 +11,8 @@ import lombok.Data;
 public class InfoOfEntity {
     private String entityName;
     private String entityAlias;
-    /**对应数据源的类型*
-     * @see com.demo.config.datasource.type.DataSourceType
-     */
-    private String source;
     //判断是否是视图，如果是视图，则为true，默认为false;
     private boolean view;
+
+    private InfoOfDruidDataSourceConfig config;
 }

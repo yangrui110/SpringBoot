@@ -4,6 +4,9 @@ server:
     context-path: /asuntech
 logging.level.org.springframework.boot.autoconfigure: ERROR
 spring:
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+---
   datasource:
     mysql:
       url: jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
@@ -13,9 +16,11 @@ spring:
       url: jdbc:sqlserver://127.0.0.1;databaseName =db1
       username: sa
       password: 123456
-  profiles:
-    active: prod
----
+    oracle:
+      url: jdbc:oracle:thin:@118.24.153.227:1521:TEST
+      username: TEST
+      password: 134167
+      driverClassName: oracle.jdbc.driver.OracleDriver
     h2:
       username: root
       password: 123456

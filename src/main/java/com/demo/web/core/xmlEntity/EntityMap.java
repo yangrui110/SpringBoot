@@ -1,9 +1,11 @@
 package com.demo.web.core.xmlEntity;
 
 import com.demo.config.advice.BaseException;
-import com.demo.web.core.crud.centity.CEntity;
+import com.demo.config.datasource.dynamic.InfoOfDruidDataSourceConfig;
+import com.demo.config.datasource.type.DataSourceType;
 import com.demo.web.core.crud.centity.COrderBy;
 import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.xmlUtil.XmlUtil;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -12,7 +14,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.StringUtils;
@@ -69,13 +70,13 @@ public class EntityMap {
     /**
      * <p>初始化所有的实体定义xml文件到entitys变量中</p>
      * */
-    public static void readXmlIntoMap() throws IOException, DocumentException {
+    public static void readXmlIntoMap(InfoOfDruidDataSourceConfig config) throws IOException, DocumentException {
 
         PathMatchingResourcePatternResolver resolver=new PathMatchingResourcePatternResolver();
         Resource[] resources=resolver.getResources("classpath:entity/**/*.xml");
         for (Resource r:resources) {
             if(r.getFilename().endsWith(".xml"))
-                readOneToMap(r);
+                readOneToMap(r,config);
         }
 
     }
@@ -83,26 +84,40 @@ public class EntityMap {
     /**
      * 读取一个资源文件到实体中去
      * */
-    private static void readOneToMap(Resource resource) throws IOException, DocumentException {
-        //解析实体对应的数据源
-        String path=resource.getURL().getPath();
-        path=path.substring(path.lastIndexOf("classes/entity")+15);
-        StringBuilder builder=new StringBuilder(path.substring(0,path.indexOf("/")));
+    public static void readOneToMap(Resource resource, InfoOfDruidDataSourceConfig config) throws IOException, DocumentException {
         //解析完毕
         String xml= XmlUtil.getXml(resource);
-        Map<String,Element> map=readEntity(xml);
+        Map<String,Element> map=readEntity(xml,config);
         map.forEach((key,value)->{
             InfoOfEntity entity = tables.get(key);
-            entity.setSource(builder.toString());
+            entity.setConfig(config);
             entitys.put(key, value);
             tables.put(key, entity);
         });
     }
 
     /**
+     * 把oracle的表名转为双引号包裹
+     * */
+    private static String parseDoubleQuote(String column){
+
+        return "\""+column+"\"";
+    }
+    /**
+     * 把oracle的列名转为双引号
+     * */
+    private static void parseColumnDoubleQuote(ColumnProperty column){
+        if(!StringUtils.isEmpty(column.getColumn()))
+            column.setColumn(parseDoubleQuote(column.getColumn()));
+        if(!StringUtils.isEmpty(column.getAlias()))
+            column.setAlias(parseDoubleQuote(column.getAlias()));
+        if (!StringUtils.isEmpty(column.getTableName()))
+            column.setTableName(parseDoubleQuote(column.getTableName()));
+    }
+    /**
      * <p>将xml文本解析为Map对象</p>
      * */
-    public static Map<String,Element> readEntity(String xml) throws UnsupportedEncodingException, DocumentException {
+    public static Map<String,Element> readEntity(String xml,InfoOfDruidDataSourceConfig config) throws UnsupportedEncodingException, DocumentException {
         SAXReader reader=new SAXReader();
         Map map=new HashMap();
         Document document=reader.read(new ByteArrayInputStream(xml.getBytes("utf-8")));
@@ -118,6 +133,7 @@ public class EntityMap {
                 entity.setView(true);
                 entity.setEntityName(al);
                 entity.setEntityAlias(al);
+                entity.setConfig(config);
                 tables.put(al,entity);
                 map.put(al, element1);
                 continue;
@@ -135,6 +151,7 @@ public class EntityMap {
                     InfoOfEntity entity1=new InfoOfEntity();
                     entity1.setEntityName(ats.getValue());
                     entity1.setEntityAlias(key);
+                    entity1.setConfig(config);
                     tables.put(key,entity1);
                 }
             }
@@ -159,12 +176,12 @@ public class EntityMap {
     /**
      * 读取实体xml到String字符串中,构造成sql语句中的查询列属性
      * */
-    public static ConditionEntity readEntityToCondition(String entityName,List<CEntity> cons,List<COrderBy> orderBy){
+    public static ConditionEntity readEntityToCondition(String entityName,Map<String,Object> cons,List<COrderBy> orderBy){
         Element element=getElement(entityName);
         if(element==null)
             throw new BaseException(304, "表名"+entityName+"不存在");
         if(cons==null)
-            cons=new ArrayList<>();
+            cons=new HashMap<>();
         if(orderBy==null)
             orderBy=new ArrayList<>();
         if("entity".equals(element.getName())){
@@ -175,13 +192,16 @@ public class EntityMap {
         } else return null;
     }
 
-    public static ConditionEntity readEntityLabel(String entityName, List<CEntity> cons, List<COrderBy> orderBy){
+    public static ConditionEntity readEntityLabel(String entityName, Map<String,Object> cons, List<COrderBy> orderBy){
         ConditionEntity entity=new ConditionEntity();
         Element element=getElement(entityName);
-        entity.setColumns(readColumnEntity(element, null,null));
+        Map<String, ColumnProperty> propertyMap = readColumnEntity(element);
+        parseWhereCondition(propertyMap, element.attributeValue("tableAlias"));
+        entity.setColumns(makeSelectColumn(propertyMap));
         entity.setMainTable(getTableName(entityName));
         entity.setMainAlias("a");
-        entity.setCons(cons==null?new ArrayList<>():cons);
+        entity.setCondition(makeWhereCondition(cons, propertyMap));
+        //entity.setCondition(cons==null?new HashMap<>():cons);
         StringBuilder builder=new StringBuilder();
         orderBy.forEach((k)->{
             builder.append(k.getNames()).append(" ").append(k.getDirect()).append(",");
@@ -198,7 +218,7 @@ public class EntityMap {
     /**
      * 读取view-entity标签
      * */
-    public static ConditionEntity  readColumnViewEntity(Element element,List<CEntity> cons, List<COrderBy> orderBy){
+    public static ConditionEntity  readColumnViewEntity(Element element,Map<String,Object> cons, List<COrderBy> orderBy){
         ConditionEntity entity=new ConditionEntity();  //需要返回的条件
         //第一遍遍历，获取主表以及key-map值,alias对应tableAlias
         Map<String,String> keyMap=getMemberMap(element);//存放表和表别名之间的对应关系
@@ -206,12 +226,12 @@ public class EntityMap {
         entity.setMainAlias(keyMap.get("great-main-table-alias"));
         //第二次遍历，获取需要查询的列
         Map<String,ColumnProperty> columns=getViewColumns(element);
+        parseWhereCondition(columns, keyMap.get("great-main-table"));
         entity.setColumns(makeSelectColumn(columns));
         //第三遍遍历，获取left join关系
         entity.setJoins(makeJoinString(element));
         //处理查询条件
-        makeWhereCondition(cons, columns);
-        entity.setCons(cons);
+        entity.setCondition(makeWhereCondition(cons, columns));
         //处理排序字段
         entity.setOrderBy(makeOrderBy(orderBy, columns));
         return entity;
@@ -255,16 +275,49 @@ public class EntityMap {
     /**
      * 制作查询条件
      * */
-    private static List<CEntity> makeWhereCondition(List<CEntity> cons,Map<String,ColumnProperty> columns){
+    private static String makeWhereCondition(Map<String,Object> cons,Map<String,ColumnProperty> columns){
+        StringBuilder builder=new StringBuilder();
+            Object list=cons.get("conditionList");
+            Object combine = cons.get("combine")==null?"and":cons.get("combine");
+            if(list!=null&&list instanceof List&&((List) list).size()>0){
+                ((List<Map>) list).forEach((k)->{
+                    Object conditionList = k.get("conditionList");
+                    Object left = k.get("left");
+                    Object right = k.get("right");
+                    Object operator = k.get("operator");
+                    if(conditionList!=null)
+                        builder.append(" (").append(makeWhereCondition(k, columns)).append(") ");
+                    if (conditionList==null){
+                        if(!StringUtils.isEmpty(left)&&!StringUtils.isEmpty(right)){
+                            ColumnProperty property = columns.get(left);
+                            builder.append(" ").append(property.getTableMemberAlias()).append(".").append(property.getColumn()).append(" ")
+                                    .append(operator==null?"=":operator).append(" ")
+                                    .append("'").append(right).append("'").append(" ");
+                            builder.append(combine).append(" ");
+                        }
+                    }
+                });
+                return builder.substring(0, builder.length()-combine.toString().length()-1);
+            }
+
+        /*
         columns.forEach((s,v)->{
-            cons.forEach((k)->{
-                Object o =k.getLeft();
+            cons.forEach((k,l)->{
+                if("left".equals(k)||"right".equals(k)||"operator".equals(k)) {
+                    if (l instanceof Map) {
+                        builder.append("(").append(makeWhereCondition((Map<String, Object>) l, columns)).append(")");
+                    } else if (l instanceof String) {
+                        builder.append(l);
+                    }
+                }
+                /*Object o =k.getLeft();
                 if(o!=null&&v.getAlias().equals(o)){
                     k.setLeft(v.getTableMemberAlias()+"."+v.getColumn());
                 }
             });
         });
-        return cons;
+*/
+        return builder.toString();
     }
     /**
      * 处理排序字段
@@ -335,30 +388,44 @@ public class EntityMap {
     /**
      * 读取entity标签
      * */
-    public static String readColumnEntity(Element element,String table,Map map){
+    public static Map<String,ColumnProperty> readColumnEntity(Element element){
+        String tableName = element.attributeValue("tableName");
         List<Element> elements = element.elements();
-        StringBuilder builder=new StringBuilder();
+        Map<String,ColumnProperty> columns=new HashMap();
         elements.forEach((el)->{
             if(el.getName().equals("column")) {
+                ColumnProperty property=new ColumnProperty();
                 String name = el.attributeValue("name");
                 String alias = el.attributeValue("alias");
                 alias = alias == null ? name : alias;
                 if (name == null)
                     throw new BaseException(304, "该标签" + el.getName() + "的name属性不能为空");
-                if(map==null) {
-                    if (table != null)
-                        builder.append(table).append(".");
-                    builder.append(name).append(" as ").append(alias).append(" , ");
-                }else if(!map.containsKey(name)){
-                    if (table != null)
-                        builder.append(table).append(".");
-                    builder.append(name).append(" as ").append(alias).append(" , ");
-                }
+                property.setColumn(name);
+                property.setAlias(alias);
+                property.setTableName(tableName);
+                property.setTableAlias("a");
+                property.setTableMemberAlias("a");
+                columns.put(alias, property);
             }
         });
-        String result=builder.toString();
-        int l=result.lastIndexOf(",");
-        return result.substring(0,l);
+        return columns;
+    }
+    /**
+     * 制作oracle的条件
+     * */
+    public static void makeOracleData(FindEntity entity){
+        if(entity.getData()!=null){
+            Map map=new HashMap();
+            entity.getData().forEach((k,v)->{
+                map.put(parseDoubleQuote((String) k), v);
+            });
+            entity.setData(map);
+        }
+        /*if(entity.getCondition().size()>0){
+            for (CEntity cEntity : entity.getCondition()) {
+                cEntity.setLeft(parseDoubleQuote(cEntity.getLeft()));
+            }
+        }*/
     }
     /**
      * 验证输入的Map键值是否存在实体定义中
@@ -377,8 +444,8 @@ public class EntityMap {
     private static void ensureColumn(Map<String,Object> map,Map keys){
         map.forEach((key,value)->{
             if(!keys.containsKey(key)){
-                System.out.println("该key"+key+"没有被定义");
-                throw new BaseException(304, "该key"+key+"没有被定义");
+                System.out.println("该key:"+key+"没有被定义");
+                throw new BaseException(304, "该key:"+key+"没有被定义");
             }
         });
     }
@@ -476,11 +543,11 @@ public class EntityMap {
     private static void excludeColumn(Map map,Element element){
         List<Element> elements = element.elements();
         elements.forEach((k)->{
-            if("column".equals(k.getName())){
+            if("exclude".equals(k.getName())){
                 String column=k.attributeValue("column");
                 if(!StringUtils.isEmpty(column)){
                     if(map.containsKey(column)){
-                        map.remove(k);
+                        map.remove(column);
                     }
                 }
             }
@@ -537,4 +604,22 @@ public class EntityMap {
         return  element;
     }
 
+    /**
+     * 处理更新、删除、插入的数据列操作
+     * */
+    public static void dealUpCondition(FindEntity findEntity){
+        Map<String, ColumnProperty> columnMap = getColumnMap(findEntity.getEntityName());
+        parseWhereCondition(columnMap,findEntity.getEntityName());
+        findEntity.setCons(makeWhereCondition(findEntity.getCondition(), columnMap));
+    }
+
+    //将所需要的where条件转为指定的数据源类型
+    private static void parseWhereCondition(Map<String,ColumnProperty> columnMap,String entityName){
+        Element element = getElement(entityName);
+        InfoOfEntity andJugeNotEmpty = getAndJugeNotEmpty(element.attributeValue("tableAlias"));
+        columnMap.forEach((k,v)->{
+            if(DataSourceType.ORACLE.equals(andJugeNotEmpty.getConfig().getSourceType()))
+                parseColumnDoubleQuote(v);
+        });
+    }
 }

@@ -15,13 +15,13 @@ public class ApplicationListenerStart implements ApplicationListener<Application
 
     @Override
     public void onApplicationEvent(ApplicationPreparedEvent applicationStartingEvent) {
-        try {
+        /*try {
             EntityMap.readXmlIntoMap();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {
             e.printStackTrace();
-        }
+        }*/
         System.out.println("初始化加载完毕");
     }
 }
