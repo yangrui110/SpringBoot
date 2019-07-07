@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
     <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
@@ -13,6 +14,7 @@
         <column name="age">
             <describtion>年龄</describtion>
         </column>
+        <primary-key name="id"/>
     </entity>
     <entity tableName="[teacher]" tableAlias="Teacher1">
         <!--alias标签是给该列取得别名-->
@@ -37,11 +39,22 @@
         <column name="t_id">
             <describtion>教师编号</describtion>
         </column>
+        <primary-key name="user_id"/>
+    </entity>
+    <entity tableName="[postParam]" tableAlias="postParam">
+        <column name="post_entity">
+            <describtion>实体名</describtion>
+        </column>
+        <column name="post_param">
+            <describtion>实体对应的参数</describtion>
+        </column>
+        <primary-key name="post_entity"/>
     </entity>
     <view-entity tableAlias="ClassesView">
         <member-entity alias="CL" tableAlias="Classes"/>
         <member-entity alias="TE" tableAlias="Teacher1"/>
         <member-entity alias="UO" tableAlias="userOne"/>
+        <alias alias="classId" column="user_id" referTable="CL"/>
         <alias alias="cName" column="class_name" referTable="CL"/>
         <alias alias="tName" column="name" referTable="TE"/>
         <alias alias="uName" column="name" referTable="UO"/>

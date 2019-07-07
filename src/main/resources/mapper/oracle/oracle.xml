@@ -14,7 +14,7 @@
     <select id="findAll" resultType="java.util.Map">
         select ${condition.columns}
         <if test="condition.orderBy != null and condition.orderBy != ''">
-            , row_number() over( order by ${condition.orderBy})
+            , row_number() over( order by ${condition.orderBy}) as RowNumber
         </if>
         from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
         <trim prefix="where" prefixOverrides="and">

@@ -1,0 +1,10 @@
+.label-left{
+    line-height: 38px;
+    text-align: center;
+}
+.layui-row{
+    margin: 10px 0px 10px 0px;
+}
+.innerIframe{
+    min-height: 400px;
+}

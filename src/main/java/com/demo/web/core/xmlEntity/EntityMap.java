@@ -3,9 +3,7 @@ package com.demo.web.core.xmlEntity;
 import com.demo.config.advice.BaseException;
 import com.demo.config.datasource.dynamic.InfoOfDruidDataSourceConfig;
 import com.demo.config.datasource.type.DataSourceType;
-import com.demo.web.core.crud.centity.COrderBy;
-import com.demo.web.core.crud.centity.ConditionEntity;
-import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.centity.*;
 import com.demo.web.core.xmlUtil.XmlUtil;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -21,10 +19,7 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @autor 杨瑞
@@ -182,12 +177,20 @@ public class EntityMap {
             throw new BaseException(304, "表名"+entityName+"不存在");
         if(cons==null)
             cons=new HashMap<>();
-        if(orderBy==null)
+        if(orderBy==null){
             orderBy=new ArrayList<>();
+            //没有排序时，就采用默认的方式
+            Map<String, ColumnProperty> primaryKey = getPrimaryKey(entityName);
+            Iterator<String> iterator = primaryKey.keySet().iterator();
+            while (iterator.hasNext()){
+                COrderBy cOrderBy=new COrderBy();
+                cOrderBy.setNames(iterator.next());
+                orderBy.add(cOrderBy);
+            }
+        }
         if("entity".equals(element.getName())){
             return readEntityLabel(entityName, cons, orderBy);
-        }
-        else if("view-entity".equals(element.getName())){
+        } else if("view-entity".equals(element.getName())){
             return readColumnViewEntity(element, cons,orderBy );
         } else return null;
     }
@@ -195,16 +198,19 @@ public class EntityMap {
     public static ConditionEntity readEntityLabel(String entityName, Map<String,Object> cons, List<COrderBy> orderBy){
         ConditionEntity entity=new ConditionEntity();
         Element element=getElement(entityName);
-        Map<String, ColumnProperty> propertyMap = readColumnEntity(element);
+        Map<String, ColumnProperty> propertyMap = getAllColumns(entityName);
         parseWhereCondition(propertyMap, element.attributeValue("tableAlias"));
         entity.setColumns(makeSelectColumn(propertyMap));
         entity.setMainTable(getTableName(entityName));
-        entity.setMainAlias("a");
+        entity.setMainAlias("");
         entity.setCondition(makeWhereCondition(cons, propertyMap));
         //entity.setCondition(cons==null?new HashMap<>():cons);
         StringBuilder builder=new StringBuilder();
         orderBy.forEach((k)->{
-            builder.append(k.getNames()).append(" ").append(k.getDirect()).append(",");
+            ColumnProperty property = propertyMap.get(k.getNames());
+            if(property!=null) {
+                builder.append(property.getColumn()).append(" ").append(k.getDirect()).append(",");
+            }
         });
         String os="";
         if(builder.length()>0){
@@ -225,7 +231,15 @@ public class EntityMap {
         entity.setMainTable(getTableName(keyMap.get("great-main-table")));
         entity.setMainAlias(keyMap.get("great-main-table-alias"));
         //第二次遍历，获取需要查询的列
-        Map<String,ColumnProperty> columns=getViewColumns(element);
+        Map<String,ColumnProperty> columns=getAllColumns(element);
+        //确保主键都被查询出来
+        Map<String, ColumnProperty> primaryKey = getPrimaryKey(element);
+        //将主键加入到columns中
+        primaryKey.forEach((k,v)->{
+            if(!columns.containsKey(k)){
+                columns.put(k, v);
+            }
+        });
         parseWhereCondition(columns, keyMap.get("great-main-table"));
         entity.setColumns(makeSelectColumn(columns));
         //第三遍遍历，获取left join关系
@@ -243,7 +257,9 @@ public class EntityMap {
     private static String makeSelectColumn(Map<String,ColumnProperty> columns){
         StringBuilder builder=new StringBuilder();
         columns.forEach((k,v)->{
-            builder.append(v.getTableMemberAlias()).append(".").append(v.getColumn()).append(" as ").append(v.getAlias())
+            if(!StringUtils.isEmpty(v.getTableMemberAlias()))
+                builder.append(v.getTableMemberAlias()).append(".");
+            builder.append(v.getColumn()).append(" as ").append(v.getAlias())
                     .append(",");
         });
         return builder.substring(0, builder.length()-1);
@@ -290,34 +306,36 @@ public class EntityMap {
                     if (conditionList==null){
                         if(!StringUtils.isEmpty(left)&&!StringUtils.isEmpty(right)){
                             ColumnProperty property = columns.get(left);
-                            builder.append(" ").append(property.getTableMemberAlias()).append(".").append(property.getColumn()).append(" ")
-                                    .append(operator==null?"=":operator).append(" ")
-                                    .append("'").append(right).append("'").append(" ");
+                            //列对应的表别名为空时，则不添加别名
+                            if(!StringUtils.isEmpty(property.getTableMemberAlias()))
+                                builder.append(" ").append(property.getTableMemberAlias()).append(".");
+                            builder.append(property.getColumn()).append(" ") .append(operator==null?"=":operator).append(" ");
+                            if(Operator.LIKE.equals(operator))
+                                   builder.append("'%").append(right).append("%'").append(" ");
+                            else builder.append("'").append(right).append("'").append(" ");
                             builder.append(combine).append(" ");
                         }
                     }
                 });
                 return builder.substring(0, builder.length()-combine.toString().length()-1);
             }
-
-        /*
-        columns.forEach((s,v)->{
-            cons.forEach((k,l)->{
-                if("left".equals(k)||"right".equals(k)||"operator".equals(k)) {
-                    if (l instanceof Map) {
-                        builder.append("(").append(makeWhereCondition((Map<String, Object>) l, columns)).append(")");
-                    } else if (l instanceof String) {
-                        builder.append(l);
-                    }
-                }
-                /*Object o =k.getLeft();
-                if(o!=null&&v.getAlias().equals(o)){
-                    k.setLeft(v.getTableMemberAlias()+"."+v.getColumn());
+        return builder.toString();
+    }
+    private static Map<String,Object> getWhereColumns(Map<String,Object> cons,Map<String,Object> results){
+        Object list=cons.get("conditionList");
+        if(list!=null&&list instanceof List&&((List) list).size()>0){
+            ((List<Map>) list).forEach((k)-> {
+                Object conditionList = k.get("conditionList");
+                Object left = k.get("left");
+                if(conditionList!=null){
+                    getWhereColumns(k, results);
+                }else {
+                    if(!StringUtils.isEmpty(left))
+                        results.put((String) left, "");
                 }
             });
-        });
-*/
-        return builder.toString();
+        }
+        return results;
     }
     /**
      * 处理排序字段
@@ -403,8 +421,11 @@ public class EntityMap {
                 property.setColumn(name);
                 property.setAlias(alias);
                 property.setTableName(tableName);
-                property.setTableAlias("a");
-                property.setTableMemberAlias("a");
+                property.setTableAlias("");
+                property.setTableMemberAlias("");
+                Element describtion = el.element("describtion");
+                if(describtion!=null)
+                    property.setDescribetion(describtion.getText());
                 columns.put(alias, property);
             }
         });
@@ -421,25 +442,115 @@ public class EntityMap {
             });
             entity.setData(map);
         }
-        /*if(entity.getCondition().size()>0){
-            for (CEntity cEntity : entity.getCondition()) {
-                cEntity.setLeft(parseDoubleQuote(cEntity.getLeft()));
-            }
-        }*/
     }
     /**
-     * 验证输入的Map键值是否存在实体定义中
+     * 验证主键是否有值，主要用在插入操作时进行的判断
+     * 主键未传值时，返回为true，有值时，返回false;
      * */
-    public static void yanzhengMap(Map<String,Object> map,String entityName){
+    public static void yanzhengPKIsEmpty(FindEntity entity){
+        Map entityData = entity.getData();
+        Map<String, ColumnProperty> primaryKey = getPrimaryKey(entity.getEntityName());
+        primaryKey.forEach((k,v)->{
+            if(!entityData.containsKey(k)||StringUtils.isEmpty(entityData.get(k)))
+                throw new BaseException(304, "主键属性为空，请给主键赋值");
+        });
+    }
+
+    public static Map<String,ColumnProperty> getPrimaryKey(String entityName){
+        Element element = EntityMap.getElement(entityName);
+        return getPrimaryKey(element);
+    }
+    /**
+     * 获取所有的主键
+     * */
+    public static Map<String,ColumnProperty> getPrimaryKey(Element element){
+        Map<String, ColumnProperty> allColumns = getAllColumns(element);
+        if("view-entity".equals(element.getName())){
+            MainTableInfo mainTable = getMainTable(element.attributeValue("tableAlias"));
+            Map<String, ColumnProperty> primaryKey = getPrimaryKey(mainTable.getTableAlias());
+            Map<String,ColumnProperty> result=new HashMap<>();
+            primaryKey.forEach((k,v)->{
+                boolean exsit=false;
+                Iterator<ColumnProperty> iterator = allColumns.values().iterator();
+                while (iterator.hasNext()){
+                    ColumnProperty property = iterator.next();
+                    if(k.equals(property.getColumn())){
+                        exsit=true;
+                        result.put(property.getAlias(), property);
+                    }
+                }
+                //遍历完成后，没有在视图中找到主键
+                if(!exsit){
+                    v.setTableMemberAlias(mainTable.getAlias());
+                    result.put(k,v);
+                }
+            });
+            return result;
+        } else if("entity".equals(element.getName())) {
+            Map<String, ColumnProperty> maps = new HashMap<>();
+            if (element != null) {
+                List<Element> elements = element.elements();
+                elements.forEach((k) -> {
+                    if ("primary-key".equals(k.getName())) {
+                        String name = k.attributeValue("name");
+                        if (!StringUtils.isEmpty(name)) {
+                            maps.put(name, allColumns.get(name));
+                        }
+                    }
+                });
+            }
+            return maps;
+        }else {
+            throw new BaseException(304, "实体定义错误");
+        }
+    }
+    /**
+     * 验证conditionkey
+     * */
+    public static void yanzhengConditionKey(Map<String,Object> map,String entityName){
+        //获取condition中的所有列
+        if(map==null)
+            return ;
+        Map<String,Object> results=new HashMap<>();
+        getWhereColumns(map,results);
+        yanzhengDataKey(results, entityName);
+    }
+    /**
+     * yanzhengDataKey
+     * */
+    public static void yanzhengDataKey(Map<String,Object> data,String entityName){
+        if(data==null)
+            return ;
         Element element=getElement(entityName);
         if("view-entity".equals(element.getName())){
-            ensureColumn(map, getViewColumns(entityName));
+            ensureColumn(data, getViewColumns(entityName));
         }else if("entity".equals(element.getName())){
-            ensureColumn(map,getColumnMap(entityName));
+            ensureColumn(data,getColumnMap(entityName));
         }else {
             throw new BaseException(304, "实体不能为空");
         }
+    }
 
+    /**
+     * 获取所有的列
+     * */
+    public static Map<String,ColumnProperty> getAllColumns(Element element){
+        Map result=null;
+        if("view-entity".equals(element.getName())){
+            result=getViewColumns(element);
+        }else if("entity".equals(element.getName())){
+            result=getColumnMap(element);
+        }else {
+            throw new BaseException(304, "实体不能为空");
+        }
+        return result;
+    }
+    /**
+     * 获取到所有的列
+     * */
+    public static Map<String,ColumnProperty> getAllColumns(String entityName){
+        Element element=getElement(entityName);
+        return getAllColumns(element);
     }
     private static void ensureColumn(Map<String,Object> map,Map keys){
         map.forEach((key,value)->{
@@ -453,7 +564,7 @@ public class EntityMap {
     /**
      * @param entityName 对应的实体名
      * */
-    private static Map<String,ColumnProperty> getColumnMap(String entityName){
+    public static Map<String,ColumnProperty> getColumnMap(String entityName){
         Element element=getElement(entityName);
         return getColumnMap(element);
     }
@@ -467,6 +578,7 @@ public class EntityMap {
         String table=element.attributeValue("tableAlias");
         String tableName=element.attributeValue("tableName");
         Map<String,ColumnProperty> keys=new HashMap();
+
         elements.forEach((el)->{
             if("column".equals(el.getName())) {
                 String name = el.attributeValue("name");
@@ -477,9 +589,12 @@ public class EntityMap {
                 ColumnProperty property=new ColumnProperty();
                 property.setColumn(name);
                 property.setAlias(alias);
-                property.setTableMemberAlias("a");
+                property.setTableMemberAlias("");
                 property.setTableAlias(table);
                 property.setTableName(tableName);
+                Element describtion = el.element("describtion");
+                if(describtion!=null)
+                    property.setDescribetion(describtion.getText());
                 keys.put(alias, property);
             }
 
@@ -500,9 +615,10 @@ public class EntityMap {
      * @return map 返回的Map集合中，包含对应的列以及列的相关属性
      * */
     private static Map<String,ColumnProperty> getViewColumns(Element element){
-        Map<String,String> keyMap=getMemberMap(element);
+        Map<String,String> keyMap=getMemberMap(element);  //获取member-entity实体
         List<Element> elements = element.elements();
-        Map<String,ColumnProperty> keys=new HashMap();
+        Map<String,ColumnProperty> keys=new HashMap();   //返回的结果集
+
         elements.forEach((el)->{
             if("alias".equals(el.getName())){
                 String alias=el.attributeValue("alias");
@@ -515,6 +631,10 @@ public class EntityMap {
                 property.setTableMemberAlias(aliasTable);
                 property.setTableAlias(keyMap.get(aliasTable));
                 property.setTableName(getTableName(keyMap.get(aliasTable)));
+                //获取关联表的属性
+                Map<String, ColumnProperty> columns = getAllColumns(keyMap.get(aliasTable));
+                property.setDescribetion(columns.get(name).getDescribetion());
+
                 if(alias!=null)
                     keys.put(alias, property);
             }else if("alias-all".equals(el.getName())){
@@ -529,6 +649,7 @@ public class EntityMap {
                     property.setTableMemberAlias(aliasTable);
                     property.setAlias(k);
                     property.setColumn(k);
+                    property.setDescribetion(v.getDescribetion());
                     keys.put(k, property);
                 });
             }
@@ -575,31 +696,8 @@ public class EntityMap {
         });
         return map;
     }
-    /**
-     * 获取主键
-     * */
-    public static String getPK(String entityName){
-        Element element=getElement(entityName);
-        List<Element> elements = element.elements();
-        Map<String,Object> pk=new HashMap<>();
-        StringBuilder builder=new StringBuilder();
-        elements.forEach((k)->{
-            if("primary-key".equals(k.getName())){
-               String name=k.attributeValue("name");
-               if(StringUtils.isEmpty(name))
-                   throw new BaseException(304, "主键属性为null");
-               else builder.append(name);
-            }
-        });
-        /*elements.forEach((k)->{
-            if("column".equals(k.getName())){
-                if(builder.toString().)
-            }
-        });*/
-        return StringUtils.isEmpty(builder.toString())?null:builder.toString();
-    }
 
-    private static Element getElement(String entityName){
+    public static Element getElement(String entityName){
         Element element=entitys.get(entityName);
         return  element;
     }
@@ -622,4 +720,36 @@ public class EntityMap {
                 parseColumnDoubleQuote(v);
         });
     }
+    /**
+     * 获取每个视图的可修改的表
+     * 视图别名是entityName，
+     * 每个视图对应的可编辑修改的是infoOfEntity
+     * */
+    public static MainTableInfo getMainTable(String entityName){
+        Element element = entitys.get(entityName);
+        MainTableInfo info=new MainTableInfo();
+        if("view-entity".equals(element.getName())){
+            //遍历获取第一个member-entity
+            Iterator<Element> iterator = element.elements().iterator();
+            while (iterator.hasNext()){
+                Element element1 = iterator.next();
+                if("member-entity".equals(element1.getName())){
+                    String tableAlias = element1.attributeValue("tableAlias");
+                    info.setViewName(entityName);
+                    info.setTableAlias(tableAlias);
+                    info.setAlias(element1.attributeValue("alias"));
+                    info.setInfoOfEntity(tables.get(tableAlias));
+                    return info;
+                }
+            }
+        }else if("entity".equals(element.getName())){
+            InfoOfEntity infoOfEntity = tables.get(entityName);
+            info.setInfoOfEntity(infoOfEntity);
+            info.setViewName(entityName);
+            info.setTableAlias(infoOfEntity.getEntityAlias());
+            return info;
+        }
+        return null;
+    }
+
 }

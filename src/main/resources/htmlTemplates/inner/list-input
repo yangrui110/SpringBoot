@@ -1,0 +1,6 @@
+<div class="layui-col-xs2 layui-col-sm2 layui-col-md2 label-left">
+    <label>innerDesc-yangrui：</label>
+</div>
+<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+    <input type="text" name="innerColumn-yangrui" placeholder="请输入innerDesc-yangrui" autocomplete="off" class="layui-input">
+</div>

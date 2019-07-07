@@ -22,11 +22,20 @@
         </trim>
     </select>
 
+    <select id="findAllNoPage" resultType="java.util.Map">
+        SELECT ${condition.columns} FROM ${condition.mainTable} ${condition.mainAlias}
+        ${condition.joins}
+        <trim prefix="where">
+            ${condition.condition}
+        </trim>
+
+    </select>
+
     <select id="totalNum" resultType="int">
         SELECT
         count(1)
         FROM
-        ( SELECT ${condition.columns}, ROW_NUMBER () OVER ( ORDER BY ${condition.orderBy}) AS RowNumber FROM ${condition.mainTable} ${condition.mainAlias}
+        ( SELECT ${condition.columns} FROM ${condition.mainTable} ${condition.mainAlias}
         ${condition.joins}
         <trim prefix="where">
             ${condition.condition}

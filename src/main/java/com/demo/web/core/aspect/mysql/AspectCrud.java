@@ -18,6 +18,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,22 +33,18 @@ public class AspectCrud implements ApplicationContextAware {
     /***
      * 切面拦截mysql操作
      */
-    @Around(value="execution(public * com.demo.web.core.crud.service.*.*(..))")
+    @Around(value="execution(public * com.demo.web.core.crud.service.BaseServiceImpl.*(..))")
     public Object doCheck(ProceedingJoinPoint point) throws Throwable {
         Object[] args=point.getArgs();
         System.out.println("方法名："+point.getSignature().getName());
-        if("findAll".equals(point.getSignature().getName())||"totalNum".equals(point.getSignature().getName())) {
+        if("findAll".equals(point.getSignature().getName())||"findAllNoPage".equals(point.getSignature().getName())||"totalNum".equals(point.getSignature().getName())) {
             for (Object a : args) {
                 if (a instanceof FindEntity) {
                     String orign = ((FindEntity) a).getEntityName();
                     Map conditions = ((FindEntity) a).getCondition();
-                    /*if (conditions.size() > 0) {
-                        Map map = new HashMap();
-                        conditions.forEach((k) -> {
-                            map.put(k.getLeft(), "");
-                        });
-                        EntityMap.yanzhengMap((Map<String, Object>) map, orign);
-                    }*/
+                    if (conditions.size() > 0) {
+                        EntityMap.yanzhengConditionKey((Map<String, Object>) conditions, orign);
+                    }
                     ConditionEntity entity = EntityMap.readEntityToCondition(orign, conditions, ((FindEntity) a).getOrderBy());
                     entity.setStart(((FindEntity)a).getStart());
                     entity.setEnd(((FindEntity)a).getEnd());
@@ -60,21 +57,16 @@ public class AspectCrud implements ApplicationContextAware {
             //验证更新、删除、插入
             for(Object arg: args){
                 if(arg instanceof FindEntity){
-                    Map conditions = ((FindEntity) arg).getCondition();
-                    String tableAlias=((FindEntity) arg).getEntityName();
+                    FindEntity entity=(FindEntity) arg;
+                    Map conditions = entity.getCondition();
+                    String tableAlias=entity.getEntityName();
                     if(EntityMap.judeIsViewEntity(tableAlias)){
                         throw new BaseException(304,"视图表"+tableAlias+"不允许增删改操作");
                     }
                     //处理其它的操作
-                    EntityMap.dealUpCondition((FindEntity) arg);
-                    //EntityMap.yanzhengMap(((FindEntity) arg).getData(), tableAlias);
-                    /*if (conditions.size() > 0) {
-                        Map map = new HashMap();
-                        conditions.forEach((k) -> {
-                            map.put(k.getLeft(), "");
-                        });
-                        EntityMap.yanzhengMap((Map<String, Object>) map, tableAlias);
-                    }*/
+                    EntityMap.dealUpCondition(entity);
+                    EntityMap.yanzhengDataKey(entity.getData(), entity.getEntityName());
+                    EntityMap.yanzhengConditionKey(entity.getCondition(), entity.getEntityName());
                 }
             }
         }

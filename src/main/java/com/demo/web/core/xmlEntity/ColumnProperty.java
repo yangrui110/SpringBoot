@@ -14,4 +14,7 @@ public class ColumnProperty {
     private String tableName;
     private String tableAlias;
     private String tableMemberAlias;
+
+    //列描述信息
+    private String describetion;
 }

@@ -20,6 +20,10 @@ public interface BaseDao {
     List<Map<String,Object>> findAll(@Param("condition") ConditionEntity entity);
 
     /**
+     * @param entity 查询的条件
+     * */
+    List<Map<String,Object>> findAllNoPage(@Param("condition") ConditionEntity entity);
+    /**
      * @param entityName 实体文件中定义的表名称
      * @param mapData 待插入的数据
      * */

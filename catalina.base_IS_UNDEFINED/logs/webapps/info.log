@@ -1,0 +1,21 @@
+2019-06-13 11:52:47:056---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 3084 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 11:52:47:071---> [main] INFO  com.demo.DemoApplicationTests -The following profiles are active: prod
+2019-06-13 11:52:53:617---> [main] INFO  com.demo.DemoApplicationTests -Started DemoApplicationTests in 7.186 seconds (JVM running for 9.075)
+2019-06-13 18:54:07:831---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 5672 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 18:54:07:831---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 18:54:50:333---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 4672 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 18:54:50:365---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 18:56:10:543---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 15788 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 18:56:10:543---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 18:58:12:770---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 5500 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 18:58:12:770---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 18:58:18:660---> [main] INFO  com.demo.DemoApplicationTests -Started DemoApplicationTests in 6.671 seconds (JVM running for 7.97)
+2019-06-13 19:01:04:196---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 14508 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 19:01:04:196---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 19:01:10:819---> [main] INFO  com.demo.DemoApplicationTests -Started DemoApplicationTests in 7.217 seconds (JVM running for 8.475)
+2019-06-13 19:02:08:366---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 14056 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 19:02:08:382---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 19:02:14:428---> [main] INFO  com.demo.DemoApplicationTests -Started DemoApplicationTests in 6.811 seconds (JVM running for 8.119)
+2019-06-13 19:03:20:413---> [main] INFO  com.demo.DemoApplicationTests -Starting DemoApplicationTests on asun-dev1 with PID 1516 (started by asun-dev1 in C:\AllData\idea\SpringBoot\demo)
+2019-06-13 19:03:20:415---> [main] INFO  com.demo.DemoApplicationTests -No active profile set, falling back to default profiles: default
+2019-06-13 19:03:26:909---> [main] INFO  com.demo.DemoApplicationTests -Started DemoApplicationTests in 7.284 seconds (JVM running for 8.549)

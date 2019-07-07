@@ -12,6 +12,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @autor 杨瑞
  * @date 2019/6/6 21:56
@@ -25,7 +28,19 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public Object findAll(FindEntity findEntity, ConditionEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        return baseDao.findAll(entity);
+        List<Map<String, Object>> all = baseDao.findAll(entity);
+        all.forEach((k)->{
+            if(k.containsKey("RowNumber"))
+                k.remove("RowNumber");
+        });
+        return all;
+    }
+
+    public List<Map<String, Object>> findAllNoPage(FindEntity findEntity, ConditionEntity entity){
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        List<Map<String, Object>> all = baseDao.findAllNoPage(entity);
+        return all;
     }
 
     public void update(FindEntity entity){
@@ -40,6 +55,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public void insert(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         String entityName=EntityMap.getTableName(entity.getEntityName());
+        EntityMap.yanzhengPKIsEmpty(entity); //验证主键的值是否已经传入
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
         if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
             EntityMap.makeOracleData(entity);
@@ -52,8 +68,8 @@ public class BaseServiceImpl implements ApplicationContextAware {
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
         if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
             EntityMap.makeOracleData(entity);
-            baseDao.insert("\""+entityName+"\"",entity.getData());
-        }//else baseDao.delete(entityName,entity.getCondition());
+            baseDao.delete("\""+entityName+"\"",entity.getCons());
+        }else baseDao.delete(entityName,entity.getCons());
     }
 
     public int totalNum(FindEntity findEntity,ConditionEntity entity){

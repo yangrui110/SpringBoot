@@ -15,4 +15,14 @@ public class InfoOfEntity {
     private boolean view;
 
     private InfoOfDruidDataSourceConfig config;
+
+    @Override
+    public String toString() {
+        return "InfoOfEntity{" +
+                "entityName='" + entityName + '\'' +
+                ", entityAlias='" + entityAlias + '\'' +
+                ", view=" + view +
+                ", config=" + config +
+                '}';
+    }
 }
