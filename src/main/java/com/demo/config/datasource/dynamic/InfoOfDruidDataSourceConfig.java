@@ -8,8 +8,8 @@ import com.alibaba.druid.pool.DruidDataSource;
  */
 public class InfoOfDruidDataSourceConfig {
     private DruidDataSource druidDataSource;
-    private String sourceDaoPath;
-    private String sourceDaoXmlPath;
+    private String[] sourceDaoPath;
+    private String[] sourceDaoXmlPath;
     private String sourceType;
     private String sourceBeanName;
     private String sourceBeanXmlPath;
@@ -31,19 +31,19 @@ public class InfoOfDruidDataSourceConfig {
         this.druidDataSource = druidDataSource;
     }
 
-    public String getSourceDaoPath() {
+    public String[] getSourceDaoPath() {
         return sourceDaoPath;
     }
 
-    public void setSourceDaoPath(String sourceDaoPath) {
+    public void setSourceDaoPath(String[] sourceDaoPath) {
         this.sourceDaoPath = sourceDaoPath;
     }
 
-    public String getSourceDaoXmlPath() {
+    public String[] getSourceDaoXmlPath() {
         return sourceDaoXmlPath;
     }
 
-    public void setSourceDaoXmlPath(String sourceDaoXmlPath) {
+    public void setSourceDaoXmlPath(String[] sourceDaoXmlPath) {
         this.sourceDaoXmlPath = sourceDaoXmlPath;
     }
 
