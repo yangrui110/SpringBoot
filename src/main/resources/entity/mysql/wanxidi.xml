@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<model>
+    <entity tableAlias="WanUser" tableName="user">
+        <column name="id">
+            <describtion>用户系统主键</describtion>
+        </column>
+        <column name="num_id">
+            <describtion>编号</describtion>
+        </column>
+        <column name="name">
+            <describtion>用户名</describtion>
+        </column>
+        <column name="phone">
+            <describtion>用户手机号</describtion>
+        </column>
+        <column name="identity">
+            <describtion>用户身份证</describtion>
+        </column>
+        <column name="mail">
+            <describtion>用户邮箱</describtion>
+        </column>
+        <column name="referral_code">
+            <describtion>用户推荐码</describtion>
+        </column>
+        <column name="qrcode">
+            <describtion>用户的推荐二维码</describtion>
+        </column>
+        <column name="vip">
+            <describtion>VIP等级</describtion>
+        </column>
+        <column name="province">
+            <describtion>省份</describtion>
+        </column>
+        <column name="city">
+            <describtion>城市</describtion>
+        </column>
+        <column name="address">
+            <describtion>地址</describtion>
+        </column>
+        <column name="country">
+            <describtion>乡镇</describtion>
+        </column>
+        <column name="parent_code">
+            <describtion>父推荐码</describtion>
+        </column>
+        <column name="create_time">
+            <describtion>创建时间</describtion>
+        </column>
+        <column name="update_time">
+            <describtion>更新时间</describtion>
+        </column>
+        <column name="vip_time">
+            <describtion>成为VIP时间</describtion>
+        </column>
+        <column name="direct_push">
+            <describtion>直推人码</describtion>
+        </column>
+        <column name="ify">
+            <describtion>是否可修改名字</describtion>
+        </column>
+        <column name="wid">
+            <describtion>微信OpenId</describtion>
+        </column>
+        <primary-key name="id"/>
+    </entity>
+    
+    <entity tableName="relation" tableAlias="WanRelation">
+        <column name="id">
+            <describtion>关联关系表</describtion>
+        </column>
+        <column name="type">
+            <describtion>关系的深度</describtion>
+        </column>
+        <column name="user_id">
+            <describtion>用户Id</describtion>
+        </column>
+        <column name="parent_id">
+            <describtion>父节点的Id</describtion>
+        </column>
+        <primary-key name="id"/>
+    </entity>
+
+    <view-entity tableAlias="WanUserRelation">
+        <member-entity tableAlias="WanRelation" alias="WR"/>
+        <member-entity tableAlias="WanUser" alias="WU"/>
+        <member-entity tableAlias="WanUser" alias="WUP"/>
+        <alias-all referTable="WR">
+        </alias-all>
+        <alias referTable="WU" column="name" alias="childName"/>
+        <alias referTable="WU" column="referral_code" alias="childCode"/>
+        <alias referTable="WUP" alias="parentName" column="name"/>
+        <alias referTable="WUP" alias="parentCode" column="referral_code"/>
+        <alias referTable="WU" alias="vipTime" column="vip_time"/>
+        <view-link tableAlias="WR" relTableAlias="WU">
+            <key-map field-name="user_id" rel-field-name="id"/>
+        </view-link>
+        <view-link tableAlias="WR" relTableAlias="WUP">
+            <key-map field-name="parent_id" rel-field-name="id"/>
+        </view-link>
+    </view-entity>
+
+</model>

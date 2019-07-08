@@ -43,8 +43,8 @@ public class ReadDruidXml {
             key=sourceType+value;
         }
         config.setSourceBeanName(key);
-        config.setSourceDaoPath(e.attributeValue("source-dao-path"));
-        config.setSourceDaoXmlPath(e.attributeValue("source-dao-xml-path"));
+        config.setSourceDaoPath(e.attributeValue("source-dao-path").split(","));
+        config.setSourceDaoXmlPath(e.attributeValue("source-dao-xml-path").split(","));
         config.setSourceBeanXmlPath(e.attributeValue("source-bean-xml-path"));
         String s = e.attributeValue("dao-base-class-name");
         config.setDaoBaseClassName(Class.forName(s));

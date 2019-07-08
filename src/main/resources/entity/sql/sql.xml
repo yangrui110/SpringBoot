@@ -83,5 +83,7 @@
         <column name="update_time">
             <describtion>修改时间</describtion>
         </column>
+        <primary-key name="parent_id"/>
+        <primary-key name="type"/>
     </entity>
 </model>
