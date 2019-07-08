@@ -109,14 +109,19 @@ public class DynamicDataSource implements ApplicationContextAware , ResourceLoad
         }
     }
     //
-    private void makeSqlFactory(DataSource dataSource,String key,String path){
+    private void makeSqlFactory(DataSource dataSource,String key,String[] path){
         try {
             BeanOperatorUtil.addBean((ConfigurableApplicationContext) applicationContext, key+"factory", SqlSessionFactory.class,()->{
                 SqlSessionFactoryBean factoryBean=new SqlSessionFactoryBean();
                 factoryBean.setDataSource(dataSource);
                 try {
-
-                    Resource[] resources = new PathMatchingResourcePatternResolver().getResources(path);
+                    Resource[] resources=new Resource[]{};
+                    for (String pathOne:path) {
+                        Resource[] resourcesOne = new PathMatchingResourcePatternResolver().getResources(pathOne);
+                        int orign=resources.length;
+                        resources=new Resource[resources.length+resourcesOne.length];
+                        System.arraycopy(resourcesOne, 0, resources, orign, resourcesOne.length);
+                    }
                     factoryBean.setMapperLocations(resources);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -149,7 +154,7 @@ public class DynamicDataSource implements ApplicationContextAware , ResourceLoad
 
     private void makeMapperScan(InfoOfDruidDataSourceConfig info){
         MapperScanConfig config=new MapperScanConfig();
-        String[] as=new String[]{info.getSourceDaoPath()};
+        String[] as=info.getSourceDaoPath();
         config.setBasePackages(as);
         config.setSqlSessionTemplateRef(info.getSourceBeanName()+"template");
         try {
