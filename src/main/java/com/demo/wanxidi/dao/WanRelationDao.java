@@ -1,5 +1,7 @@
 package com.demo.wanxidi.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +11,7 @@ import java.util.Map;
  */
 public interface WanRelationDao {
 
-    List<Map> findRelation();
+    List<Map> findRelation(@Param("condition")Map<String,Object> condition, @Param("start") int start, @Param("end") int end);
 
+    int countRelation(@Param("condition") Map<String,Object> condition);
 }

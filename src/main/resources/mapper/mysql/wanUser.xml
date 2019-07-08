@@ -3,7 +3,56 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.demo.wanxidi.dao.WanRelationDao">
-    <select id="findRelation" resultType="java.util.Map">
-        select * from relation
+    <select id="countRelation" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            relation a
+        LEFT JOIN `user` b ON a.user_id = b.id
+        LEFT JOIN `user` c on a.parent_id = c.id
+        <trim prefixOverrides="and" prefix="where">
+            <foreach collection="condition" index="key" item="value" separator="and" >
+                <if test="value!= '' and value!=null ">
+                <choose>
+                    <when test="key == 'startTime'">
+                        b.vip_time &gt; #{value}
+                    </when>
+                    <when test="key == 'endTime'">
+                        b.vip_time &lt; #{value}
+                    </when>
+                    <otherwise>
+                        ${key} like concat(concat('%',#{value}),'%')
+                    </otherwise>
+                </choose>
+                </if>
+            </foreach>
+        </trim>
     </select>
+    <select id="findRelation" resultType="java.util.Map">
+        SELECT
+        b.num_id as numId,b.referral_code as referralCode,b.`name` as userName,
+        c.referral_code as parentCode,c.`name` as parentName,a.type as deep
+        FROM
+            relation a
+        LEFT JOIN `user` b ON a.user_id = b.id
+        LEFT JOIN `user` c on a.parent_id = c.id
+        <trim prefixOverrides="and" prefix="where">
+            <foreach collection="condition" index="key" item="value" separator="and" >
+                <choose>
+                    <when test="key == 'startTime'">
+                        b.vip_time &gt; #{value}
+                    </when>
+                    <when test="key == 'endTime'">
+                        b.vip_time &lt; #{value}
+                    </when>
+                    <otherwise>
+                        ${key} like concat(concat('%',#{value}),'%')
+                    </otherwise>
+                </choose>
+
+            </foreach>
+        </trim>
+        limit #{start},#{end}
+    </select>
+
 </mapper>
