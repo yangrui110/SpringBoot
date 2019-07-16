@@ -29,7 +29,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String indexOne(){
-        System.out.println(1);
+        System.out.println(12333);
         return "index";
     }
 
