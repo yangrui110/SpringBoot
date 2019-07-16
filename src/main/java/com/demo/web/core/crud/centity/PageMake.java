@@ -13,8 +13,10 @@ public class PageMake {
      * 制作mysql的分页参数
      * */
     public static void makeMysqlPage(ConditionEntity entity){
-        entity.setStart(entity.getStart()-1);
-        entity.setEnd(entity.getEnd());
+        if(entity.getStart()!=null&&entity.getEnd()!=null) {
+            entity.setStart(entity.getStart() - 1);
+            entity.setEnd(entity.getEnd());
+        }
     }
 
     /**

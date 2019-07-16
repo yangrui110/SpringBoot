@@ -18,7 +18,19 @@ public class FileUtil {
         }
         return out;
     }
-
+    public static byte[] readFileToByte(InputStream inputStream) throws IOException {
+        BufferedInputStream inputStream1=new BufferedInputStream(inputStream);
+        ByteArrayOutputStream outputStream=new ByteArrayOutputStream();
+        byte[] bys=new byte[1024];
+        while(inputStream1.read(bys)!=-1) {
+            outputStream.write(bys,0,bys.length);
+        }
+        byte[] bs=outputStream.toByteArray();
+        //文件字节数组
+        outputStream.close();
+        inputStream1.close();
+        return bs;
+    }
     public static String getFileString(File file) throws IOException {
         ByteArrayOutputStream out= readFile(file);
 
@@ -26,4 +38,5 @@ public class FileUtil {
         out.close();
         return s;
     }
+
 }

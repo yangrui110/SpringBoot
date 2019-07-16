@@ -11,6 +11,24 @@
         <column name="last_login_time">
             <describtion>最近一次的登陆时间</describtion>
         </column>
+        <column name="disabled">
+            <describtion>账号是否被禁用（1或者Null为正常状态，2位禁用状态）</describtion>
+        </column>
+        <column name="disabled_end_time">
+            <describtion>禁用的截止时间</describtion>
+        </column>
+        <primary-key name="user_id"/>
+    </entity>
+    <entity tableName="user_info" tableAlias="userInfo">
+        <column name="user_id">
+            <describtion>用户ID</describtion>
+        </column>
+        <column name="user_name">
+            <describtion>用户名</describtion>
+        </column>
+        <column name="user_icon">
+            <describtion>用户的头像地址</describtion>
+        </column>
         <primary-key name="user_id"/>
     </entity>
     <view-entity tableAlias="userLoginView">
@@ -24,6 +42,95 @@
         <alias referTable="UO" column="name" alias="userName"/>
         <view-link tableAlias="UL" relTableAlias="UO" relOptional="true">
             <key-map rel-field-name="id" field-name="user_id"/>
+        </view-link>
+    </view-entity>
+    <entity tableName="role" tableAlias="role">
+        <column name="role_id">
+            <describtion>角色ID</describtion>
+        </column>
+        <column name="role_name">
+            <describtion>角色名称</describtion>
+        </column>
+        <primary-key name="role_id"/>
+    </entity>
+    <entity tableName="user_role" tableAlias="userRole">
+        <column name="user_id">
+            <describtion>用户ID</describtion>
+        </column>
+        <column name="role_id">
+            <describtion>角色ID</describtion>
+        </column>
+        <primary-key name="user_id"/>
+        <primary-key name="role_id"/>
+    </entity>
+    <entity tableName="permission" tableAlias="permission">
+        <column name="permission_id">
+            <describtion>权限ID</describtion>
+        </column>
+        <column name="permission_name">
+            <describtion>权限名</describtion>
+        </column>
+        <primary-key name="permission_id"/>
+    </entity>
+    <entity tableName="role_permission" tableAlias="rolePermission">
+        <column name="role_id">
+            <describtion>角色Id</describtion>
+        </column>
+        <column name="permission_id">
+            <describtion>权限Id</describtion>
+        </column>
+        <primary-key name="role_id"/>
+        <primary-key name="permission_id"/>
+    </entity>
+    <view-entity tableAlias="userRoleView">
+        <member-entity tableAlias="userLogin" alias="UL"/>
+        <member-entity tableAlias="role" alias="RL"/>
+        <member-entity tableAlias="userRole" alias="UR"/>
+        <alias column="user_id" referTable="UL" alias="userId"/>
+        <alias column="role_id" referTable="RL" alias="roleId"/>
+        <alias column="role_name" referTable="RL" alias="roleName"/>
+        <view-link tableAlias="UL" relTableAlias="UR" relOptional="true">
+            <key-map field-name="user_id" rel-field-name="user_id"/>
+        </view-link>
+        <view-link tableAlias="UR" relTableAlias="RL" relOptional="true">
+            <key-map field-name="role_id" rel-field-name="role_id"/>
+        </view-link>
+    </view-entity>
+    <view-entity tableAlias="rolePermissionView">
+        <member-entity tableAlias="role" alias="RL"/>
+        <member-entity tableAlias="permission" alias="PM"/>
+        <member-entity tableAlias="rolePermission" alias="RP"/>
+        <alias column="role_id" referTable="RL" alias="roleId"/>
+        <alias column="permission_id" referTable="PM" alias="permissionId"/>
+        <alias column="permission_name" referTable="PM" alias="permissionName"/>
+        <view-link tableAlias="RL" relTableAlias="RP" relOptional="true">
+            <key-map field-name="role_id" rel-field-name="role_id"/>
+        </view-link>
+        <view-link tableAlias="RP" relTableAlias="PM" relOptional="true">
+            <key-map field-name="permission_id" rel-field-name="permission_id"/>
+        </view-link>
+    </view-entity>
+    <view-entity tableAlias="userPermissions">
+        <member-entity tableAlias="userLogin" alias="UL"/>
+        <member-entity tableAlias="role" alias="RL"/>
+        <member-entity tableAlias="userRole" alias="URole"/>
+        <member-entity tableAlias="permission" alias="PS"/>
+        <member-entity tableAlias="rolePermission" alias="RP"/>
+        <alias column="user_id" referTable="UL" alias="userId"/>
+        <alias column="permission_id" referTable="PS" alias="permissionId"/>
+        <alias column="permission_name" referTable="PS" alias="permissionName"/>
+        <alias column="role_name" referTable="RL" alias="roleName"/>
+        <view-link tableAlias="UL" relTableAlias="URole" relOptional="true">
+            <key-map field-name="user_id" rel-field-name="user_id"/>
+        </view-link>
+        <view-link tableAlias="URole" relTableAlias="RL" relOptional="true">
+            <key-map field-name="role_id" rel-field-name="role_id"/>
+        </view-link>
+        <view-link tableAlias="RL" relTableAlias="RP" relOptional="true">
+            <key-map field-name="role_id" rel-field-name="role_id"/>
+        </view-link>
+        <view-link tableAlias="RP" relTableAlias="PS" relOptional="true">
+            <key-map field-name="permission_id" rel-field-name="permission_id"/>
         </view-link>
     </view-entity>
 </model>

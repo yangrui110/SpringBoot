@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<model>
+    <entity tableName="chat_group" tableAlias="chatGroup">
+        <column name="group_id">
+            <describtion>群组Id</describtion>
+        </column>
+        <column name="group_name">
+            <describtion>群组名</describtion>
+        </column>
+        <column name="create_time">
+            <describtion>创建时间</describtion>
+        </column>
+        <column name="group_icon">
+            <describtion>群组的头像地址</describtion>
+        </column>
+        <primary-key name="group_id"/>
+    </entity>
+    <entity tableName="user_friend_group" tableAlias="userFriendGroup">
+        <column name="user_id">
+            <describtion>用户主键</describtion>
+        </column>
+        <column name="refer_id">
+            <describtion>关联表主键</describtion>
+        </column>
+        <column name="refer_type">
+            <describtion>关联表的类型（好友或者群组）</describtion>
+        </column>
+        <column name="create_time">
+            <describtion>创建的事件</describtion>
+        </column>
+        <column name="last_msg_time">
+            <describtion>最后一次消息的时间</describtion>
+        </column>
+        <column name="last_content">
+            <describtion>最后一次内容</describtion>
+        </column>
+        <primary-key name="user_id"/>
+        <primary-key name="refer_id"/>
+    </entity>
+    <view-entity tableAlias="userFriendView">
+        <member-entity tableAlias="userFriendGroup" alias="UFG"/>
+        <member-entity tableAlias="chatGroup" alias="CG"/>
+        <member-entity tableAlias="userInfo" alias="UL"/>
+        <alias-all referTable="UFG"></alias-all>
+        <alias column="user_name" alias="userName" referTable="UL"/>
+        <alias column="group_name" alias="groupName" referTable="CG"/>
+        <alias column="user_icon" alias="userIcon" referTable="UL"/>
+        <alias column="group_icon" alias="groupIcon" referTable="CG"/>
+        <view-link tableAlias="UFG" relTableAlias="CG">
+            <key-map field-name="refer_id" rel-field-name="group_id"/>
+        </view-link>
+        <view-link tableAlias="UFG" relTableAlias="UL" >
+            <key-map field-name="refer_id" rel-field-name="user_id"/>
+        </view-link>
+    </view-entity>
+</model>
