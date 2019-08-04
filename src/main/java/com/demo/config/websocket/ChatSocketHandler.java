@@ -34,18 +34,18 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         JSONObject jsonObject = JSON.parseObject(msg);
         WebSocketSession socketSession = sessions.get(jsonObject.getString("user_id"));
         if(socketSession!=null)
-            socketSession.sendMessage(new TextMessage("新消息"));
+            socketSession.sendMessage(new TextMessage("发送新消息"));
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String userId = (String) session.getAttributes().get("userId");
+        String userId = (String) session.getAttributes().get("data");
         sessions.put(userId, session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String userId = (String) session.getAttributes().get("userId");
+        String userId = (String) session.getAttributes().get("data");
         sessions.remove(userId);
     }
 }

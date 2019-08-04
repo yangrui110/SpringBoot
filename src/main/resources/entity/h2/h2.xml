@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<!--tableName属性不支持驼峰命名规则-->
+<model>
+
+</model>

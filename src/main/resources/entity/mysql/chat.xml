@@ -14,6 +14,9 @@
         <column name="group_icon">
             <describtion>群组的头像地址</describtion>
         </column>
+        <column name="group_type">
+            <describtion>群组、用户的区分标志，默认群组</describtion>
+        </column>
         <primary-key name="group_id"/>
     </entity>
     <entity tableName="user_friend_group" tableAlias="userFriendGroup">
@@ -24,10 +27,10 @@
             <describtion>关联表主键</describtion>
         </column>
         <column name="refer_type">
-            <describtion>关联表的类型（好友或者群组）</describtion>
+            <describtion>关联表的类型（好友或者群组）,将会保存到Redis中</describtion>
         </column>
         <column name="create_time">
-            <describtion>创建的事件</describtion>
+            <describtion>创建的时间</describtion>
         </column>
         <column name="last_msg_time">
             <describtion>最后一次消息的时间</describtion>
@@ -42,11 +45,14 @@
         <member-entity tableAlias="userFriendGroup" alias="UFG"/>
         <member-entity tableAlias="chatGroup" alias="CG"/>
         <member-entity tableAlias="userInfo" alias="UL"/>
-        <alias-all referTable="UFG"></alias-all>
+        <alias-all referTable="UFG">
+        </alias-all>
         <alias column="user_name" alias="userName" referTable="UL"/>
         <alias column="group_name" alias="groupName" referTable="CG"/>
         <alias column="user_icon" alias="userIcon" referTable="UL"/>
         <alias column="group_icon" alias="groupIcon" referTable="CG"/>
+        <alias column="user_type" alias="userType" referTable="UL"/>
+        <alias column="group_type" alias="groupType" referTable="CG"/>
         <view-link tableAlias="UFG" relTableAlias="CG">
             <key-map field-name="refer_id" rel-field-name="group_id"/>
         </view-link>

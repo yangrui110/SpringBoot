@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.web.core.crud.dao.sql.SqlAjaxCrudDao">
+    <!--最小的行数是1-->
+    <select id="findAll" resultType="java.util.Map">
+        SELECT
+        *
+        FROM
+        ( SELECT ${condition.columns}, ROW_NUMBER () OVER ( ORDER BY ${condition.orderBy}) AS RowNumber FROM ${condition.mainTable} ${condition.mainAlias}
+        ${condition.joins}
+        <trim prefix="where">
+            ${condition.condition}
+        </trim>
+        ) s
+        <trim prefix="where">
+            <if test="condition.start != null and condition.end != null">
+                RowNumber &gt; #{condition.start}
+                AND RowNumber &lt;= #{condition.end}
+            </if>
+        </trim>
+    </select>
+
+    <select id="findAllNoPage" resultType="java.util.Map">
+        SELECT ${condition.columns} FROM ${condition.mainTable} ${condition.mainAlias}
+        ${condition.joins}
+        <trim prefix="where">
+            ${condition.condition}
+        </trim>
+
+    </select>
+
+    <select id="totalNum" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        ( SELECT ${condition.columns} FROM ${condition.mainTable} ${condition.mainAlias}
+        ${condition.joins}
+        <trim prefix="where">
+            ${condition.condition}
+        </trim>
+        ) s
+    </select>
+
+    <insert id="insert">
+        insert into ${entityName}
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            ${key}
+        </foreach>
+        values
+        <foreach item="value" index="key" collection="data" separator=" , " open="(" close=")">
+            #{value}
+        </foreach>
+    </insert>
+
+    <update id="update">
+        update ${entityName}
+        set
+        <foreach collection="data" separator="," item="value" index="key">
+            ${key} = #{value}
+        </foreach>
+        where
+        ${whereCondition}
+    </update>
+
+    <delete id="delete">
+        delete from ${entityName}
+        where
+        ${whereCondition}
+    </delete>
+</mapper>

@@ -3,6 +3,7 @@ package com.demo.chat.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.demo.chat.constant.ChatConstant;
 import com.demo.config.advice.BaseException;
 import com.demo.config.util.JedisUtil;
 import com.demo.config.util.MapUtil;
@@ -31,6 +32,7 @@ public class ChatService {
      * 获取首页聊天列表步骤：
      * 1.获取数据库中的某个用户的关联关系表
      * 2.从Redis中获取每个记录对应的未读消息数目，以及名称chat_userId_groupId
+     * @param
      * */
     public List getChatMessage(String userId){
         FindEntity entity=new FindEntity();
@@ -48,10 +50,10 @@ public class ChatService {
                 notRead=jsonObject.getInteger("notRead"); //未读消息数量
             }
 
-            if("yh".equals(type)) {
+            if(ChatConstant.HY.equals(type)) {
                 map.put("icon", map.get("userIcon"));
                 map.put("name", map.get("userName"));
-            } else if("qz".equals(type)) {
+            } else if(ChatConstant.QZ.equals(type)) {
                 map.put("icon", map.get("groupIcon"));
                 map.put("name", map.get("groupName"));
             }else {
@@ -95,14 +97,13 @@ public class ChatService {
     }
     /**
      * 发送消息
-     * @param maps
+     * @param maps {userId:'',destId:"",content:"",refer_type:"",createTime:""}
      * */
     public void sendMsg(Map<String,Object> maps){
         String userId = (String) maps.get("userId");
         String destId = (String) maps.get("destId");
         String content= (String) maps.get("content");
         String createTime= (String) maps.get("createTime");
-        String type = (String) maps.get("type"); //消息的类型,分为qz,hy
         String userKey = JedisUtil.getByKey("chat_" + userId+"_"+destId);
         if(StringUtils.isEmpty(userKey)) {
             Map instance = MapUtil.newInstance();
@@ -123,11 +124,20 @@ public class ChatService {
         }
         //更新最后一条记录值
         Map map=new HashMap();
-        map.put("user_id", userId);
-        map.put("refer_id", destId);
+        //map.put("user_id", userId);
+        //map.put("refer_id", destId);
+        List ls=new ArrayList();
+        Map one= MapUtil.newInstance();
+        one.put("left", "user_id");
+        one.put("right", userId);
+        ls.add(one);
+        Map two= MapUtil.newInstance();
+        two.put("left", "refer_id");
+        two.put("right", destId);
+        ls.add(two);
+        map.put("conditionList", ls);
         //构造待更新的条件
         Map data=new HashMap();
-        data.put("refer_type", type);
         data.put("last_content", content);
         data.put("last_msg_time", createTime);
         data.put("user_id", userId);
@@ -176,4 +186,10 @@ public class ChatService {
         }
         return referKey;
     }*/
+
+
+    private List getFriendList(Map map){
+
+        return null;
+    }
 }

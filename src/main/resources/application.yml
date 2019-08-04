@@ -14,6 +14,10 @@ spring:
         max-active: 200
         max-wait: 10000ms
         min-idle: 20
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
 uploadFile:
   path: C:\\FileUpload\\
 ---

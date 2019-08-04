@@ -1,29 +1,19 @@
 package com.demo.config.interceptor;
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.demo.config.advice.BaseException;
 import com.demo.config.advice.ResultEnum;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @autor 杨瑞
  * @date 2019/6/16 0:25
  */
 @Component
-public class LoginInterceptor extends WebMvcConfigurationSupport implements HandlerInterceptor {
+public class LoginInterceptor  implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Object userLogin = request.getSession().getAttribute("userLogin");
@@ -33,11 +23,8 @@ public class LoginInterceptor extends WebMvcConfigurationSupport implements Hand
         return true;
     }
 
-    @Override
+    /*@Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        StringHttpMessageConverter messageConverter=new StringHttpMessageConverter();
-        messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
-        converters.add(messageConverter);
         FastJsonHttpMessageConverter fastJsonHttpMessageConverter=new FastJsonHttpMessageConverter();
         fastJsonHttpMessageConverter.setDefaultCharset(Charset.forName("UTF-8"));
         List<MediaType> supportedMediaTypes=new ArrayList<>();
@@ -66,5 +53,5 @@ public class LoginInterceptor extends WebMvcConfigurationSupport implements Hand
         config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
         converters.add(fastJsonHttpMessageConverter);
-    }
+    }*/
 }

@@ -29,6 +29,9 @@
         <column name="user_icon">
             <describtion>用户的头像地址</describtion>
         </column>
+        <column name="user_type">
+            <describtion>用户和群组的区分标志，默认是yh</describtion>
+        </column>
         <primary-key name="user_id"/>
     </entity>
     <view-entity tableAlias="userLoginView">
