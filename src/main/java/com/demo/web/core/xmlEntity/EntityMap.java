@@ -302,7 +302,7 @@ public class EntityMap {
                     Object right = k.get("right");
                     Object operator = k.get("operator");
                     if(conditionList!=null)
-                        builder.append(" (").append(makeWhereCondition(k, columns)).append(") ");
+                        builder.append(" (").append(makeWhereCondition(k, columns)).append(") ").append(combine).append(" ");
                     if (conditionList==null){
                         if(!StringUtils.isEmpty(left)&&!StringUtils.isEmpty(right)){
                             ColumnProperty property = columns.get(left);

@@ -62,8 +62,9 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
         FastJsonConfig config=new FastJsonConfig();
         config.setDateFormat("yyyy-MM-dd HH:mm:ss");
         config.setCharset(Charset.forName("UTF-8"));
-        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue);
-        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
+        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,
+                SerializerFeature.DisableCircularReferenceDetect);
+        //config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
         converters.add(fastJsonHttpMessageConverter);
     }
