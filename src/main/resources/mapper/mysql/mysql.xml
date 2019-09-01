@@ -21,9 +21,13 @@
                 </if>
             </foreach>-->
         </trim>
+        <if test="condition.orderBy != null">
+            order by ${condition.orderBy}
+        </if>
         <if test="condition.start!=null and condition.end != null">
             limit ${condition.start} , ${condition.end}
         </if>
+
     </select>
 
     <select id="findAllNoPage" resultType="java.util.Map">
@@ -36,6 +40,9 @@
                 </if>
             </foreach>-->
         </trim>
+        <if test="condition.orderBy != null">
+            order by ${condition.orderBy}
+        </if>
     </select>
 
     <select id="totalNum" resultType="int">
