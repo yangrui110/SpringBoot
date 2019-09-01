@@ -21,8 +21,8 @@ layui.use('form', function() {
             combine:"and"
         }
     },function (data) {
-       if(data.length>0)
-            editorData=data[0];
+       if(data.data.length>0)
+            editorData=data.data[0];
         //初始化vue.js的数据绑定
         var app4 = new Vue({
             el: '#editorForm',

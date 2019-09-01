@@ -44,6 +44,19 @@ public class MakePageController {
     @Autowired
     private BaseServiceImpl baseService;
 
+    /**
+     *
+     * */
+    @ResponseBody
+    @GetMapping("getAllTables")
+    public ResultEntity getAllTables(){
+        Map<String, InfoOfEntity> tables = EntityMap.tables;
+        List<String> results=new ArrayList<>();
+        tables.forEach((k,v)->{
+            results.add(k);
+        });
+        return new ResultEntity(ResultEnum.OK,results);
+    }
     @ResponseBody
     @GetMapping("getAllColumns")
     public ResultEntity getAllColumns(@RequestParam("entityName")String entityName){
@@ -133,7 +146,7 @@ public class MakePageController {
         System.out.println("查看的列：" + viewList);
 
         //
-        HeaderType.setResponseFile("123.zip", response);
+        HeaderType.setResponseFile(entityName+".zip", response);
         byte[] buff = new byte[1024];
         OutputStream osx = null;
         try {

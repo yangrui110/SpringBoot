@@ -31,8 +31,6 @@ public class MakeFile {
     public static String makeListHtml(JSONObject map) throws IOException {
         ClassPathResource resource = new ClassPathResource("htmlTemplates/inner/list-input");
         String pattern = FileUtil.getFileString(resource.getFile());
-        ClassPathResource rowResource = new ClassPathResource("htmlTemplates/inner/list-row");
-        String row = FileUtil.getFileString(rowResource.getFile());
         System.out.println("替换前："+pattern);
 
         StringBuffer result=new StringBuffer();
@@ -50,14 +48,8 @@ public class MakeFile {
             String describetion = pattern.replaceAll("innerDesc-yangrui", next.getString("describetion"));
             describetion=describetion.replaceAll("innerColumn-yangrui", next.getString("alias"));
             builder.append(describetion);
-            if(iterator.hasNext()){
-                JSONObject next2 = (JSONObject) iterator.next();
-                String describetion2 = pattern.replaceAll("innerDesc-yangrui", next2.getString("describetion"));
-                describetion2=describetion2.replaceAll("innerColumn-yangrui", next.getString("alias"));
-                builder.append(describetion2);
-            }
             System.out.println(builder.toString());
-            result.append(row.replaceAll("rows-yangrui",builder.toString() ));
+            result.append(builder.toString());
         }
         return result.toString();
     }
@@ -71,8 +63,11 @@ public class MakeFile {
         Iterator<Object> iterator = map.values().iterator();
         while (iterator.hasNext()){
             JSONObject next = (JSONObject) iterator.next();
-            if(next.getBoolean("show"))
-                result.append(pattern.replaceAll("listTableField", next.getString("alias")));
+            if(next.getBoolean("show")) {
+                String patternOne = pattern.replaceAll("listTableField", next.getString("alias"));
+                String patternTwo = patternOne.replaceAll("listTableFieldDesc", next.getString("describetion"));
+                result.append(patternTwo);
+            }
         }
         if(result.length()>0)
             return result.toString();

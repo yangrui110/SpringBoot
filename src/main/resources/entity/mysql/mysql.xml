@@ -2,6 +2,7 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
+
     <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
     <entity tableName="user" tableAlias="User">
         <!--alias标签是给该列取得别名-->

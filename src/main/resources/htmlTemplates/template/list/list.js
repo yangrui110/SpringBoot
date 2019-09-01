@@ -11,7 +11,7 @@ layui.use(['table','form','layer'], function(){
     var pk={};
     //给pk赋值
     apiClient.getPK({viewEntityName:viewName},function (data) {
-        pk = data;
+        pk = data.data;
         console.log(data);
     })
     //第一个实例
@@ -101,7 +101,7 @@ layui.use(['table','form','layer'], function(){
                     result.push(r1);
                 }
                 apiClient.delSelect({
-                    entityName:tableName,
+                    entityName:viewName,
                     datas:result
                 },function (data) {
                     layer.msg("删除成功");
@@ -142,7 +142,7 @@ layui.use(['table','form','layer'], function(){
                     conditionList.push(ob);
                 }
                 apiClient.delete({
-                    entityName:tableName,
+                    entityName:viewName,
                     condition:{
                         conditionList:conditionList
                     }},function (data) {

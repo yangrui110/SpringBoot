@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,10 +36,12 @@ public class FileController {
     @PostMapping("upload")
     public Map uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
         String originName=file.getOriginalFilename();
-        String fileName=ensureFile(originName);
-
+        Map<String,Object> mapData=ensureFile(originName);
+        String fileName= (String) mapData.get("relativePath");
+        File file1 = (File) mapData.get("file");
         BufferedInputStream inputStream=new BufferedInputStream(file.getInputStream());
-        BufferedOutputStream outputStream=new BufferedOutputStream(new FileOutputStream(new File(uploadFileProperties.getFilePath()+fileName)));
+        BufferedOutputStream  outputStream = new BufferedOutputStream(new FileOutputStream(file1));
+
         byte[] bys=new byte[1024];
         int len=-1;
         while((len=inputStream.read(bys))!=-1) {
@@ -47,12 +50,30 @@ public class FileController {
         outputStream.close();
         inputStream.close();
         Map<String,Object> map=new HashMap<>();
-        map.put("filePath","file/"+fileName);
+        map.put("filePath",fileName);
         map.put("fileOriginalName", originName);
         return map;
     }
 
-    private String ensureFile(String originName) throws Exception {
+    public static void main(String[] args) throws IOException {
+        getFileByPath("classpath:/upload");
+    }
+
+    private static File getFileByPath(String originName) throws IOException {
+        File file=null;
+        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        String date = dateFormat.format(new Date());
+        String property = System.getProperty("user.dir");
+        String fileSeparator = System.getProperty("file.separator");
+        String realPath = property+fileSeparator+"upload"+fileSeparator+date+fileSeparator;
+
+
+        return file;
+    }
+    /**
+     * @return 返回数据格式：{relativePath:"",file:file}
+     * */
+    private Map<String,Object> ensureFile(String originName) throws Exception {
         int a=originName.lastIndexOf(".");
         String sufix="";
         if(a!=-1)
@@ -60,26 +81,37 @@ public class FileController {
         else
             sufix=originName;
         sufix= Util.getRandUUID()+sufix;
-        String basePath=uploadFileProperties.getFilePath();
+        String property = System.getProperty("user.dir");
+        String fileSeparator = "/";
+
+        //String basePath=uploadFileProperties.getFilePath();
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
         String format = dateFormat.format(new Date());
-        File base=new File(basePath+format+"\\");
+        String realPath = property+fileSeparator+"upload"+fileSeparator+format+fileSeparator;
+        File base=new File(realPath);
         if(!base.exists())
             base.mkdirs();
-        String fileName=basePath+sufix;
+        String fileName=realPath+sufix;
         File files=new File(fileName);
         if(!files.exists())
             files.createNewFile();
-        return format+"/"+sufix;
+        Map<String,Object> result=new HashMap<>();
+        result.put("relativePath",format+fileSeparator+sufix);
+        result.put("file",files);
+        return result;
     }
 
+
     @ResponseBody
-    @GetMapping("download/{date}/{path}")
+    @GetMapping("download")
     public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         logger.info("pathInfo="+request.getServletPath());
-        String path=request.getServletPath().replaceAll("/file/download","");
-        String pathname=uploadFileProperties.getFilePath()+path;
+        String path=request.getParameter("path");
+        String property = System.getProperty("user.dir");
+        String fileSeparator = "/";
+        //String path=request.getServletPath().replaceAll("/file/download","");
+        String pathname=property+fileSeparator+"upload"+fileSeparator+path;
         InputStream inputStream= new FileInputStream(new File(pathname));
         byte[] bs=FileUtil.readFileToByte(inputStream);
         int d=path.lastIndexOf(".");

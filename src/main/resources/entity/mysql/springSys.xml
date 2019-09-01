@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
+<!--tableName属性不支持驼峰命名规则-->
+<model>
+
+    <entity tableName="postParam" tableAlias="postParam">
+        <column name="post_entity">
+            <describtion>实体名</describtion>
+        </column>
+        <column name="post_param">
+            <describtion>实体对应的参数</describtion>
+        </column>
+        <primary-key name="post_entity"/>
+    </entity>
+</model>

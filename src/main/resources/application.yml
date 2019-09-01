@@ -14,8 +14,12 @@ spring:
         max-active: 200
         max-wait: 10000ms
         min-idle: 20
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
 uploadFile:
-  path: C:\\FileUpload\\
+  path: classpath:/upload
 ---
   datasource:
     mysql:

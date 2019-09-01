@@ -85,7 +85,22 @@ public class MakeConditionUtil {
         }
         return parseLast(ls,combine);
     }
-
+    /**
+     * @param lists 默认存储的Map格式是：{key:value}
+     * */
+    public static Map<String,Object> makeCondition(List<Map<String,Object>> lists){
+        List ls=new ArrayList();
+        for(Map<String,Object> map: lists){
+            ls.add(makeCondition(map));
+        }
+        return parseLast(ls);
+    }
+    /**
+     * @param lists1 Map集合
+     * @param lists2 Map集合
+     * @param combine 结合关系
+     * @see CombineOperator 获取详细的combine信息
+     * */
     public static Map<String,Object> makeCondition(List<Map<String,Object>> lists1,List<Map<String,Object>> lists2,String combine){
         Map<String, Object> left = makeCondition(lists1);
         Map<String, Object> right = makeCondition(lists2);
