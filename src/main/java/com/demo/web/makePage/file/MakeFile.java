@@ -2,6 +2,7 @@ package com.demo.web.makePage.file;
 
 import com.alibaba.fastjson.JSONObject;
 import com.demo.config.datasource.type.DataSourceType;
+import com.demo.web.core.crud.centity.COrderBy;
 import com.demo.web.core.crud.centity.MainTableInfo;
 import com.demo.web.core.xmlEntity.ColumnProperty;
 import com.demo.web.core.xmlEntity.EntityMap;
@@ -9,12 +10,11 @@ import com.demo.web.core.xmlEntity.InfoOfEntity;
 import com.demo.web.util.file.FileUtil;
 import com.demo.web.util.file.zip.Compress;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -59,13 +59,19 @@ public class MakeFile {
     public static String makeTableList(JSONObject map) throws IOException {
         ClassPathResource tableResource = new ClassPathResource("htmlTemplates/inner/list-table");
         String pattern = FileUtil.getFileString(tableResource.getFile());
+        ClassPathResource columnResource = new ClassPathResource("htmlTemplates/inner/pic-compoments");
+        String patternColumn = FileUtil.getFileString(columnResource.getFile());
         StringBuilder result=new StringBuilder();
         Iterator<Object> iterator = map.values().iterator();
         while (iterator.hasNext()){
             JSONObject next = (JSONObject) iterator.next();
             if(next.getBoolean("show")) {
                 String patternOne = pattern.replaceAll("listTableField", next.getString("alias"));
-                String patternTwo = patternOne.replaceAll("listTableFieldDesc", next.getString("describetion"));
+                String patternTwo = patternOne.replaceAll("fieldDesc", next.getString("describetion"));
+                if("picture".equals(next.getString("compomentType"))){
+                    patternColumn=patternColumn.replaceAll("layColumnName-yangrui",next.getString("alias"));
+                    patternTwo=patternTwo.replaceAll("layTemplate-yangrui",patternColumn);
+                }else patternTwo=patternTwo.replaceAll("layTemplate-yangrui","");
                 result.append(patternTwo);
             }
         }
@@ -156,24 +162,26 @@ public class MakeFile {
         ClassPathResource resource=new ClassPathResource("htmlTemplates/template");
         File[] files = resource.getFile().listFiles();
         String params = (String) condition.get("post_param");
+        String timerCompoments = registerTimerCompoments(JSONObject.parseObject(params));
+        String orderBy = getOrderByString(JSONObject.parseObject(params));
         for(File file:files){
             if("add".equals(file.getName())){
                 String addList = makeAddList(JSONObject.parseObject(params));
-                compressHtml(condition, outputStream, file,addList);
+                compressHtml(condition, outputStream, file,addList,timerCompoments);
             }else if("edit".equals(file.getName())){
                 Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey((String) condition.get("post_entity"));
                 String editList = makeEditList(JSONObject.parseObject(params),primaryKey);
-                compressHtml(condition, outputStream, file, editList);
+                compressHtml(condition, outputStream, file, editList,timerCompoments);
             }else if("view".equals(file.getName())){
                 String viewList = makeViewList(JSONObject.parseObject(params));
-                compressHtml(condition,outputStream ,file ,viewList );
+                compressHtml(condition,outputStream ,file ,viewList,timerCompoments);
             }else if("list".equals(file.getName())){
-                compressList(condition,outputStream,file);
+                compressList(condition,outputStream,file,timerCompoments,orderBy);
             }
         }
     }
 
-    public static void compressList(Map condition, ZipOutputStream outputStream,File file) throws IOException {
+    public static void compressList(Map condition, ZipOutputStream outputStream,File file,String timerCompoments,String orderBy) throws IOException {
         String entityName= (String) condition.get("post_entity");
         String params= (String) condition.get("post_param");
         String listHtml = makeListHtml(JSONObject.parseObject(params));
@@ -186,14 +194,19 @@ public class MakeFile {
             builder.append(entityName).append("/").append(entityName).append("-").append(file.getName()).append("/").append(entityName).append("-").append(f.getName());
             if(f.getName().endsWith(".html")){
                 String result=fileString.replaceAll("rows-yangrui", listHtml);
-                result=result.replaceAll("entityName-yangrui", entityName);
+                result=result.replaceAll("entityName-yangrui", mainTable.getTableAlias());
+                result = result.replaceAll("aliasName-yangrui", entityName);
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".js")){
                 String result = fileString.replaceAll("entityName-yangrui", mainTable.getTableAlias());//增加界面使用主表替换
                 result = result.replaceAll("aliasName-yangrui", entityName);//增加界面使用主表替换
                 result=result.replaceAll("fields-yangrui", tableList);
-                if(DataSourceType.SQL.equals(mainTable.getInfoOfEntity().getConfig().getSourceType()))
-                    result=result.replaceAll("orderby-yangrui", makeOrderBy(entityName));
+                result=result.replaceAll("timerCompoments-yangrui",timerCompoments);
+                result=result.replaceAll("orderBy-yangrui",orderBy);
+                if(StringUtils.isEmpty(orderBy)) {
+                    if (DataSourceType.SQL.equals(mainTable.getInfoOfEntity().getConfig().getSourceType()))
+                        result = result.replaceAll("orderby-yangrui", makeOrderBy(entityName));
+                }
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".css")){
                 Compress.compressString(fileString, outputStream, builder.toString());
@@ -207,7 +220,7 @@ public class MakeFile {
      * @param file 文件夹
      * @param rows 预先需要替换的行
      * */
-    public static void compressHtml(Map condition, ZipOutputStream outputStream,File file,String rows) throws IOException {
+    public static void compressHtml(Map condition, ZipOutputStream outputStream,File file,String rows,String timerCompoments) throws IOException {
         String entityName= (String) condition.get("post_entity");
         MainTableInfo mainTable = EntityMap.getMainTable((String) condition.get("post_entity"));
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(mainTable.getTableAlias());
@@ -218,14 +231,59 @@ public class MakeFile {
             builder.append(entityName).append("/").append(entityName).append("-").append(file.getName()).append("/").append(entityName).append("-").append(f.getName());
             if(f.getName().endsWith(".html")){
                 String result=fileString.replaceAll("rows-yangrui", rows);
-                result=result.replaceAll("entityName-yangrui", entityName);
+                result=result.replaceAll("entityName-yangrui", mainTable.getTableAlias());
+                result=result.replaceAll("aliasName-yangrui", entityName);
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".js")){
                 String result = fileString.replaceAll("entityName-yangrui", mainTable.getTableAlias());//增加界面使用主表替换
+                result = result.replaceAll("aliasName-yangrui", entityName);
+                result=result.replaceAll("timerCompoments-yangrui",timerCompoments);
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".css")){
                 Compress.compressString(fileString, outputStream, builder.toString());
             }
         }
+    }
+
+    /**
+     * 获取各种组件的字符串
+     * */
+    private static String registerTimerCompoments(JSONObject params) throws IOException {
+        StringBuilder resultTime=new StringBuilder();
+        ClassPathResource timerResource = new ClassPathResource("htmlTemplates/inner/timer-compoments");
+        ClassPathResource workResource = new ClassPathResource("htmlTemplates/inner/timer-compoments");
+        String pattern = FileUtil.getFileString(timerResource.getFile());
+        Iterator<Object> iterator = params.values().iterator();
+        while (iterator.hasNext()){
+            JSONObject next = (JSONObject) iterator.next();
+            if("timer".equals(next.getString("compomentType"))) {
+                String patternOne = pattern.replaceAll("layDateId-yangrui", next.getString("alias"));
+                resultTime.append(patternOne);
+            }else if(!StringUtils.isEmpty(next.get("workParentValue"))){
+                //存入字典
+            }
+        }
+        return resultTime.toString();
+    }
+
+    /**
+     * 获取排序字段的字符串  替换的字符串：orderBy-yangrui
+     * */
+    private static String getOrderByString(JSONObject params){
+        Iterator<Object> iterator = params.values().iterator();
+        List<COrderBy> as=new ArrayList<>();
+        while (iterator.hasNext()){
+            JSONObject next = (JSONObject) iterator.next();
+            if(next.get("orderBy")!=null&&!"".equals(next.getString("orderBy"))) {
+                COrderBy cOrderBy=new COrderBy();
+                cOrderBy.setNames(next.getString("alias"));
+                cOrderBy.setDirect(next.getString("orderBy"));
+                as.add(cOrderBy);
+            }
+        }
+        if(as.size()>0) {
+            return ",orderBy:" + JSONObject.toJSONString(as);
+        }
+        return "";
     }
 }

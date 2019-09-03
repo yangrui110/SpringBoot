@@ -1,0 +1,9 @@
+,templet:function(d){
+    var url="";
+    if(d.layColumnName-yangrui==null){
+        url = "../../../../layuiadmin/img/timg.jpg";
+    }else {
+        url=apiClient.getUrl()+"/file/download/"+d.layColumnName-yangrui;
+    }
+    return  "<img src='"+url+"' style='width: 30px;height: 30px;'>"
+}

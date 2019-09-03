@@ -12,4 +12,21 @@
         </column>
         <primary-key name="post_entity"/>
     </entity>
+
+    <entity tableName="work_book" tableAlias="workBook">
+        <describetion>字典表，存储系统内部的字典值</describetion>
+        <column name="parent_id">
+            <describtion>字典的父级</describtion>
+        </column>
+        <column name="dic_id">
+            <describtion>字典值，保持唯一性</describtion>
+        </column>
+        <column name="dic_value">
+            <describtion>字典的文本描述</describtion>
+        </column>
+        <column name="create_time">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key name="dic_value"/>
+    </entity>
 </model>

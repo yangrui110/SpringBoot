@@ -32,7 +32,7 @@
         <column name="teacher_pros">
             <describtion>学生</describtion>
         </column>
-        <primary-key name="id"/>
+        <primary-key name="teacher_id"/>
 
     </entity>
     <!--定义第一个member-entity为主表-->
@@ -40,7 +40,10 @@
         <member-entity alias="TE" tableAlias="Teacher"/>
         <member-entity alias="UL" tableAlias="userLogin"/>
         <alias-all referTable="UL"></alias-all>
-        <alias-all referTable="TE"></alias-all>
+        <alias-all referTable="TE">
+            <exclude column="teacher_id"></exclude>
+        </alias-all>
+        <alias column="teacher_id" alias="teacherID" referTable="TE"></alias>
         <!--默认左外连接-->
         <view-link tableAlias="TE" relTableAlias="UL" relOptional="false">
             <key-map field-name="teacher_pros" rel-field-name="user_id"/>
