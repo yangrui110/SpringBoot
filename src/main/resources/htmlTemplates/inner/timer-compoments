@@ -1,0 +1,3 @@
+laydate.render({
+    elem: '#layDateId-yangrui'
+  });

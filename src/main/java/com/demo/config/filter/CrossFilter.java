@@ -1,17 +1,27 @@
 package com.demo.config.filter;
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @autor 杨瑞
  * @date 2019/6/15 21:46
  */
 @Component
-public class CrossFilter implements Filter {
+public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println("过滤器呀");
@@ -23,7 +33,7 @@ public class CrossFilter implements Filter {
         filterChain.doFilter(servletRequest, response);
     }
 
-    /*@Override
+    @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         StringHttpMessageConverter messageConverter=new StringHttpMessageConverter();
         messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
@@ -52,9 +62,10 @@ public class CrossFilter implements Filter {
         FastJsonConfig config=new FastJsonConfig();
         config.setDateFormat("yyyy-MM-dd HH:mm:ss");
         config.setCharset(Charset.forName("UTF-8"));
-        config.setSerializerFeatures(SerializerFeature.WriteNullStringAsEmpty);
-        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
+        config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,
+                SerializerFeature.DisableCircularReferenceDetect);
+        //config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
         converters.add(fastJsonHttpMessageConverter);
-    }*/
+    }
 }

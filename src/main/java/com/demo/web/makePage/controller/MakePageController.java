@@ -9,6 +9,7 @@ import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.crud.centity.MainTableInfo;
 import com.demo.web.core.crud.service.BaseServiceImpl;
+import com.demo.web.core.util.MakeConditionUtil;
 import com.demo.web.core.xmlEntity.ColumnProperty;
 import com.demo.web.core.xmlEntity.EntityMap;
 import com.demo.web.core.xmlEntity.InfoOfEntity;
@@ -44,6 +45,19 @@ public class MakePageController {
     @Autowired
     private BaseServiceImpl baseService;
 
+    /**
+     *
+     * */
+    @ResponseBody
+    @GetMapping("getAllTables")
+    public ResultEntity getAllTables(){
+        Map<String, InfoOfEntity> tables = EntityMap.tables;
+        List<String> results=new ArrayList<>();
+        tables.forEach((k,v)->{
+            results.add(k);
+        });
+        return new ResultEntity(ResultEnum.OK,results);
+    }
     @ResponseBody
     @GetMapping("getAllColumns")
     public ResultEntity getAllColumns(@RequestParam("entityName")String entityName){
@@ -54,6 +68,23 @@ public class MakePageController {
         result.put("columns", allColumns);
         result.put("tableName", entityName);
         return new ResultEntity(ResultEnum.OK,allColumns);
+    }
+    /**
+     * @param entityName 表名，对应的postparam表的主键
+     * */
+    @ResponseBody
+    @GetMapping("getFromPostEntity")
+    public ResultEntity getFromPostEntity(String entityName){
+        Map<String, Object> condition = MakeConditionUtil.makeCondition("post_entity", entityName);
+        FindEntity findEntity=new FindEntity();
+        findEntity.setEntityName("postParam");
+        findEntity.setCondition(condition);
+        List<Map<String, Object>> list = baseService.findAllNoPage(findEntity, new ConditionEntity());
+        Map<String,Object> result=new HashMap<>();
+        if(list.size()>0){
+            result=list.get(0);
+        }
+        return new ResultEntity(ResultEnum.OK,result);
     }
 
     /**
@@ -116,14 +147,7 @@ public class MakePageController {
 
         FindEntity entity = new FindEntity();
         entity.setEntityName("postParam");
-        Map os = new HashMap();
-        Map os1 = new HashMap();
-        os1.put("left", "post_entity");
-        os1.put("right", entityName);
-        List ls = new ArrayList();
-        ls.add(os1);
-        os.put("conditionList", ls);
-        entity.setCondition(os);
+        entity.setCondition(MakeConditionUtil.makeCondition("post_entity",entityName));
         List<Map<String, Object>> allNoPage =  baseService.findAllNoPage(entity, new ConditionEntity());
         if (allNoPage.size() <= 0) {
             return;
@@ -133,7 +157,7 @@ public class MakePageController {
         System.out.println("查看的列：" + viewList);
 
         //
-        HeaderType.setResponseFile("123.zip", response);
+        HeaderType.setResponseFile(entityName+".zip", response);
         byte[] buff = new byte[1024];
         OutputStream osx = null;
         try {

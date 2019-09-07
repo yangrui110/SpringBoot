@@ -41,15 +41,7 @@
         </column>
         <primary-key name="user_id"/>
     </entity>
-    <entity tableName="[postParam]" tableAlias="postParam">
-        <column name="post_entity">
-            <describtion>实体名</describtion>
-        </column>
-        <column name="post_param">
-            <describtion>实体对应的参数</describtion>
-        </column>
-        <primary-key name="post_entity"/>
-    </entity>
+
     <view-entity tableAlias="ClassesView">
         <member-entity alias="CL" tableAlias="Classes"/>
         <member-entity alias="TE" tableAlias="Teacher1"/>

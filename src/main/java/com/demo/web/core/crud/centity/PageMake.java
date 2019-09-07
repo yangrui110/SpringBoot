@@ -14,7 +14,7 @@ public class PageMake {
      * */
     public static void makeMysqlPage(ConditionEntity entity){
         if(entity.getStart()!=null&&entity.getEnd()!=null) {
-            entity.setStart(entity.getStart() - 1);
+            entity.setStart((entity.getStart() - 1)*entity.getEnd());
             entity.setEnd(entity.getEnd());
         }
     }

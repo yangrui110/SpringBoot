@@ -65,7 +65,8 @@ public class BaseController {
 
     @ResponseBody
     @GetMapping("getPK")
-    public ResultEntity getPK(@RequestParam("viewEntityName") String viewEntityName){
+    public ResultEntity getPK(@RequestParam("viewEntityName") String viewEntityName
+            ,@RequestParam("entityName")String entityName){
         /*Map<String, Object> primaryKey = EntityMap.getPrimaryKey(entityName);
         Map<String, ColumnProperty> allColumns = EntityMap.getAllColumns(viewEntityName);
         Map result=new HashMap();

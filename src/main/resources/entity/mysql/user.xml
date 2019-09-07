@@ -5,7 +5,7 @@
         <column name="user_id">
             <describtion>用户Id</describtion>
         </column>
-        <column name="login_password">
+        <column name="user_password">
             <describtion>登录密码</describtion>
         </column>
         <column name="last_login_time">

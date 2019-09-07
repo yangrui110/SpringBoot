@@ -2,6 +2,7 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
+
     <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
     <entity tableName="user" tableAlias="User">
         <!--alias标签是给该列取得别名-->
@@ -22,31 +23,30 @@
     </entity>
     <entity tableName="teacher" tableAlias="Teacher">
         <!--alias标签是给该列取得别名-->
-        <column name="id">
+        <column name="teacher_id">
             <describtion>编号</describtion>
         </column>
-        <column name="name">
+        <column name="teacher_name">
             <describtion>姓名</describtion>
         </column>
-        <column name="pros">
+        <column name="teacher_pros">
             <describtion>学生</describtion>
         </column>
-        <primary-key name="id"/>
+        <primary-key name="teacher_id"/>
 
     </entity>
     <!--定义第一个member-entity为主表-->
-    <view-entity  tableAlias="TSView">
+    <view-entity  tableAlias="TeacherUserView">
         <member-entity alias="TE" tableAlias="Teacher"/>
-        <member-entity alias="US" tableAlias="User"/>
-        <alias-all referTable="US">
-            <exclude column="name"/>
+        <member-entity alias="UL" tableAlias="userLogin"/>
+        <alias-all referTable="UL"></alias-all>
+        <alias-all referTable="TE">
+            <exclude column="teacher_id"></exclude>
         </alias-all>
-        <alias alias="tName" column="name" referTable="TE"/>
-        <alias alias="tId" column="id" referTable="TE"/>
-        <alias alias="sName" column="name" referTable="US"/>
+        <alias column="teacher_id" alias="teacherID" referTable="TE"></alias>
         <!--默认左外连接-->
-        <view-link tableAlias="TE" relTableAlias="US" relOptional="false">
-            <key-map field-name="pros" rel-field-name="id"/>
+        <view-link tableAlias="TE" relTableAlias="UL" relOptional="false">
+            <key-map field-name="teacher_pros" rel-field-name="user_id"/>
         </view-link>
     </view-entity>
 </model>

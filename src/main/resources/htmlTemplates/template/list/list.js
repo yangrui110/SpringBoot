@@ -1,24 +1,27 @@
-layui.use(['table','form','layer'], function(){
+layui.use(['table','form','layer','laydate'], function(){
     var table = layui.table;
+    var laydate = layui.laydate;
     var form = layui.form;
     var layer=layui.layer;
     var viewName="aliasName-yangrui";
+    var entityName = "entityName-yangrui";
     var skin="innerIframe";
     var queryData= {
         "entityName": viewName,
         "condition": {"conditionList":[]}
+        orderBy-yangrui
     }
     var pk={};
     //给pk赋值
-    apiClient.getPK({viewEntityName:viewName},function (data) {
-        pk = data;
+    apiClient.getPK({viewEntityName:viewName,entityName:entityName},function (data) {
+        pk = data.data;
         console.log(data);
     })
     //第一个实例
     var tableIns=table.render({
         elem: '#data'
         ,height: 312
-        ,url: 'http://localhost:8080/asuntech/common/findAll' //数据接口
+        ,url: apiClient.getUrl()+'/common/findAll' //数据接口
         ,page: {
             curr:location.hash.replace('#!fenye=', '')
             ,hash: 'fenye'
@@ -79,7 +82,7 @@ layui.use(['table','form','layer'], function(){
             layer.open({
                 type:2,
                 title:"新增用户",
-                content:"../entityName-yangrui-add/entityName-yangrui-add.html",
+                content:"../aliasName-yangrui-add/aliasName-yangrui-add.html",
                 area:['60%'],
                 skin:skin
             })
@@ -101,7 +104,7 @@ layui.use(['table','form','layer'], function(){
                     result.push(r1);
                 }
                 apiClient.delSelect({
-                    entityName:tableName,
+                    entityName:viewName,
                     datas:result
                 },function (data) {
                     layer.msg("删除成功");
@@ -128,7 +131,7 @@ layui.use(['table','form','layer'], function(){
             layer.open({
                 type:2,
                 title:"详情",
-                content:"../entityName-yangrui-view/entityName-yangrui-view.html?param="+encodeURIComponent(JSON.stringify(parseData)),
+                content:"../aliasName-yangrui-view/aliasName-yangrui-view.html?param="+encodeURIComponent(JSON.stringify(parseData)),
                 area:['60%'],
                 skin:skin
             })
@@ -142,7 +145,7 @@ layui.use(['table','form','layer'], function(){
                     conditionList.push(ob);
                 }
                 apiClient.delete({
-                    entityName:tableName,
+                    entityName:entityName,
                     condition:{
                         conditionList:conditionList
                     }},function (data) {
@@ -160,11 +163,11 @@ layui.use(['table','form','layer'], function(){
             layer.open({
                 type:2,
                 title:"修改用户",
-                content:"../entityName-yangrui-edit/entityName-yangrui-editor.html?param="+encodeURIComponent(JSON.stringify(parseData)),
+                content:"../aliasName-yangrui-edit/aliasName-yangrui-editor.html?param="+encodeURIComponent(JSON.stringify(parseData)),
                 area:['60%'],
                 skin:skin
             })
         }
     });
-
+    timerCompoments-yangrui
 });
