@@ -13,5 +13,5 @@ apiClient.findAll({
                 str += "<option value='" + k.dic_id + "'>" + k.dic_value + "</option>"
             }
             htmlElement.innerHTML = str;
-            form.render("editorForm",'select')
+            form.render('select')
         })

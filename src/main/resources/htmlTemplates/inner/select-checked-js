@@ -16,5 +16,5 @@ apiClient.findAll({
                  str+=">"+ k.dic_value + "</option>"
             }
             htmlElement.innerHTML = str;
-            form.render("viewForm",'select')
+            form.render('select')
         })
