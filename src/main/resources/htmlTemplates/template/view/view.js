@@ -1,5 +1,8 @@
-layui.use('form', function() {
+layui.use(['form','layer','laydate','upload'], function() {
     var form = layui.form;
+    var laydate = layui.laydate;
+    var upload = layui.upload;
+    var layer=layui.layer;
     var entityName = "entityName-yangrui";
     var viewName='aliasName-yangrui';
     var param = paramUtil.getQueryString("param");
@@ -30,4 +33,5 @@ layui.use('form', function() {
     function initSelect() {
         selectCheckedCompoments-yangrui
     }
+
 })

@@ -32,6 +32,9 @@
         <column name="teacher_pros">
             <describtion>学生</describtion>
         </column>
+        <column name="teacher_icon">
+            <describtion>老师头像</describtion>
+        </column>
         <primary-key name="teacher_id"/>
 
     </entity>

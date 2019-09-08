@@ -8,9 +8,12 @@ apiClient.findAll({
         }, (data) => {
             var htmlElement = document.getElementsByName("columnAlias-yangrui").item(0);
             var str = "<option value=''></option>";
-            for (var k of data.data) {inqi
+            for (var k of data.data) {
                 //开始构造option数据
-                str += "<option value='" + k.dic_id + "'>" + k.dic_value + "</option>"
+                str += "<option value='" + k.dic_id + "'";
+                 if(editorData.column-yangrui==k.dic_id)
+                    str+=" selected ";
+                 str+=">"+ k.dic_value + "</option>"
             }
             htmlElement.innerHTML = str;
             form.render('select')

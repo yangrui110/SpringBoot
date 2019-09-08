@@ -1,0 +1,6 @@
+<a target="_blank" href="">
+    <img name="column-yangrui" src="" width="60px" height="60px">
+</a>
+<button type="button" class="layui-btn" id="column-yangrui">
+    <i class="layui-icon">&#xe67c;</i>上传图片
+</button>

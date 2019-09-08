@@ -93,6 +93,10 @@ public class MakeFile {
     public static String makeEditList(Map columns,Map<String,ColumnProperty> primaryKey) throws IOException {
         ClassPathResource tableResource = new ClassPathResource("htmlTemplates/inner/edit-input");
         String pattern = FileUtil.getFileString(tableResource.getFile());
+
+        ClassPathResource uploadResource = new ClassPathResource("htmlTemplates/inner/upload-html");
+        String patternUpload = FileUtil.getFileString(uploadResource.getFile());
+
         ClassPathResource tableResourceReadOnly = new ClassPathResource("htmlTemplates/inner/edit-input-readOnly");
         String patternReadOnly = FileUtil.getFileString(tableResourceReadOnly.getFile());
         StringBuilder builder=new StringBuilder();
@@ -111,6 +115,8 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
+                }else if("pic".equals(os.get("compomentType"))){
+                    pa=patternUpload;
                 }
                 builder.append(makeListPattern(os, pa));
             }else{
@@ -130,6 +136,9 @@ public class MakeFile {
         String pattern = FileUtil.getFileString(tableResource.getFile());
         StringBuilder builder=new StringBuilder();
 
+        ClassPathResource uploadResource = new ClassPathResource("htmlTemplates/inner/upload-html");
+        String patternUpload = FileUtil.getFileString(uploadResource.getFile());
+
         ClassPathResource tableSelectResource = new ClassPathResource("htmlTemplates/inner/select-addAndEditor-html");
         String patternSelect = FileUtil.getFileString(tableSelectResource.getFile());
 
@@ -144,6 +153,8 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
+                }else if("pic".equals(os.get("compomentType"))){
+                    pa=patternUpload;
                 }
                 builder.append(makeListPattern(os,pa));
             }
@@ -159,6 +170,9 @@ public class MakeFile {
         String pattern = FileUtil.getFileString(tableResource.getFile());
         StringBuilder builder=new StringBuilder();
 
+        ClassPathResource uploadResource = new ClassPathResource("htmlTemplates/inner/upload-view-html");
+        String patternUpload = FileUtil.getFileString(uploadResource.getFile());
+
         ClassPathResource tableSelectResource = new ClassPathResource("htmlTemplates/inner/select-view-html");
         String patternSelect = FileUtil.getFileString(tableSelectResource.getFile());
 
@@ -172,6 +186,8 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
+                }else if("pic".equals(os.get("compomentType"))){
+                    pa=patternUpload;
                 }
                 builder.append(makeListPattern(os, pa));
             }
@@ -244,6 +260,7 @@ public class MakeFile {
                 result=result.replaceAll("fields-yangrui", tableList);
                 result=result.replaceAll("timerCompoments-yangrui",compoments.get("timer"));
                 result=result.replaceAll("selectCompoments-yangrui", compoments.get("select"));
+                result=result.replaceAll("uploadCompoments-yangrui", compoments.get("upload"));
                 result=result.replaceAll("orderBy-yangrui",orderBy);
                 if(StringUtils.isEmpty(orderBy)) {
                     if (DataSourceType.SQL.equals(mainTable.getInfoOfEntity().getConfig().getSourceType()))
@@ -282,6 +299,7 @@ public class MakeFile {
                 result=result.replaceAll("timerCompoments-yangrui",compoments.get("timer"));
                 result=result.replaceAll("selectCompoments-yangrui", compoments.get("select"));
                 result=result.replaceAll("selectCheckedCompoments-yangrui", compoments.get("selectChecked"));
+                result=result.replaceAll("uploadCompoments-yangrui", compoments.get("upload"));
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".css")){
                 Compress.compressString(fileString, outputStream, builder.toString());
@@ -296,13 +314,19 @@ public class MakeFile {
         Map<String,String> result=new HashMap<>();
         StringBuilder timeBuilder=new StringBuilder();
         StringBuilder workBuilder = new StringBuilder();
+        StringBuilder uploadBuilder = new StringBuilder();
         StringBuilder workCheckedBuilder = new StringBuilder();
+        StringBuilder workCheckedViewBuilder = new StringBuilder();
         ClassPathResource timerResource = new ClassPathResource("htmlTemplates/inner/timer-compoments");
         ClassPathResource workResource = new ClassPathResource("htmlTemplates/inner/select-js");
+        ClassPathResource uploadResource = new ClassPathResource("htmlTemplates/inner/upload-js");
         ClassPathResource workCheckedResource = new ClassPathResource("htmlTemplates/inner/select-checked-js");
+        ClassPathResource workCheckedViewResource = new ClassPathResource("htmlTemplates/inner/select-checked-view-js");
         String timePattern = FileUtil.getFileString(timerResource.getFile());
         String workPattern = FileUtil.getFileString(workResource.getFile());
+        String uploadPattern = FileUtil.getFileString(uploadResource.getFile());
         String workCheckedPattern = FileUtil.getFileString(workCheckedResource.getFile());
+        String workCheckedViewPattern = FileUtil.getFileString(workCheckedViewResource.getFile());
         Iterator<Object> iterator = params.values().iterator();
         while (iterator.hasNext()){
             JSONObject next = (JSONObject) iterator.next();
@@ -312,17 +336,30 @@ public class MakeFile {
             }else if(!StringUtils.isEmpty(next.get("workParentValue"))){
                 //存入字典
                 String parentValue = workPattern.replaceAll("dicValue-yangrui", (String) next.get("workParentValue"));
-                parentValue=parentValue.replaceAll("column-yangrui", next.getString("alias"));
+                parentValue=parentValue.replaceAll("column-yangrui", next.getString("column"));
+                parentValue=parentValue.replaceAll("columnAlias-yangrui", next.getString("alias"));
                 workBuilder.append(parentValue);
 
                 String parentCheckedValue = workCheckedPattern.replaceAll("dicValue-yangrui", (String) next.get("workParentValue"));
-                parentCheckedValue=parentCheckedValue.replaceAll("column-yangrui", next.getString("alias"));
+                parentCheckedValue=parentCheckedValue.replaceAll("columnAlias-yangrui", next.getString("alias"));
+                parentCheckedValue=parentCheckedValue.replaceAll("column-yangrui", next.getString("column"));
                 workCheckedBuilder.append(parentCheckedValue);
+
+                String parentCheckedViewValue = workCheckedViewPattern.replaceAll("dicValue-yangrui", (String) next.get("workParentValue"));
+                parentCheckedViewValue=parentCheckedViewValue.replaceAll("columnAlias-yangrui", next.getString("alias"));
+                parentCheckedViewValue=parentCheckedViewValue.replaceAll("column-yangrui", next.getString("column"));
+                workCheckedViewBuilder.append(parentCheckedViewValue);
+            }else if("pic".equals(next.getString("compomentType"))){
+                String patternOne = uploadPattern.replaceAll("columnAlias-yangrui", next.getString("alias"));
+                patternOne = patternOne.replaceAll("column-yangrui", next.getString("column"));
+                uploadBuilder.append(patternOne);
             }
         }
         result.put("timer", timeBuilder.toString());
         result.put("select", workBuilder.toString());
+        result.put("upload", uploadBuilder.toString());
         result.put("selectChecked", workCheckedBuilder.toString());
+        result.put("selectCheckedView", workCheckedViewBuilder.toString());
         return result;
     }
 

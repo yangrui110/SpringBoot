@@ -1,7 +1,8 @@
-layui.use(['table','form','layer','laydate'], function(){
+layui.use(['table','form','layer','laydate','upload'], function(){
     var table = layui.table;
     var laydate = layui.laydate;
     var form = layui.form;
+    var upload = layui.upload;
     var layer=layui.layer;
     var viewName="aliasName-yangrui";
     var entityName = "entityName-yangrui";

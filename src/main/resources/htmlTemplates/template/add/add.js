@@ -1,7 +1,8 @@
-layui.use(['form','layer','laydate'], function(){
+layui.use(['form','layer','laydate','upload'], function(){
     var laydate = layui.laydate;
     var form = layui.form;
     var layer=layui.layer;
+    var upload = layui.upload;
 
     var tableName="entityName-yangrui";
 
@@ -30,4 +31,6 @@ layui.use(['form','layer','laydate'], function(){
         return false;
     })
     timerCompoments-yangrui
+
+    uploadCompoments-yangrui
 });

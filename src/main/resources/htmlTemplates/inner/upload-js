@@ -1,0 +1,24 @@
+//执行实例
+    var uploadInst = upload.render({
+        elem: '#column-yangrui' //绑定元素
+        ,url: apiClient.getUrl()+'/file/upload/' //上传接口
+        ,accept:'images'
+        ,acceptMime: 'image/jpg,image/jpeg, image/png'
+        ,done: function(res){
+            //上传完毕回调
+            console.log(res);
+            var elementsByName = document.getElementsByName("column-yangrui");
+            for(var k of elementsByName){
+                if(k.tagName=="IMG"){
+                    //如果是img标签，设置其src属性
+                    k.src=apiClient.getUrl()+"/file/download?path="+res.filePath;
+                    if(k.parentElement.tagName=='A') {
+                        k.parentElement.href = apiClient.getUrl() + "/file/download?path=" + res.filePath;
+                    }
+                }
+            }
+        }
+        ,error: function(){
+            //请求异常回调
+        }
+    });
