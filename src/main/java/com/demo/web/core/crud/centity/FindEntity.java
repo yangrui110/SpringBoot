@@ -15,10 +15,9 @@ public class FindEntity {
     //实体的名字
     private String entityName;
     //查询条件
-<<<<<<< HEAD
-=======
+
     //{conditionList:[{conditionList:[{left:'id',operator:'=',right:'2'},combine:'and'},{left:'name',operator:'<',right:'lisi'}],combine:'or'}
->>>>>>> origin/master
+
     //{conditionList:[{left:'id',operator:'=',right:'2'},{left:'name',operator:'<',right:'lisi'}],combine:'or'}
     private Map<String,Object> condition = new HashMap<>();
     private Integer start;

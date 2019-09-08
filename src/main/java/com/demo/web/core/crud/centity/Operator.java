@@ -11,4 +11,6 @@ public class Operator {
     public static final String LIKE="like";
 
     public static final String NOE_EQUAL="!=";
+
+    public static final String IN="in";
 }

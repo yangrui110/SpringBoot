@@ -5,6 +5,7 @@ import com.demo.chat.service.ChatService;
 import com.demo.config.listener.ChatEvent;
 import com.demo.config.listener.ChatPublisher;
 import com.demo.config.properties.UploadFileProperties;
+import com.demo.config.util.MapUtil;
 import com.demo.web.core.crud.centity.CombineOperator;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
@@ -19,10 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApplication.class)
@@ -75,5 +73,18 @@ public class DemoApplicationTests {
 		map.put("end", 10);
 		List historyMsg = chatService.getHistoryMsg(map);
 		System.out.println(historyMsg);*/
+	}
+
+	@Test
+	public void test6(){
+			List<Map<String,Object>> ls=new ArrayList<>();
+		Map map = MapUtil.toMap("teacher_id", "10002");
+		map.put("teacher_name", "ik5");
+		Map map1 = MapUtil.toMap("teacher_id", "10003");
+		map1.put("teacher_pros", "119");
+		map1.put("teacher_name", "ik9");
+		ls.add(map);
+		ls.add(map1);
+		baseService.updateAll("Teacher", ls);
 	}
 }

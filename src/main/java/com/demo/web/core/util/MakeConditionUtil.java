@@ -27,17 +27,17 @@ public class MakeConditionUtil {
         return map;
     }
 
-    private static Map<String,Object> parseOne(String key,Object value,String operator){
+    public static Map<String,Object> parseOne(String key,Object value,String operator){
         Map<String,Object> map=parseOne(key,value);
         map.put("operator",operator==null? Operator.EQUAL:operator);
         return map;
     }
-    private static Map<String,Object> parseLast(List ls){
+    public static Map<String,Object> parseLast(List ls){
         HashMap hashMap=new HashMap();
         hashMap.put("conditionList",ls);
         return hashMap;
     }
-    private static Map<String,Object> parseLast(List ls,String combine){
+    public static Map<String,Object> parseLast(List ls,String combine){
         Map<String, Object> parseLast = parseLast(ls);
         parseLast.put("combine",combine==null? CombineOperator.AND:combine);
         return parseLast;
@@ -109,4 +109,6 @@ public class MakeConditionUtil {
         ls.add(right);
         return parseLast(ls,combine);
     }
+
+
 }

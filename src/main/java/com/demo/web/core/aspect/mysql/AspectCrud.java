@@ -70,7 +70,13 @@ public class AspectCrud implements ApplicationContextAware {
                 }
             }
         }
-        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(((FindEntity) args[0]).getEntityName());
+        String entityName = "";
+        if(args[0] instanceof String){
+            entityName= (String) args[0];
+        }else if(args[0] instanceof FindEntity){
+            entityName=((FindEntity) args[0]).getEntityName();
+        }
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
         DataSourceTransactionManager manager = (DataSourceTransactionManager) applicationContext.getBean(entity1.getConfig().getSourceBeanName()+"manager");
         TransactionStatus status = SelfTransaction.begin(manager);
         Object os= null;

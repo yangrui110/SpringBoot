@@ -3,7 +3,7 @@
 <base>
     <datasource url="jdbc:mysql://118.24.153.227:3306/springsys?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;zeroDateTimeBehavior=convertToNull"
                 name="root"
-                password="123456"
+                password="1234qwer!"
                 source-dao-path="com.demo.web.core.crud.dao.mysql,com.demo.wanxidi.dao"
                 source-dao-xml-path="classpath:mapper/mysql/*.xml"
                 source-bean-xml-path="classpath:entity/mysql/*.xml"

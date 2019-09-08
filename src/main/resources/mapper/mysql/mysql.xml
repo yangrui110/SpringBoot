@@ -74,9 +74,48 @@
     </update>
 
     <delete id="delete">
-        delete from ${entityName}
+        delete * from ${entityName}
         where
         ${whereCondition}
     </delete>
+
+    <insert id="insertAll">
+      insert into ${entityName}
+        <foreach item="value" index="key" collection="keys" separator=" , " open="(" close=")">
+            ${value}
+        </foreach>
+        values
+        <foreach item="mapOne" index="index" collection="data" separator=" , ">
+            <foreach collection="mapOne" index="key" item="dataValue" separator="," close=")" open="(">
+                #{dataValue}
+            </foreach>
+        </foreach>
+    </insert>
+
+    <delete id="deleteAll">
+        delete from ${entityName} where
+        <foreach collection="pks" separator="and" item="pk" index="key">
+            ${key} in
+            <foreach collection="pk" item="value" separator="," open="(" close=")" index="i">
+                #{value}
+            </foreach>
+        </foreach>
+    </delete>
+
+    <update id="updateAll">
+        update ${entityName} set
+        <foreach collection="data" index="key" item="value" separator=",">
+            <if test="value !=null and value !=''">
+                ${key} = ${value}
+            </if>
+        </foreach>
+        where
+        <foreach collection="pks" separator="and" item="pk" index="key">
+            ${key} in
+            <foreach collection="pk" item="value" separator="," open="(" close=")" index="i">
+                #{value}
+            </foreach>
+        </foreach>
+    </update>
 
 </mapper>

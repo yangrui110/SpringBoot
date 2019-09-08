@@ -91,22 +91,8 @@ public class BaseController {
     @ResponseBody
     @PostMapping("delSelect")
     public ResultEntity delSelect(@RequestBody DelSelectEntity delSelectEntity){
-        List<Map> datas = delSelectEntity.getDatas();
-        datas.forEach((k)->{
-            FindEntity findEntity=new FindEntity();
-            findEntity.setEntityName(delSelectEntity.getEntityName());
-            List condition=new ArrayList();
-            k.forEach((key,value)->{
-                Map map=new HashMap();
-                map.put("left", key);
-                map.put("right", value);
-                condition.add(map);
-            });
-            Map maps=new HashMap();
-            maps.put("conditionList", condition);
-            findEntity.setCondition(maps);
-            baseService.delete(findEntity);
-        });
+        List<Map<String,Object>> datas = delSelectEntity.getDatas();
+        baseService.delSelect(delSelectEntity.getEntityName(), datas);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
     @ResponseBody

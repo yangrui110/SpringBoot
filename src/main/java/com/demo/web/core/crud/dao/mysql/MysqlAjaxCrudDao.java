@@ -39,4 +39,25 @@ public interface MysqlAjaxCrudDao extends BaseDao {
      * @param  whereCondition where后面的查询条件
      * */
     void delete(@Param("entityName") String entityName,@Param("whereCondition") String whereCondition);
+
+    /**
+     * @param entityName 实体文件中定义的表名称
+     * @param keys 属性列
+     * @param mapDatas 定义的实体列属性集合
+     * */
+    void insertAll(@Param("entityName") String entityName,@Param("keys")List<String> keys,@Param("data")List<Map<String,Object>> mapDatas);
+    /**
+     * @param entityName 实体文件中定义的表名称
+     * @param pks 实体的主键集合
+     * @param mapDatas 待更新的数据集合
+     * */
+    void updateAll(@Param("entityName")String entityName,@Param("pks")List<String> pks,@Param("data")List<Map<String,Object>> mapDatas);
+
+    /**
+     * @param entityName 实体文件中定义的表名称
+     * @param pks 定义的每个主键对应的一个List集合
+     * */
+    void deleteAll(@Param("entityName")String entityName,@Param("pks")Map<String,List<Object>> pks);
 }
+
+

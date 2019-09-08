@@ -177,6 +177,15 @@ public class EntityMap {
             throw new BaseException(304, "表名"+entityName+"不存在");
         if(cons==null)
             cons=new HashMap<>();
+        orderBy=makeDefaulOrderBy(entityName, orderBy);
+        if("entity".equals(element.getName())){
+            return readEntityLabel(entityName, cons, orderBy);
+        } else if("view-entity".equals(element.getName())){
+            return readColumnViewEntity(element, cons,orderBy );
+        } else return null;
+    }
+
+    public static List<COrderBy> makeDefaulOrderBy(String entityName, List<COrderBy> orderBy){
         if(orderBy==null){
             orderBy=new ArrayList<>();
             //没有排序时，就采用默认的方式
@@ -188,13 +197,8 @@ public class EntityMap {
                 orderBy.add(cOrderBy);
             }
         }
-        if("entity".equals(element.getName())){
-            return readEntityLabel(entityName, cons, orderBy);
-        } else if("view-entity".equals(element.getName())){
-            return readColumnViewEntity(element, cons,orderBy );
-        } else return null;
+        return orderBy;
     }
-
     public static ConditionEntity readEntityLabel(String entityName, Map<String,Object> cons, List<COrderBy> orderBy){
         ConditionEntity entity=new ConditionEntity();
         Element element=getElement(entityName);
@@ -312,7 +316,15 @@ public class EntityMap {
                             builder.append(property.getColumn()).append(" ") .append(operator==null?"=":operator).append(" ");
                             if(Operator.LIKE.equals(operator))
                                    builder.append("'%").append(right).append("%'").append(" ");
-                            else builder.append("'").append(right).append("'").append(" ");
+                            else if(Operator.IN.equals(operator)){
+                                StringBuilder bs=new StringBuilder();
+                                List lRight = (List) right;
+                                 for(Object inner:lRight){
+                                     bs.append("'").append(inner).append("'").append(",");
+                                 }
+                                String substring = bs.substring(0, bs.length() - 1);
+                                 builder.append("(").append(substring).append(")");
+                            }else builder.append("'").append(right).append("'").append(" ");
                             builder.append(combine).append(" ");
                         }
                     }

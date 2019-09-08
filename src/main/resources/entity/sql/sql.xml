@@ -59,23 +59,4 @@
         </view-link>
     </view-entity>
 
-    <entity tableName="work_book" tableAlias="workBook">
-        <column name="parent_id">
-            <describtion>父节点id</describtion>
-        </column>
-        <column name="type">
-            <describtion>每个父节点对应的子节点</describtion>
-        </column>
-        <column name="value">
-            <describtion>每个点对应的说明</describtion>
-        </column>
-        <column name="create_time">
-            <describtion>创建时间</describtion>
-        </column>
-        <column name="update_time">
-            <describtion>修改时间</describtion>
-        </column>
-        <primary-key name="parent_id"/>
-        <primary-key name="type"/>
-    </entity>
 </model>
