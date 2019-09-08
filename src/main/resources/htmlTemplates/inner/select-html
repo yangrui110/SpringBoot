@@ -1,0 +1,8 @@
+<div class="layui-col-xs2 layui-col-sm2 layui-col-md2 label-left">
+    <label>label-yangrui：</label>
+</div>
+<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+    <select name="columnAlias-yangrui" readonly lay-filter="columnAlias-yangrui">
+
+    </select>
+</div>

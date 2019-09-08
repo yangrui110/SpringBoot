@@ -17,6 +17,9 @@
         <column name="disabled_end_time">
             <describtion>禁用的截止时间</describtion>
         </column>
+        <column name="disabled_start_time">
+            <describtion>禁用的开始时间</describtion>
+        </column>
         <primary-key name="user_id"/>
     </entity>
     <entity tableName="user_info" tableAlias="userInfo">
