@@ -459,13 +459,16 @@ public class EntityMap {
      * 验证主键是否有值，主要用在插入操作时进行的判断
      * 主键未传值时，返回为true，有值时，返回false;
      * */
-    public static void yanzhengPKIsEmpty(FindEntity entity){
+    public static Map<String,Object> yanzhengPKIsEmpty(FindEntity entity){
         Map entityData = entity.getData();
+        Map<String,Object> returnData=new HashMap<>();
         Map<String, ColumnProperty> primaryKey = getPrimaryKey(entity.getEntityName());
         primaryKey.forEach((k,v)->{
             if(!entityData.containsKey(k)||StringUtils.isEmpty(entityData.get(k)))
                 throw new BaseException(304, "主键属性为空，请给主键赋值");
+            returnData.put(k, entityData.get(k));
         });
+        return returnData;
     }
 
     public static Map<String,ColumnProperty> getPrimaryKey(String entityName){

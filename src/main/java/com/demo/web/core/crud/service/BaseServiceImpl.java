@@ -64,8 +64,12 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public void insert(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         String entityName=EntityMap.getTableName(entity.getEntityName());
-        EntityMap.yanzhengPKIsEmpty(entity); //验证主键的值是否已经传入
+        Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity);//验证主键的值是否已经传入
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        //校验数据库中是否已经存在该主键
+        Map<String,Object> record = baseDao.findByPK(entityName,pkData);
+        if(record!=null)
+            throw new BaseException(504, "主键已经存在于数据库中");
         if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
             EntityMap.makeOracleData(entity);
             baseDao.insert("\""+entityName+"\"",entity.getData());
