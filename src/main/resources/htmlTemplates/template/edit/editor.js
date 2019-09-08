@@ -32,8 +32,29 @@ layui.use(['form','layer','laydate','upload'], function(){
     },function (data) {
         if(data.data.length>0)
             editorData=data.data[0];
+        var paths=ImgPaths-yangrui;  //JSON对象
+        initImg(paths);
         form.val("editorForm",editorData);
     })
+
+    function initImg(paths){
+        if(!paths)
+            return ;
+        for(var key in paths){
+            var elementsByName = document.getElementsByName(key);
+            for(var k of elementsByName){
+                if(k.tagName=="IMG"){
+                    //如果是img标签，设置其src属性
+                    k.src=apiClient.getUrl()+"/file/download?path="+paths[key];
+                    if(k.parentElement.tagName=='A') {
+                        k.parentElement.href = apiClient.getUrl() + "/file/download?path=" + paths[key];
+                    }
+                }else if(k.tagName=="INPUT"){
+                    k.value=paths[key];
+                }
+            }
+        }
+    }
 
     form.on('submit(commit)', function(data){
         delete data.field.file;

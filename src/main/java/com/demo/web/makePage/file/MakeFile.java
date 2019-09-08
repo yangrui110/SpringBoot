@@ -300,6 +300,7 @@ public class MakeFile {
                 result=result.replaceAll("selectCompoments-yangrui", compoments.get("select"));
                 result=result.replaceAll("selectCheckedCompoments-yangrui", compoments.get("selectChecked"));
                 result=result.replaceAll("uploadCompoments-yangrui", compoments.get("upload"));
+                result=result.replaceAll("ImgPaths-yangrui", compoments.get("imgPaths"));
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".css")){
                 Compress.compressString(fileString, outputStream, builder.toString());
@@ -328,6 +329,8 @@ public class MakeFile {
         String workCheckedPattern = FileUtil.getFileString(workCheckedResource.getFile());
         String workCheckedViewPattern = FileUtil.getFileString(workCheckedViewResource.getFile());
         Iterator<Object> iterator = params.values().iterator();
+
+        StringBuilder pics=new StringBuilder(",");
         while (iterator.hasNext()){
             JSONObject next = (JSONObject) iterator.next();
             if(CompomentType.TIMER.equals(next.getString("compomentType"))) {
@@ -353,13 +356,19 @@ public class MakeFile {
                 String patternOne = uploadPattern.replaceAll("columnAlias-yangrui", next.getString("alias"));
                 patternOne = patternOne.replaceAll("column-yangrui", next.getString("column"));
                 uploadBuilder.append(patternOne);
+                //
+                pics.append("'").append(next.getString("column")).append("':").append("editorData.").append(next.getString("column")).append(",");
             }
         }
+        String substring = pics.substring(1, pics.length());
+        pics=new StringBuilder();
+        pics.insert(0, "{").append(substring).append("}");
         result.put("timer", timeBuilder.toString());
         result.put("select", workBuilder.toString());
         result.put("upload", uploadBuilder.toString());
         result.put("selectChecked", workCheckedBuilder.toString());
         result.put("selectCheckedView", workCheckedViewBuilder.toString());
+        result.put("imgPaths", pics.toString());
         return result;
     }
 
