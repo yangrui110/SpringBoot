@@ -17,6 +17,11 @@ layui.use(['table','form','layer','laydate'], function(){
         pk = data.data;
         console.log(data);
     })
+
+    initSelect();
+    function initSelect() {
+        selectCompoments-yangrui
+    }
     //第一个实例
     var tableIns=table.render({
         elem: '#data'
@@ -124,7 +129,7 @@ layui.use(['table','form','layer','laydate'], function(){
         var parseData={};
         for(var key in pk){
             if(data[key]!=null)
-                parseData[pk[key]]=data[key];
+                parseData[key]=data[key];
         }
         if(obj.event === 'detail'){
             //打开详情界面
@@ -140,7 +145,7 @@ layui.use(['table','form','layer','laydate'], function(){
                 var conditionList=[];
                 for(var k in parseData){
                     var ob={};
-                    ob.left=k;
+                    ob.left=pk[k];
                     ob.right=parseData[k];
                     conditionList.push(ob);
                 }
@@ -160,10 +165,15 @@ layui.use(['table','form','layer','laydate'], function(){
             });
         } else if(obj.event === 'edit'){
             //打开编辑界面
+            //构造参数
+            var param={};
+            for(var k in parseData){
+                param[pk[k]]=parseData[k];
+            }
             layer.open({
                 type:2,
                 title:"修改用户",
-                content:"../aliasName-yangrui-edit/aliasName-yangrui-editor.html?param="+encodeURIComponent(JSON.stringify(parseData)),
+                content:"../aliasName-yangrui-edit/aliasName-yangrui-editor.html?param="+encodeURIComponent(JSON.stringify(param)),
                 area:['60%'],
                 skin:skin
             })

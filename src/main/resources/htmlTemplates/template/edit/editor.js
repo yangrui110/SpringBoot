@@ -1,5 +1,7 @@
-layui.use('form', function() {
+layui.use(['form','layer','laydate'], function(){
+    var laydate = layui.laydate;
     var form = layui.form;
+    var layer=layui.layer;
 
     var entityName="entityName-yangrui";
     var param =paramUtil.getQueryString("param");
@@ -13,6 +15,12 @@ layui.use('form', function() {
         ob.right=uriComponent[k];
         conditionList.push(ob);
     }
+
+    initSelect();
+    function initSelect() {
+        selectCheckedCompoments-yangrui
+    }
+
     //从服务器获取数据
     apiClient.findAllNoPage({
         entityName:entityName,
@@ -21,15 +29,9 @@ layui.use('form', function() {
             combine:"and"
         }
     },function (data) {
-       if(data.data.length>0)
+        if(data.data.length>0)
             editorData=data.data[0];
-        //初始化vue.js的数据绑定
-        var app4 = new Vue({
-            el: '#editorForm',
-            data: {
-                editorData:editorData
-            }
-        })
+        form.val("editorForm",editorData);
     })
 
     form.on('submit(commit)', function(data){
@@ -39,7 +41,7 @@ layui.use('form', function() {
                 conditionList:conditionList,
                 combine:"and"
             },
-            data: editorData
+            data: data.field
         },function (data) {
             layer.msg("修改成功")
             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引

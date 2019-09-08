@@ -1,23 +1,24 @@
-layui.use('form', function(){
+layui.use(['form','layer','laydate'], function(){
+    var laydate = layui.laydate;
     var form = layui.form;
-
-    var addData={};
+    var layer=layui.layer;
 
     var tableName="entityName-yangrui";
-    //初始化vue.js的数据绑定
-    var app4 = new Vue({
-        el: '#editorForm',
-        data: {
-            addData:addData
-        }
-    })
+
+    initSelect();
+    function initSelect() {
+        selectCompoments-yangrui
+    }
     form.on('submit(commit)', function(data){
         console.log(data.field);
+        console.log(data.form)
+        var commitData=data.field;
         //进行保存操作
         var commit={
             entityName:tableName,
-            data:addData
-        };
+            data:commitData
+        }
+
         apiClient.insert(commit,function (data) {
             layer.msg("增加成功")
             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
