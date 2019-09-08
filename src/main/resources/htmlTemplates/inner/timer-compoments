@@ -1,3 +1,4 @@
 laydate.render({
     elem: '#layDateId-yangrui'
+    ,type: 'datetime'
   });
