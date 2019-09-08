@@ -1,6 +1,11 @@
-<a target="_blank" href="">
-    <img name="column-yangrui" src="" width="60px" height="60px">
-</a>
-<button type="button" class="layui-btn" id="column-yangrui">
-    <i class="layui-icon">&#xe67c;</i>上传图片
-</button>
+<div class="layui-col-xs4 layui-col-sm4 layui-col-md4 label-left">
+    label-yangrui：
+</div>
+<div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+    <a target="_blank" href="">
+        <img name="column-yangrui" src="" width="60px" height="60px">
+    </a>
+    <button type="button" class="layui-btn" id="column-yangrui">
+        <i class="layui-icon">&#xe67c;</i>上传图片
+    </button>
+</div>

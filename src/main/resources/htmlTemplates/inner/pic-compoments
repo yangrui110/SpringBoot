@@ -3,7 +3,7 @@
     if(d.layColumnName-yangrui==null){
         url = "../../../../layuiadmin/img/timg.jpg";
     }else {
-        url=apiClient.getUrl()+"/file/download/"+d.layColumnName-yangrui;
+        url=apiClient.getUrl()+"/file/download?path="+d.layColumnName-yangrui;
     }
     return  "<img src='"+url+"' style='width: 30px;height: 30px;'>"
 }

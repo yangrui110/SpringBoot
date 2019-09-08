@@ -74,7 +74,7 @@ public class MakeFile {
             if(next.getBoolean("show")) {
                 String patternOne = pattern.replaceAll("listTableField", next.getString("alias"));
                 String patternTwo = patternOne.replaceAll("fieldDesc", next.getString("describetion"));
-                if("picture".equals(next.getString("compomentType"))){
+                if(CompomentType.PICTURE.equals(next.getString("compomentType"))){
                     patternColumn=patternColumn.replaceAll("layColumnName-yangrui",next.getString("alias"));
                     patternTwo=patternTwo.replaceAll("layTemplate-yangrui",patternColumn);
                 }else patternTwo=patternTwo.replaceAll("layTemplate-yangrui","");
@@ -115,7 +115,7 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
-                }else if("pic".equals(os.get("compomentType"))){
+                }else if(CompomentType.PICTURE.equals(os.get("compomentType"))){
                     pa=patternUpload;
                 }
                 builder.append(makeListPattern(os, pa));
@@ -153,7 +153,7 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
-                }else if("pic".equals(os.get("compomentType"))){
+                }else if(CompomentType.PICTURE.equals(os.get("compomentType"))){
                     pa=patternUpload;
                 }
                 builder.append(makeListPattern(os,pa));
@@ -186,7 +186,7 @@ public class MakeFile {
                 String pa=pattern;
                 if(!StringUtils.isEmpty(os.get("workParentValue"))){
                     pa=patternSelect;
-                }else if("pic".equals(os.get("compomentType"))){
+                }else if(CompomentType.PICTURE.equals(os.get("compomentType"))){
                     pa=patternUpload;
                 }
                 builder.append(makeListPattern(os, pa));
@@ -330,7 +330,7 @@ public class MakeFile {
         Iterator<Object> iterator = params.values().iterator();
         while (iterator.hasNext()){
             JSONObject next = (JSONObject) iterator.next();
-            if("timer".equals(next.getString("compomentType"))) {
+            if(CompomentType.TIMER.equals(next.getString("compomentType"))) {
                 String patternOne = timePattern.replaceAll("layDateId-yangrui", next.getString("alias"));
                 timeBuilder.append(patternOne);
             }else if(!StringUtils.isEmpty(next.get("workParentValue"))){
@@ -349,7 +349,7 @@ public class MakeFile {
                 parentCheckedViewValue=parentCheckedViewValue.replaceAll("columnAlias-yangrui", next.getString("alias"));
                 parentCheckedViewValue=parentCheckedViewValue.replaceAll("column-yangrui", next.getString("column"));
                 workCheckedViewBuilder.append(parentCheckedViewValue);
-            }else if("pic".equals(next.getString("compomentType"))){
+            }else if(CompomentType.PICTURE.equals(next.getString("compomentType"))){
                 String patternOne = uploadPattern.replaceAll("columnAlias-yangrui", next.getString("alias"));
                 patternOne = patternOne.replaceAll("column-yangrui", next.getString("column"));
                 uploadBuilder.append(patternOne);

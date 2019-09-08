@@ -36,6 +36,7 @@ layui.use(['form','layer','laydate','upload'], function(){
     })
 
     form.on('submit(commit)', function(data){
+        delete data.field.file;
         apiClient.update({
             entityName: entityName,
             condition:{
