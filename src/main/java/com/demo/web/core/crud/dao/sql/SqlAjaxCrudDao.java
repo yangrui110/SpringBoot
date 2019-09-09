@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface SqlAjaxCrudDao extends BaseDao {
 
+    Map<String,Object> findByPK(@Param("entityName") String entityName,@Param("mapData") Map<String,Object> mapData);
 
     int totalNum(@Param("condition") ConditionEntity entity);
 

@@ -13,6 +13,7 @@ layui.use(['form','layer','laydate','upload'], function(){
     form.on('submit(commit)', function(data){
         console.log(data.field);
         console.log(data.form)
+        delete data.field.file;
         var commitData=data.field;
         //进行保存操作
         var commit={

@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <model>
-    <entity tableName="user_login" tableAlias="userLogin">
-        <column name="user_id">
-            <describtion>用户Id</describtion>
-        </column>
-        <column name="user_password">
-            <describtion>登录密码</describtion>
-        </column>
-        <column name="last_login_time">
-            <describtion>最近一次的登陆时间</describtion>
-        </column>
-        <column name="disabled">
-            <describtion>账号是否被禁用（1或者Null为正常状态，2位禁用状态）</describtion>
-        </column>
-        <column name="disabled_end_time">
-            <describtion>禁用的截止时间</describtion>
-        </column>
-        <column name="disabled_start_time">
-            <describtion>禁用的开始时间</describtion>
-        </column>
-        <primary-key name="user_id"/>
-    </entity>
+
     <entity tableName="user_info" tableAlias="userInfo">
         <column name="user_id">
             <describtion>用户ID</describtion>

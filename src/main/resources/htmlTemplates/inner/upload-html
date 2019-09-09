@@ -2,6 +2,7 @@
     label-yangrui：
 </div>
 <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
+    <input name="column-yangrui" value="" style="display: none">
     <a target="_blank" href="">
         <img name="column-yangrui" src="" width="60px" height="60px">
     </a>

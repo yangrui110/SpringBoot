@@ -6,9 +6,9 @@
 
     <!--通过主键查找对应的一条数据-->
     <select id="findByPK" resultType="java.util.Map">
-        select * from #{entityName} a where
+        select * from ${entityName} a where
         <foreach collection="mapData" index="key"  item="data" separator=" and ">
-            a.#{key} = #{data}
+            a.${key} = #{data}
         </foreach>
     </select>
     <select id="findAll" resultType="java.util.Map">
@@ -26,6 +26,20 @@
             </if>
             <if test="condition.end != null and condition.start != null">
                 and ROWNUM &lt;= ${condition.end}
+            </if>
+        </trim>
+
+    </select>
+
+    <select id="findAllNoPage" resultType="java.util.Map">
+        select ${condition.columns}
+        <if test="condition.orderBy != null and condition.orderBy != ''">
+            , row_number() over( order by ${condition.orderBy}) as RowNumber
+        </if>
+        from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
+        <trim prefix="where" prefixOverrides="and">
+            <if test="condition.condition!='' and condition.condition!=null">
+                and ${condition.condition}
             </if>
         </trim>
 

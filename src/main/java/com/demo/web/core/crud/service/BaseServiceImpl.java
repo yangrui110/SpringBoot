@@ -37,18 +37,26 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public List findAll(FindEntity findEntity, ConditionEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
+            entity.setMainTable("\""+entity.getMainTable()+"\"");
+        }
         List<Map<String, Object>> all = baseDao.findAll(entity);
         all.forEach((k)->{
             if(k.containsKey("RowNumber"))
                 k.remove("RowNumber");
         });
+
         return all;
     }
 
     public List<Map<String, Object>> findAllNoPage(FindEntity findEntity, ConditionEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
+            entity.setMainTable("\""+entity.getMainTable()+"\"");
+        }
         List<Map<String, Object>> all = baseDao.findAllNoPage(entity);
+
         return all;
     }
 
@@ -67,12 +75,15 @@ public class BaseServiceImpl implements ApplicationContextAware {
         Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity);//验证主键的值是否已经传入
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
         //校验数据库中是否已经存在该主键
+        if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())) {
+            entityName = "\"" + entityName + "\"";
+        }
         Map<String,Object> record = baseDao.findByPK(entityName,pkData);
         if(record!=null)
             throw new BaseException(504, "主键已经存在于数据库中");
         if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
             EntityMap.makeOracleData(entity);
-            baseDao.insert("\""+entityName+"\"",entity.getData());
+            baseDao.insert(entityName,entity.getData());
         }else baseDao.insert(entityName,entity.getData());
     }
     public void delete(FindEntity entity){
@@ -88,6 +99,9 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public int totalNum(FindEntity findEntity,ConditionEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        if(DataSourceType.ORACLE.equals(entity1.getConfig().getSourceType())){
+            entity.setMainTable("\""+entity.getMainTable()+"\"");
+        }
         return baseDao.totalNum(entity);
     }
 
