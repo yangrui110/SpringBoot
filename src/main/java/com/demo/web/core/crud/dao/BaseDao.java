@@ -32,14 +32,14 @@ public interface BaseDao {
     /**
      * @param entityName 实体文件中定义的表名称
      * @param mapData 待更新的数据集
-     * @param whereCondition where后面的查询条件
+     * @param cons 主键的条件
      * */
-    void update(@Param("entityName") String entityName,@Param("data") Map<String,Object> mapData,@Param("whereCondition") String whereCondition);
+    void update(@Param("entityName") String entityName,@Param("data") Map<String,Object> mapData,@Param("cons") Map<String,Object> cons);
     /**
      * @param entityName 实体文件中定义的表名称
-     * @param  whereCondition where后面的查询条件
+     * @param  cons 主键
      * */
-    void delete(@Param("entityName") String entityName,@Param("whereCondition")String whereCondition);
+    void delete(@Param("entityName") String entityName,@Param("cons")Map<String,Object> cons);
 
     /**
      * @param entityName 实体文件中定义的表名称

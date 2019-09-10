@@ -81,10 +81,14 @@ public class DemoApplicationTests {
 		Map map = MapUtil.toMap("teacher_id", "10002");
 		map.put("teacher_name", "ik5");
 		Map map1 = MapUtil.toMap("teacher_id", "10003");
-		map1.put("teacher_pros", "119");
-		map1.put("teacher_name", "ik9");
+		//map1.put("teacher_pros", "119");
+		//map1.put("teacher_name", "ik9");
 		ls.add(map);
 		ls.add(map1);
-		baseService.updateAll("Teacher", ls);
+		FindEntity entity=new FindEntity();
+		entity.setEntityName("Teacher");
+		entity.setData(map);
+		//entity.setCondition(MapUtil.toMap("teacher_id", "10002"));
+		baseService.findAll(entity,new ConditionEntity());
 	}
 }

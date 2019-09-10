@@ -66,7 +66,7 @@ public class AspectCrud implements ApplicationContextAware {
                     //处理其它的操作
                     EntityMap.dealUpCondition(entity);
                     EntityMap.yanzhengDataKey(entity.getData(), entity.getEntityName());
-                    EntityMap.yanzhengConditionKey(entity.getCondition(), entity.getEntityName());
+                    //EntityMap.yanzhengConditionKey(entity.getCondition(), entity.getEntityName());
                 }
             }
         }

@@ -443,26 +443,14 @@ public class EntityMap {
         });
         return columns;
     }
-    /**
-     * 制作oracle的条件
-     * */
-    public static void makeOracleData(FindEntity entity){
-        if(entity.getData()!=null){
-            Map map=new HashMap();
-            entity.getData().forEach((k,v)->{
-                map.put(parseDoubleQuote((String) k), v);
-            });
-            entity.setData(map);
-        }
-    }
+
     /**
      * 验证主键是否有值，主要用在插入操作时进行的判断
      * 主键未传值时，返回为true，有值时，返回false;
      * */
-    public static Map<String,Object> yanzhengPKIsEmpty(FindEntity entity){
-        Map entityData = entity.getData();
+    public static Map<String,Object> yanzhengPKIsEmpty(String entityName,Map<String,Object> entityData){
         Map<String,Object> returnData=new HashMap<>();
-        Map<String, ColumnProperty> primaryKey = getPrimaryKey(entity.getEntityName());
+        Map<String, ColumnProperty> primaryKey = getPrimaryKey(entityName);
         primaryKey.forEach((k,v)->{
             if(!entityData.containsKey(k)||StringUtils.isEmpty(entityData.get(k)))
                 throw new BaseException(304, "主键属性为空，请给主键赋值");
@@ -721,9 +709,16 @@ public class EntityMap {
      * 处理更新、删除、插入的数据列操作
      * */
     public static void dealUpCondition(FindEntity findEntity){
-        Map<String, ColumnProperty> columnMap = getColumnMap(findEntity.getEntityName());
-        parseWhereCondition(columnMap,findEntity.getEntityName());
-        findEntity.setCons(makeWhereCondition(findEntity.getCondition(), columnMap));
+        //Map<String, ColumnProperty> columnMap = getColumnMap(findEntity.getEntityName());
+        //parseWhereCondition(columnMap,findEntity.getEntityName());
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(findEntity.getEntityName());
+        Map data = findEntity.getData();
+        Map<String,Object> cons=new HashMap<>();
+        primaryKey.forEach((k,v)->{
+            cons.put(k,data.get(k));
+        });
+        findEntity.setCondition(cons);
+        //findEntity.setCons(makeWhereCondition(findEntity.getCondition(), columnMap));
     }
 
     //将所需要的where条件转为指定的数据源类型
