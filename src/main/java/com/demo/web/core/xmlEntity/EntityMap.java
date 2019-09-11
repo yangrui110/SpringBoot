@@ -468,6 +468,10 @@ public class EntityMap {
      * */
     public static Map<String,ColumnProperty> getPrimaryKey(Element element){
         Map<String, ColumnProperty> allColumns = getAllColumns(element);
+        Map<String, ColumnProperty> entityPks = getEntityPks(allColumns, element);
+        if(entityPks.size()>0){
+            return entityPks;
+        }
         if("view-entity".equals(element.getName())){
             MainTableInfo mainTable = getMainTable(element.attributeValue("tableAlias"));
             Map<String, ColumnProperty> primaryKey = getPrimaryKey(mainTable.getTableAlias());
@@ -490,22 +494,30 @@ public class EntityMap {
             });
             return result;
         } else if("entity".equals(element.getName())) {
-            Map<String, ColumnProperty> maps = new HashMap<>();
-            if (element != null) {
-                List<Element> elements = element.elements();
-                elements.forEach((k) -> {
-                    if ("primary-key".equals(k.getName())) {
-                        String name = k.attributeValue("name");
-                        if (!StringUtils.isEmpty(name)) {
-                            maps.put(name, allColumns.get(name));
-                        }
-                    }
-                });
-            }
-            return maps;
+
+            return getEntityPks(allColumns, element);
         }else {
             throw new BaseException(304, "实体定义错误");
         }
+    }
+
+    /**
+     * 视图时，先查看是否存在primary-key标签
+     * */
+    public static Map<String,ColumnProperty> getEntityPks(Map<String,ColumnProperty> allColumns,Element element){
+        Map<String, ColumnProperty> maps = new HashMap<>();
+        if (element != null) {
+            List<Element> elements = element.elements();
+            elements.forEach((k) -> {
+                if ("primary-key".equals(k.getName())) {
+                    String name = k.attributeValue("name");
+                    if (!StringUtils.isEmpty(name)) {
+                        maps.put(name, allColumns.get(name));
+                    }
+                }
+            });
+        }
+        return maps;
     }
     /**
      * 验证conditionkey

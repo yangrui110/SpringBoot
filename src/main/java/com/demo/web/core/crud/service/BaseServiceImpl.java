@@ -38,8 +38,15 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public Map<String,Object> findByPK(String entityName,Map<String,Object> pkDatas){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
         EntityMap.yanzhengPKIsEmpty(entityName,pkDatas);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
+        Map<String,Object> pks=new HashMap<>();
+        primaryKey.forEach((k,v)->{
+            if(pkDatas.get(k)!=null){
+                pks.put(k, pkDatas.get(k));
+            }
+        });
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        Map<String, Object> pk = baseDao.findByPK(entityName, pkDatas);
+        Map<String, Object> pk = baseDao.findByPK(entityName, pks);
         return pk;
     }
 

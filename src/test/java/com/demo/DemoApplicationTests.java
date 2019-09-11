@@ -11,6 +11,8 @@ import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.core.util.MakeConditionUtil;
+import com.demo.web.core.xmlEntity.ColumnProperty;
+import com.demo.web.core.xmlEntity.EntityMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -87,8 +89,10 @@ public class DemoApplicationTests {
 		ls.add(map1);
 		FindEntity entity=new FindEntity();
 		entity.setEntityName("Teacher");
-		entity.setData(map);
+		entity.setData(map1);
 		//entity.setCondition(MapUtil.toMap("teacher_id", "10002"));
-		baseService.findAll(entity,new ConditionEntity());
+		Map<String, ColumnProperty> userView = EntityMap.getPrimaryKey("TeacherUserView");
+		baseService.findAllNoPage(entity,new ConditionEntity());
+		//baseService.findByPK("Teacher", map);
 	}
 }
