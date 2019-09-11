@@ -20,6 +20,7 @@
                             <xs:element ref="alias-all"/>
                             <xs:element ref="alias"/>
                             <xs:element ref="view-link"/>
+                            <xs:element ref="primary-key"/>
                         </xs:sequence>
                         <xs:attributeGroup ref="viewEntity.attrs"/>
                     </xs:complexType>

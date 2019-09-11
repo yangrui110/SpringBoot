@@ -79,10 +79,11 @@ public class DemoApplicationTests {
 
 	@Test
 	public void test6(){
-			List<Map<String,Object>> ls=new ArrayList<>();
+		List<Map<String,Object>> ls=new ArrayList<>();
 		Map map = MapUtil.toMap("teacher_id", "10002");
 		map.put("teacher_name", "ik5");
 		Map map1 = MapUtil.toMap("teacher_id", "10003");
+		map1.put("teacher_name","ik9");
 		//map1.put("teacher_pros", "119");
 		//map1.put("teacher_name", "ik9");
 		ls.add(map);
@@ -90,9 +91,12 @@ public class DemoApplicationTests {
 		FindEntity entity=new FindEntity();
 		entity.setEntityName("Teacher");
 		entity.setData(map1);
+		entity.setCondition(MakeConditionUtil.makeCondition("teacherID","10003","teacher_name","ik9"));
 		//entity.setCondition(MapUtil.toMap("teacher_id", "10002"));
 		Map<String, ColumnProperty> userView = EntityMap.getPrimaryKey("TeacherUserView");
-		baseService.findAllNoPage(entity,new ConditionEntity());
+		//baseService.update(entity);
+		entity.setEntityName("TeacherUserView");
+		baseService.totalNum(entity,new ConditionEntity());
 		//baseService.findByPK("Teacher", map);
 	}
 }

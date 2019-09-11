@@ -95,6 +95,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
     public int totalNum(FindEntity findEntity,ConditionEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(findEntity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        entity.setMainTable(findEntity.getEntityName());
         return baseDao.totalNum(entity);
     }
 

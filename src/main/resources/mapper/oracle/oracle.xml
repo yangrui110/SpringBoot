@@ -47,8 +47,10 @@
 
     <select id="totalNum" resultType="int">
         select count(1) from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
-        <trim prefix="where">
-            ${condition.condition}
+        <trim prefix="where" prefixOverrides="and">
+            <if test="condition.condition!='' and condition.condition!=null">
+                and ${condition.condition}
+            </if>
         </trim>
     </select>
 

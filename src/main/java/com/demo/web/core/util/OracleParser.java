@@ -1,7 +1,6 @@
 package com.demo.web.core.util;
 
 import com.demo.web.core.crud.centity.ConditionEntity;
-import com.demo.web.core.crud.centity.FindEntity;
 
 import java.util.HashMap;
 import java.util.Map;

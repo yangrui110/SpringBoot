@@ -60,6 +60,8 @@
         <view-link tableAlias="TE" relTableAlias="UL" relOptional="false">
             <key-map field-name="teacher_pros" rel-field-name="user_id"/>
         </view-link>
+        <primary-key name="teacherID"/>
+        <primary-key name="user_id"/>
     </view-entity>
 
     <entity tableName="user_login" tableAlias="userLogin">

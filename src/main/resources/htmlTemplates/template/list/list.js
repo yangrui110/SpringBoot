@@ -12,10 +12,16 @@ layui.use(['table','form','layer','laydate','upload'], function(){
         "condition": {"conditionList":[]}
         orderBy-yangrui
     }
-    var pk={};
+    var viewPk={};
+    var editorPk={};
     //给pk赋值
     apiClient.getPK({viewEntityName:viewName,entityName:entityName},function (data) {
-        pk = data.data;
+        viewPk = data.data;
+        console.log(data);
+    })
+    //给pk赋值
+    apiClient.getPK({viewEntityName:viewName,entityName:entityName},function (data) {
+        editorPk = data.data;
         console.log(data);
     })
 
@@ -104,8 +110,8 @@ layui.use(['table','form','layer','laydate','upload'], function(){
                 var result=[];
                 for(var v of data){
                     var r1={};
-                    for(var k in pk){
-                        r1[pk[k]]=v[k];
+                    for(var k in editorPk){
+                        r1[editorPk[k]]=v[k];
                     }
                     result.push(r1);
                 }
@@ -127,12 +133,13 @@ layui.use(['table','form','layer','laydate','upload'], function(){
     //监听工具条
     table.on('tool(dataFilter)', function(obj){
         var data = obj.data;
-        var parseData={};
-        for(var key in pk){
-            if(data[key]!=null)
-                parseData[key]=data[key];
-        }
+
         if(obj.event === 'detail'){
+            var parseData={};
+            for(var key in viewPk){
+                if(data[key]!=null)
+                    parseData[key]=data[key];
+            }
             //打开详情界面
             layer.open({
                 type:2,
@@ -142,6 +149,11 @@ layui.use(['table','form','layer','laydate','upload'], function(){
                 skin:skin
             })
         } else if(obj.event === 'del'){
+            var parseData={};
+            for(var key in editorPk){
+                if(data[key]!=null)
+                    parseData[key]=data[key];
+            }
             layer.confirm('删除该记录值？', function(index){
                 var conditionList=[];
                 for(var k in parseData){
@@ -165,11 +177,16 @@ layui.use(['table','form','layer','laydate','upload'], function(){
 
             });
         } else if(obj.event === 'edit'){
+            var parseData={};
+            for(var key in editorPk){
+                if(data[key]!=null)
+                    parseData[key]=data[key];
+            }
             //打开编辑界面
             //构造参数
             var param={};
             for(var k in parseData){
-                param[pk[k]]=parseData[k];
+                param[editorPk[k]]=parseData[k];
             }
             layer.open({
                 type:2,

@@ -53,7 +53,7 @@ public class OracleAspect {
     @Around(value = "execution( public * com.demo.web.core.crud.dao.BaseDao.totalNum(..))")
     public Object aspectTotalNum(ProceedingJoinPoint point) throws Throwable {
         Object[] args = point.getArgs();
-        aspectFindEntity((FindEntity) args[0]);
+        aspectConditon((ConditionEntity) args[0]);
         return point.proceed(args);
     }
     @Around(value = "execution( public * com.demo.web.core.crud.dao.BaseDao.delete(..))")
@@ -64,7 +64,7 @@ public class OracleAspect {
     }
 
     private void aspectFindEntity(FindEntity entity){
-        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+        InfoOfEntity infoOfEntity = EntityMap.getMainTable(entity.getEntityName()).getInfoOfEntity();
         entity.setEntityName(infoOfEntity.getEntityName());
         if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
             entity.setCondition(OracleParser.parseMap(entity.getCondition()));
@@ -72,7 +72,7 @@ public class OracleAspect {
         }
     }
     private void aspectConditon(ConditionEntity entity){
-        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty(entity.getMainTable());
+        InfoOfEntity infoOfEntity = EntityMap.getMainTable(entity.getMainTable()).getInfoOfEntity();
         entity.setMainTable(infoOfEntity.getEntityName());
         if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
             OracleParser.parseConditionEntity(entity);
@@ -81,7 +81,7 @@ public class OracleAspect {
 
     private void aspectUpdate(Object[] args){
         //1、实体名 2、PK数据
-        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty((String) args[0]);
+        InfoOfEntity infoOfEntity = EntityMap.getMainTable((String) args[0]).getInfoOfEntity();
         args[0] = infoOfEntity.getEntityName();
         if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
             args[0]= OracleParser.parseEntityName((String) args[0]);
@@ -91,7 +91,7 @@ public class OracleAspect {
     }
     private void aspectCommon(Object[] args){
         //1、实体名 2、PK数据
-        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty((String) args[0]);
+        InfoOfEntity infoOfEntity = EntityMap.getMainTable((String) args[0]).getInfoOfEntity();
         args[0] = infoOfEntity.getEntityName();
         if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
             args[0]= OracleParser.parseEntityName((String) args[0]);
@@ -101,7 +101,7 @@ public class OracleAspect {
 
     private void aspectName(Object[] args){
         //1、实体名 2、PK数据
-        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty((String) args[0]);
+        InfoOfEntity infoOfEntity = EntityMap.getMainTable((String) args[0]).getInfoOfEntity();
         args[0] = infoOfEntity.getEntityName();
         if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
             args[0]= OracleParser.parseEntityName((String) args[0]);
