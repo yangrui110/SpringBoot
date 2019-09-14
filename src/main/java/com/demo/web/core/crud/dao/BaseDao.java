@@ -46,7 +46,7 @@ public interface BaseDao {
      * @param keys 属性列
      * @param mapDatas 定义的实体列属性集合
      * */
-    void insertAll(@Param("entityName") String entityName,@Param("keys")List<String> keys,@Param("data")List<Map<String,Object>> mapDatas);
+    void insertAll(@Param("entityName") String entityName,@Param("keys")List<String> keys,@Param("data")List<List<Object>> mapDatas);
 
     /**
      * @param entityName 实体文件中定义的表名称

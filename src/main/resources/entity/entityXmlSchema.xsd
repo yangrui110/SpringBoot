@@ -20,7 +20,6 @@
                             <xs:element ref="alias-all"/>
                             <xs:element ref="alias"/>
                             <xs:element ref="view-link"/>
-                            <xs:element ref="primary-key"/>
                         </xs:sequence>
                         <xs:attributeGroup ref="viewEntity.attrs"/>
                     </xs:complexType>
@@ -47,7 +46,8 @@
         <xs:attribute name="tableAlias" type="xs:string"/>
     </xs:attributeGroup>
     <xs:attributeGroup name="column.attrs">
-        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="optional"/>
+        <xs:attribute name="alias" type="xs:string" use="required"/>
     </xs:attributeGroup>
     <!--view-entity标签下的子元素以及属性-->
     <xs:element name="member-entity">

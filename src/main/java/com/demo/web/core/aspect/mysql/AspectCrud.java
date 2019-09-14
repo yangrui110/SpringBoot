@@ -41,7 +41,7 @@ public class AspectCrud implements ApplicationContextAware {
             for (Object a : args) {
                 if (a instanceof FindEntity) {
                     String orign = ((FindEntity) a).getEntityName();
-                    Map conditions = ((FindEntity) a).getCondition();
+                    Map conditions = ((FindEntity) a).getData();
                     if (conditions.size() > 0) {
                         EntityMap.yanzhengConditionKey((Map<String, Object>) conditions, orign);
                     }
@@ -58,12 +58,12 @@ public class AspectCrud implements ApplicationContextAware {
             for(Object arg: args){
                 if(arg instanceof FindEntity){
                     FindEntity entity=(FindEntity) arg;
-                    Map conditions = entity.getCondition();
                     String tableAlias=entity.getEntityName();
                     if(EntityMap.judeIsViewEntity(tableAlias)){
                         throw new BaseException(304,"视图表"+tableAlias+"不允许增删改操作");
                     }
                     //处理其它的操作
+
                     EntityMap.dealUpCondition(entity);
                     EntityMap.yanzhengDataKey(entity.getData(), entity.getEntityName());
                     //EntityMap.yanzhengConditionKey(entity.getCondition(), entity.getEntityName());

@@ -2,7 +2,7 @@
     <label>label-yangrui：</label>
 </div>
 <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
-    <select name="column-yangrui" lay-filter="column-yangrui">
+    <select name="columnAlias-yangrui" lay-filter="columnAlias-yangrui">
 
     </select>
 </div>

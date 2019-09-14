@@ -3,6 +3,6 @@
             label-yangrui：
         </div>
         <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
-            <label class="data-height">{{viewData.column-yangrui}}</label>
+            <label class="data-height">{{viewData.columnAlias-yangrui}}</label>
         </div>
     </div>

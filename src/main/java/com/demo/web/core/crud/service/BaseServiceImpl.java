@@ -5,7 +5,6 @@ import com.demo.config.advice.ExceptionEntity;
 import com.demo.config.datasource.type.DataSourceType;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
-import com.demo.web.core.crud.centity.MainTableInfo;
 import com.demo.web.core.crud.centity.Operator;
 import com.demo.web.core.crud.dao.BaseDao;
 import com.demo.web.core.util.MakeConditionUtil;
@@ -19,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @autor 杨瑞
@@ -42,7 +38,7 @@ public class BaseServiceImpl implements ApplicationContextAware {
         Map<String,Object> pks=new HashMap<>();
         primaryKey.forEach((k,v)->{
             if(pkDatas.get(k)!=null){
-                pks.put(k, pkDatas.get(k));
+                pks.put(v.getColumn(), pkDatas.get(k));
             }
         });
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
@@ -68,23 +64,36 @@ public class BaseServiceImpl implements ApplicationContextAware {
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
         entity.setMainTable(findEntity.getEntityName());
         List<Map<String, Object>> all = baseDao.findAllNoPage(entity);
-
+        all.forEach((k)->{
+            if(k.containsKey("RowNumber"))
+                k.remove("RowNumber");
+        });
         return all;
     }
 
     public void update(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+        Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        baseDao.update(entity.getEntityName(),entity.getData() ,entity.getCondition());
+        Map parseData = new HashMap();
+        entity.getData().forEach((k,v)->{
+            parseData.put(columns.get(k).getColumn(), v);
+        });
+        baseDao.update(entity.getEntityName(),parseData,entity.getCondition());
     }
     public void insert(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+        Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
         Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        Map<String,Object> record = baseDao.findByPK(entity.getEntityName(),pkData);
+        Map<String,Object> record = findByPK(entity.getEntityName(),pkData);
         if(record!=null)
             throw new BaseException(504, "主键已经存在于数据库中");
-        baseDao.insert(entity.getEntityName(),entity.getData());
+        Map parseData = new HashMap();
+        entity.getData().forEach((k,v)->{
+            parseData.put(columns.get(k).getColumn(), v);
+        });
+        baseDao.insert(entity.getEntityName(),parseData);
     }
     public void delete(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
@@ -107,34 +116,40 @@ public class BaseServiceImpl implements ApplicationContextAware {
         }
         Map<String, ColumnProperty> allColumns = EntityMap.getAllColumns(entityName);
         //将条件中的列转换为满列格式,保持数据格式的统一性
-        List<Map<String,Object>> result=new ArrayList<>();
-        mapDatas.forEach((v)->{
-            Map<String,Object> one=new HashMap<>();
-            allColumns.forEach((key,value)->{
-                one.put(key, v.get(key));
-            });
-            result.add(one);
-        });
-
+        List<List<Object>> result=new ArrayList<>();
+        List<String> aliasKeys=new ArrayList<>();  //键值
         List<String> keys=new ArrayList<>();  //键值
         allColumns.forEach((key,value)->{
-            keys.add(key);
+            aliasKeys.add(key);
+            keys.add(value.getColumn());
         });
+        for(Map<String,Object> v :mapDatas){
+            List<Object> one =new ArrayList<>();
+            for(String key : aliasKeys){
+                one.add( v.get(key));
+            }
+            result.add(one);
+        }
 
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(infoOfEntity.getConfig().getDaoBaseClassName());
 
-        baseDao.insertAll(infoOfEntity.getEntityName(),keys, result);
+        baseDao.insertAll(entityName,keys, result);
     }
 
     public void delSelect(String entityName,List<Map<String,Object>> mapDatas){
         InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty(entityName);
+        Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entityName);
         if(infoOfEntity.isView()){
             infoOfEntity = EntityMap.getMainTable(entityName).getInfoOfEntity();
         }
         Map<String, List<Object>> result = getResult(infoOfEntity, mapDatas);
+        Map aliasResult =new HashMap();
+        result.forEach((k,v)->{
+            aliasResult.put(columns.get(k), v);
+        });
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(infoOfEntity.getConfig().getDaoBaseClassName());
 
-        baseDao.deleteAll(infoOfEntity.getEntityName(), result);
+        baseDao.deleteAll(entityName, result);
         //baseDao.(entityName,keys, result);
     }
 
@@ -165,6 +180,12 @@ public class BaseServiceImpl implements ApplicationContextAware {
         Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entityName);
         //筛选出主键
         Map<String, List<Object>> result = getResult(infoOfEntity, mapDatas);
+        Map<String,List<Object>> aliasResult = new HashMap<>();
+        Map<String,ColumnProperty> aliasColumns = new HashMap<>();
+        result.forEach((k,v)->{
+            aliasResult.put(columns.get(k).getColumn(), v);
+            aliasColumns.put(k, columns.get(k));
+        });
         List<Object> pks =new ArrayList<>();
         result.forEach((k,v)->{
             pks.add(k);
@@ -202,21 +223,28 @@ public class BaseServiceImpl implements ApplicationContextAware {
             StringBuilder builder=new StringBuilder();
             for(Map<String,Object> mapOne:mapDatas) {
                 if (mapOne.containsKey(key)) {
-                    builder.append(" WHEN ").append(makePkString(result, mapOne)).append(" THEN ").append("'").append(mapOne.get(key)).append("'");
+                    if(mapOne.get(key)!=null) {
+                        builder.append(" WHEN ").append(makePkString(aliasColumns, mapOne, infoOfEntity)).append(" THEN ").append("'").append(mapOne.get(key)).append("'");
+                    }
                 }
             }
             if(!StringUtils.isEmpty(builder.toString())){
-                builder.insert(0, " CASE ").append(" END ");
-                condition.put(key, builder.toString());
+                if(builder.length()>0) {
+                    builder.insert(0, " CASE ").append(" END ");
+                    condition.put(key, builder.toString());
+                }else condition.put(key, null);
             }
         });
-
-        baseDao.updateAll(infoOfEntity.getEntityName(), result,condition);
+        Map ol=new HashMap();
+        condition.forEach((k,v)->{
+            ol.put(columns.get(k).getColumn(), v);
+        });
+        baseDao.updateAll(entityName, aliasResult,ol);
 
     }
 
     private List<Map<String,Object>> getAllRecords(String entityName,Map pks,List<Map<String,Object>> mapDatas){
-
+        InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty(entityName);
         //先查出所有的记录集
         List<Map<String,Object>> cons=new ArrayList<>();
         pks.forEach((key,value)->{
@@ -230,8 +258,9 @@ public class BaseServiceImpl implements ApplicationContextAware {
             }
             cons.add(MakeConditionUtil.parseOne((String) key, ls, Operator.IN));
         });
-        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entityName);
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(infoOfEntity.getConfig().getDaoBaseClassName());
         ConditionEntity conditionEntity = EntityMap.readEntityLabel(entityName, MakeConditionUtil.parseLast(cons), EntityMap.makeDefaulOrderBy(entityName, null));
+        conditionEntity.setMainTable(entityName);
         List<Map<String, Object>> allRecodes =baseDao.findAllNoPage(conditionEntity);
         return allRecodes;
     }
@@ -239,10 +268,14 @@ public class BaseServiceImpl implements ApplicationContextAware {
      * @param pks 主键的列名作为key值
      * @param values 每个更新记录的值
      * */
-    private String makePkString(Map pks,Map<String,Object> values){
+    private String makePkString(Map<String,ColumnProperty> pks,Map<String,Object> values,InfoOfEntity infoOfEntity){
         StringBuilder builder=new StringBuilder();
+        StringBuilder quote = new StringBuilder();
+        if(DataSourceType.ORACLE.equals(infoOfEntity.getConfig().getSourceType())){
+            quote.append("\"");
+        }
         pks.forEach((k,v)->{
-            builder.append(" ").append(k).append(" = '").append(values.get(k)).append("' and ");
+            builder.append(" ").append(quote).append(v.getColumn()).append(quote).append(" = '").append(values.get(k)).append("' and ");
         });
         String result = builder.substring(0, builder.length() - 4);
         return result;

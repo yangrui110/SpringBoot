@@ -2,11 +2,11 @@
     label-yangrui：
 </div>
 <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
-    <input name="column-yangrui" value="" style="display: none">
+    <input name="columnAlias-yangrui" value="" style="display: none">
     <a target="_blank" href="">
-        <img name="column-yangrui" src="" width="60px" height="60px">
+        <img name="columnAlias-yangrui" src="" width="60px" height="60px">
     </a>
-    <button type="button" class="layui-btn" id="column-yangrui">
+    <button type="button" class="layui-btn" id="columnAlias-yangrui">
         <i class="layui-icon">&#xe67c;</i>上传图片
     </button>
 </div>

@@ -11,7 +11,7 @@ apiClient.findAll({
             for (var k of data.data) {
                 //开始构造option数据
                 str += "<option value='" + k.dic_id + "'";
-                 if(editorData.column-yangrui==k.dic_id)
+                 if(editorData.columnAlias-yangrui==k.dic_id)
                     str+=" selected ";
                  str+=">"+ k.dic_value + "</option>"
             }

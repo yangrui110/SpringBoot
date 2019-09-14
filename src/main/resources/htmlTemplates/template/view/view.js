@@ -19,7 +19,7 @@ layui.use(['form','layer','laydate','upload'], function() {
     //从服务器获取数据
     apiClient.findAllNoPage({
         entityName:viewName,
-        condition:{
+        data:{
             conditionList:conditionList,
             combine:"and"
         }

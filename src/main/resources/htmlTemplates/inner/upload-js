@@ -1,13 +1,13 @@
 //执行实例
-    var column-yangrui = upload.render({
-        elem: '#column-yangrui' //绑定元素
+    var columnAlias-yangrui = upload.render({
+        elem: '#columnAlias-yangrui' //绑定元素
         ,url: apiClient.getUrl()+'/file/upload/' //上传接口
         ,accept:'images'
         ,acceptMime: 'image/jpg,image/jpeg, image/png'
         ,done: function(res){
             //上传完毕回调
             console.log(res);
-            var paths={"column-yangrui":res.filePath};
+            var paths={"columnAlias-yangrui":res.filePath};
             initImg(paths);
         }
         ,error: function(){

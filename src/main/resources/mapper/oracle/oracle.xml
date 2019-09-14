@@ -12,7 +12,7 @@
         </foreach>
     </select>
     <select id="findAll" resultType="java.util.Map">
-        select ${condition.columns}
+        select *  from (select ${condition.columns}
         <if test="condition.orderBy != null and condition.orderBy != ''">
             , row_number() over( order by ${condition.orderBy}) as RowNumber
         </if>
@@ -21,14 +21,16 @@
             <if test="condition.condition!='' and condition.condition!=null">
                 and ${condition.condition}
             </if>
-            <if test="condition.start != null and condition.start != null">
-                and ROWNUM &gt;= ${condition.start}
-            </if>
             <if test="condition.end != null and condition.start != null">
                 and ROWNUM &lt;= ${condition.end}
             </if>
         </trim>
-
+        )
+        <trim prefix="where">
+            <if test="condition.start != null and condition.start != null">
+                RowNumber &gt; ${condition.start}
+            </if>
+        </trim>
     </select>
 
     <select id="findAllNoPage" resultType="java.util.Map">
@@ -47,10 +49,8 @@
 
     <select id="totalNum" resultType="int">
         select count(1) from ${condition.mainTable} ${condition.mainAlias} ${condition.joins}
-        <trim prefix="where" prefixOverrides="and">
-            <if test="condition.condition!='' and condition.condition!=null">
-                and ${condition.condition}
-            </if>
+        <trim prefix="where">
+            ${condition.condition}
         </trim>
     </select>
 
@@ -86,4 +86,46 @@
             </foreach>
         </trim>
     </delete>
+
+    <insert id="insertAll">
+        insert all
+        <foreach item="mapOne" index="index" collection="data" separator=" ">
+        into ${entityName}
+            <foreach item="value" index="key" collection="keys" separator=" , " open="(" close=")">
+                ${value}
+            </foreach>
+            values
+            <foreach collection="mapOne" index="key" item="dataValue" separator="," close=")" open="(">
+                #{dataValue}
+            </foreach>
+         </foreach>
+        select 1 from dual
+    </insert>
+
+    <update id="updateAll">
+        update ${entityName} set
+        <foreach collection="data" index="key" item="value" separator=",">
+            <if test="value !=null and value !=''">
+                ${key} = ${value}
+            </if>
+        </foreach>
+        where
+        <foreach collection="pks" separator="and" item="pk" index="key">
+            ${key} in
+            <foreach collection="pk" item="value" separator="," open="(" close=")" index="i">
+                #{value}
+            </foreach>
+        </foreach>
+    </update>
+
+    <delete id="deleteAll">
+        delete from ${entityName} where
+        <foreach collection="pks" separator="and" item="pk" index="key">
+            ${key} in
+            <foreach collection="pk" item="value" separator="," open="(" close=")" index="i">
+                #{value}
+            </foreach>
+        </foreach>
+    </delete>
+
 </mapper>

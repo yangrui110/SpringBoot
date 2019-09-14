@@ -1,17 +1,17 @@
 apiClient.findAll({
-            entityName: "workBook", condition: {
+            entityName: "workBook", data: {
                 conditionList: [{
-                    left: "parent_id",
+                    left: "parentId",
                     right: "dicValue-yangrui"
                 }]
             }
         }, (data) => {
-            var htmlElement = document.getElementsByName("column-yangrui").item(0);
+            var htmlElement = document.getElementsByName("columnAlias-yangrui").item(0);
             var str = "<option value=''></option>";
             for (var k of data.data) {
                 //开始构造option数据
-                str += "<option value='" + k.dic_id + "'";
-                 if(editorData.column-yangrui==k.dic_id)
+                str += "<option value='" + k.dicId + "'";
+                 if(editorData.columnAlias-yangrui==k.dicId)
                     str+=" selected ";
                  str+=">"+ k.dic_value + "</option>"
             }

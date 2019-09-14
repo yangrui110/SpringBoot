@@ -25,7 +25,7 @@ layui.use(['form','layer','laydate','upload'], function(){
     //从服务器获取数据
     apiClient.findAllNoPage({
         entityName:entityName,
-        condition:{
+        data:{
             conditionList:conditionList,
             combine:"and"
         }
@@ -60,7 +60,7 @@ layui.use(['form','layer','laydate','upload'], function(){
         delete data.field.file;
         apiClient.update({
             entityName: entityName,
-            condition:{
+            data:{
                 conditionList:conditionList,
                 combine:"and"
             },

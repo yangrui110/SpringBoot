@@ -218,7 +218,7 @@ public class MakeFile {
     public static void compress(Map condition,ZipOutputStream outputStream) throws IOException {
         ClassPathResource resource=new ClassPathResource("htmlTemplates/template");
         File[] files = resource.getFile().listFiles();
-        String params = (String) condition.get("post_param");
+        String params = (String) condition.get("postParam");
         Map<String,String> compoments = registerTimerCompoments(JSONObject.parseObject(params));
         String orderBy = getOrderByString(JSONObject.parseObject(params));
         for(File file:files){
@@ -226,7 +226,7 @@ public class MakeFile {
                 String addList = makeAddList(JSONObject.parseObject(params));
                 compressHtml(condition, outputStream, file,addList,compoments);
             }else if("edit".equals(file.getName())){
-                Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey((String) condition.get("post_entity"));
+                Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey((String) condition.get("postEntity"));
                 String editList = makeEditList(JSONObject.parseObject(params),primaryKey);
                 compressHtml(condition, outputStream, file, editList,compoments);
             }else if("view".equals(file.getName())){
@@ -239,8 +239,8 @@ public class MakeFile {
     }
 
     public static void compressList(Map condition, ZipOutputStream outputStream,File file,Map<String,String> compoments,String orderBy) throws IOException {
-        String entityName= (String) condition.get("post_entity");
-        String params= (String) condition.get("post_param");
+        String entityName= (String) condition.get("postEntity");
+        String params= (String) condition.get("postParam");
         String listHtml = makeListHtml(JSONObject.parseObject(params));
         String tableList = makeTableList(JSONObject.parseObject(params));
         MainTableInfo mainTable = EntityMap.getMainTable(entityName);
@@ -280,8 +280,8 @@ public class MakeFile {
      * @param rows 预先需要替换的行
      * */
     public static void compressHtml(Map condition, ZipOutputStream outputStream,File file,String rows,Map<String,String> compoments) throws IOException {
-        String entityName= (String) condition.get("post_entity");
-        MainTableInfo mainTable = EntityMap.getMainTable((String) condition.get("post_entity"));
+        String entityName= (String) condition.get("postEntity");
+        MainTableInfo mainTable = EntityMap.getMainTable((String) condition.get("postEntity"));
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(mainTable.getTableAlias());
         File[] files = file.listFiles();
         for(File f:files){
@@ -357,7 +357,7 @@ public class MakeFile {
                 patternOne = patternOne.replaceAll("column-yangrui", next.getString("column"));
                 uploadBuilder.append(patternOne);
                 //
-                pics.append("'").append(next.getString("column")).append("':").append("editorData.").append(next.getString("column")).append(",");
+                pics.append("'").append(next.getString("alias")).append("':").append("editorData.").append(next.getString("alias")).append(",");
             }
         }
         String substring = pics.substring(1, pics.length());

@@ -9,19 +9,13 @@ layui.use(['table','form','layer','laydate','upload'], function(){
     var skin="innerIframe";
     var queryData= {
         "entityName": viewName,
-        "condition": {"conditionList":[]}
+        "data": {"conditionList":[]}
         orderBy-yangrui
     }
-    var viewPk={};
-    var editorPk={};
+    var pk={};
     //给pk赋值
     apiClient.getPK({viewEntityName:viewName,entityName:entityName},function (data) {
-        viewPk = data.data;
-        console.log(data);
-    })
-    //给pk赋值
-    apiClient.getPK({viewEntityName:viewName,entityName:entityName},function (data) {
-        editorPk = data.data;
+        pk = data.data;
         console.log(data);
     })
 
@@ -74,10 +68,10 @@ layui.use(['table','form','layer','laydate','upload'], function(){
         console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
         console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
         console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
-        queryData.condition.conditionList=[];
+        queryData.data.conditionList=[];
         for(var k in data.field){
             if(data.field[k]!='')
-                queryData.condition.conditionList.push({left:k,right:data.field[k],operator:'like'});
+                queryData.data.conditionList.push({left:k,right:data.field[k],operator:'like'});
         }
         tableIns.reload('data',{
             page:{
@@ -110,8 +104,8 @@ layui.use(['table','form','layer','laydate','upload'], function(){
                 var result=[];
                 for(var v of data){
                     var r1={};
-                    for(var k in editorPk){
-                        r1[editorPk[k]]=v[k];
+                    for(var k in pk){
+                        r1[pk[k]]=v[k];
                     }
                     result.push(r1);
                 }
@@ -133,13 +127,12 @@ layui.use(['table','form','layer','laydate','upload'], function(){
     //监听工具条
     table.on('tool(dataFilter)', function(obj){
         var data = obj.data;
-
+        var parseData={};
+        for(var key in pk){
+            if(data[key]!=null)
+                parseData[key]=data[key];
+        }
         if(obj.event === 'detail'){
-            var parseData={};
-            for(var key in viewPk){
-                if(data[key]!=null)
-                    parseData[key]=data[key];
-            }
             //打开详情界面
             layer.open({
                 type:2,
@@ -149,11 +142,6 @@ layui.use(['table','form','layer','laydate','upload'], function(){
                 skin:skin
             })
         } else if(obj.event === 'del'){
-            var parseData={};
-            for(var key in editorPk){
-                if(data[key]!=null)
-                    parseData[key]=data[key];
-            }
             layer.confirm('删除该记录值？', function(index){
                 var conditionList=[];
                 for(var k in parseData){
@@ -177,16 +165,11 @@ layui.use(['table','form','layer','laydate','upload'], function(){
 
             });
         } else if(obj.event === 'edit'){
-            var parseData={};
-            for(var key in editorPk){
-                if(data[key]!=null)
-                    parseData[key]=data[key];
-            }
             //打开编辑界面
             //构造参数
             var param={};
             for(var k in parseData){
-                param[editorPk[k]]=parseData[k];
+                param[pk[k]]=parseData[k];
             }
             layer.open({
                 type:2,

@@ -1,7 +1,7 @@
 apiClient.findAll({
-            entityName: "workBook", condition: {
+            entityName: "workBook", data: {
                 conditionList: [{
-                    left: "parent_id",
+                    left: "parentId",
                     right: "dicValue-yangrui"
                 }]
             }
@@ -10,7 +10,7 @@ apiClient.findAll({
             var str = "<option value=''></option>";
             for (var k of data.data) {
                 //开始构造option数据
-                str += "<option value='" + k.dic_id + "'>" + k.dic_value + "</option>"
+                str += "<option value='" + k.dicId + "'>" + k.dicValue + "</option>"
             }
             htmlElement.innerHTML = str;
             form.render('select')

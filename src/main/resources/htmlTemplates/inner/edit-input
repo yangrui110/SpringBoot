@@ -3,5 +3,5 @@
         label-yangrui：
     </div>
     <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">
-        <input type="text" name="column-yangrui" placeholder="请输入label-yangrui" autocomplete="off" class="layui-input">
+        <input type="text" name="columnAlias-yangrui" placeholder="请输入label-yangrui" autocomplete="off" class="layui-input">
     </div>

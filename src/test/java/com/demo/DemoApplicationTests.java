@@ -9,6 +9,7 @@ import com.demo.config.util.MapUtil;
 import com.demo.web.core.crud.centity.CombineOperator;
 import com.demo.web.core.crud.centity.ConditionEntity;
 import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.centity.Operator;
 import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.core.util.MakeConditionUtil;
 import com.demo.web.core.xmlEntity.ColumnProperty;
@@ -79,24 +80,40 @@ public class DemoApplicationTests {
 
 	@Test
 	public void test6(){
-		List<Map<String,Object>> ls=new ArrayList<>();
-		Map map = MapUtil.toMap("teacher_id", "10002");
-		map.put("teacher_name", "ik5");
-		Map map1 = MapUtil.toMap("teacher_id", "10003");
-		map1.put("teacher_name","ik9");
+			List<Map<String,Object>> ls=new ArrayList<>();
+		Map map = MapUtil.toMap("teacherId", "10009");
+		map.put("userPassword", "12345");
+		Map map1 = MapUtil.toMap("teacherId", "10003");
 		//map1.put("teacher_pros", "119");
 		//map1.put("teacher_name", "ik9");
 		ls.add(map);
 		ls.add(map1);
 		FindEntity entity=new FindEntity();
-		entity.setEntityName("Teacher");
-		entity.setData(map1);
-		entity.setCondition(MakeConditionUtil.makeCondition("teacherID","10003","teacher_name","ik9"));
-		//entity.setCondition(MapUtil.toMap("teacher_id", "10002"));
-		Map<String, ColumnProperty> userView = EntityMap.getPrimaryKey("TeacherUserView");
-		//baseService.update(entity);
 		entity.setEntityName("TeacherUserView");
-		baseService.totalNum(entity,new ConditionEntity());
+		entity.setData(MakeConditionUtil.makeCondition(map));
+		//entity.setCondition(MapUtil.toMap("teacher_id", "10002"));
+		//Map<String, ColumnProperty> userView = EntityMap.getPrimaryKey("TeacherUserView");
+		//
+		Map map2 =new HashMap();
+		map2.put("teacherId", "10010");
+		map2.put("teacherName", "ik");
+		map2.put("teacherPros", "113");
+		Map map3 =new HashMap();
+		map3.put("teacherId", "10011");
+		map3.put("teacherName", "lp");
+		map3.put("teacherPros", "112");
+		Map map4 =new HashMap();
+		map4.put("teacherId", "10012");
+		map4.put("teacherName", "nk");
+		map4.put("teacherPros", "113");
+		List<Map<String,Object>> lsOne=new ArrayList<>();
+		lsOne.add(map2);
+		lsOne.add(map3);
+		lsOne.add(map4);
+		//baseService.insertAll("Teacher", lsOne);
+		baseService.updateAll("Teacher", lsOne);
+		//baseService.delSelect("Teacher", lsOne);
+		//baseService.findAll(entity,new ConditionEntity());
 		//baseService.findByPK("Teacher", map);
 	}
 }

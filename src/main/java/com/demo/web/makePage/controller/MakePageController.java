@@ -75,10 +75,10 @@ public class MakePageController {
     @ResponseBody
     @GetMapping("getFromPostEntity")
     public ResultEntity getFromPostEntity(String entityName){
-        Map<String, Object> condition = MakeConditionUtil.makeCondition("post_entity", entityName);
+        Map<String, Object> condition = MakeConditionUtil.makeCondition("postEntity", entityName);
         FindEntity findEntity=new FindEntity();
         findEntity.setEntityName("postParam");
-        findEntity.setCondition(condition);
+        findEntity.setData(condition);
         List<Map<String, Object>> list = baseService.findAllNoPage(findEntity, new ConditionEntity());
         Map<String,Object> result=new HashMap<>();
         if(list.size()>0){
@@ -107,12 +107,12 @@ public class MakePageController {
         //插入postParam数据表中
         FindEntity entity=new FindEntity();
         entity.setEntityName("postParam");
-        Map data = MapUtil.toMap("post_param", jsonObject.getJSONObject("columns").toString());
-        data.put("post_entity", jsonObject.getString("entityName"));
+        Map data = MapUtil.toMap("postParam", jsonObject.getJSONObject("columns").toString());
+        data.put("postEntity", jsonObject.getString("entityName"));
         entity.setData(data);
         Map os=new HashMap();
         Map os1=new HashMap();
-        os1.put("left", "post_entity");
+        os1.put("left", "postEntity");
         os1.put("right", jsonObject.getString("entityName"));
         List ls=new ArrayList();
         ls.add(os1);
@@ -147,12 +147,13 @@ public class MakePageController {
 
         FindEntity entity = new FindEntity();
         entity.setEntityName("postParam");
-        entity.setCondition(MakeConditionUtil.makeCondition("post_entity",entityName));
+        entity.setData(MakeConditionUtil.makeCondition("postEntity",entityName));
         List<Map<String, Object>> allNoPage =  baseService.findAllNoPage(entity, new ConditionEntity());
         if (allNoPage.size() <= 0) {
             return;
         }
-        JSONObject params=JSONObject.parseObject((String) ((Map)allNoPage.get(0)).get("post_param"));
+        Map map = (allNoPage.get(0));
+        JSONObject params=JSONObject.parseObject((String) map.get("postParam"));
         String viewList = MakeFile.makeViewList(params);
         System.out.println("查看的列：" + viewList);
 

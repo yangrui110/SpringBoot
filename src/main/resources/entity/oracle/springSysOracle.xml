@@ -2,49 +2,49 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
-    <entity tableName="postparam" tableAlias="postParam">
-        <column name="post_entity">
+    <entity tableName="post_param" tableAlias="postParam">
+        <column alias="postEntity">
             <describtion>实体名</describtion>
         </column>
-        <column name="post_param">
+        <column alias="postParam">
             <describtion>实体对应的参数</describtion>
         </column>
-        <primary-key name="post_entity"/>
+        <primary-key alias="postEntity"/>
     </entity>
 
     <entity tableName="work_book" tableAlias="workBook">
         <describetion>字典表，存储系统内部的字典值</describetion>
-        <column name="parent_id">
+        <column alias="parentId">
             <describtion>字典的父级</describtion>
         </column>
-        <column name="dic_id">
+        <column alias="dicId">
             <describtion>字典值，保持唯一性</describtion>
         </column>
-        <column name="dic_value">
+        <column alias="dicValue">
             <describtion>字典的文本描述</describtion>
         </column>
-        <column name="create_time">
+        <column alias="createTime">
             <describtion>创建时间</describtion>
         </column>
-        <primary-key name="dic_value"/>
+        <primary-key alias="dicValue"/>
     </entity>
 
     <!--下面都是测试表-->
     <entity tableName="teacher" tableAlias="Teacher">
         <!--alias标签是给该列取得别名-->
-        <column name="teacher_id">
+        <column name="teacher_id" alias="teacherId">
             <describtion>编号</describtion>
         </column>
-        <column name="teacher_name">
+        <column name="teacher_name" alias="teacherName">
             <describtion>姓名</describtion>
         </column>
-        <column name="teacher_pros">
+        <column alias="teacherPros">
             <describtion>学生</describtion>
         </column>
-        <column name="teacher_icon">
+        <column alias="teacherIcon">
             <describtion>老师头像</describtion>
         </column>
-        <primary-key name="teacher_id"/>
+        <primary-key alias="teacherId"/>
 
     </entity>
     <!--定义第一个member-entity为主表-->
@@ -53,36 +53,34 @@
         <member-entity alias="UL" tableAlias="userLogin"/>
         <alias-all referTable="UL"></alias-all>
         <alias-all referTable="TE">
-            <exclude column="teacher_id"></exclude>
+            <exclude column="teacherId"></exclude>
         </alias-all>
-        <alias column="teacher_id" alias="teacherID" referTable="TE"></alias>
+        <alias column="teacher_id" alias="teacherId" referTable="TE"></alias>
         <!--默认左外连接-->
         <view-link tableAlias="TE" relTableAlias="UL" relOptional="false">
-            <key-map field-name="teacher_pros" rel-field-name="user_id"/>
+            <key-map field-name="teacherPros" rel-field-name="userId"/>
         </view-link>
-        <primary-key name="teacherID"/>
-        <primary-key name="user_id"/>
     </view-entity>
 
     <entity tableName="user_login" tableAlias="userLogin">
-        <column name="user_id">
+        <column alias="userId">
             <describtion>用户Id</describtion>
         </column>
-        <column name="user_password">
+        <column alias="userPassword">
             <describtion>登录密码</describtion>
         </column>
-        <column name="last_login_time">
+        <column alias="lastLoginTime">
             <describtion>最近一次的登陆时间</describtion>
         </column>
-        <column name="disabled">
+        <column alias="disabled">
             <describtion>账号是否被禁用（1或者Null为正常状态，2位禁用状态）</describtion>
         </column>
-        <column name="disabled_end_time">
+        <column alias="disabledEndTime">
             <describtion>禁用的截止时间</describtion>
         </column>
-        <column name="disabled_start_time">
+        <column alias="disabledStartTime">
             <describtion>禁用的开始时间</describtion>
         </column>
-        <primary-key name="user_id"/>
+        <primary-key alias="userId"/>
     </entity>
 </model>
