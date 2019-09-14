@@ -51,14 +51,19 @@
     <view-entity  tableAlias="TeacherUserView">
         <member-entity alias="TE" tableAlias="Teacher"/>
         <member-entity alias="UL" tableAlias="userLogin"/>
+        <member-entity alias="UIF" tableAlias="userInfo"/>
         <alias-all referTable="UL"></alias-all>
         <alias-all referTable="TE">
             <exclude column="teacherId"></exclude>
         </alias-all>
-        <alias column="teacher_id" alias="teacherId" referTable="TE"></alias>
+        <alias-all referTable="UIF"></alias-all>
+        <alias  column="teacherId" alias="teacherID" referTable="TE"></alias>
         <!--默认左外连接-->
         <view-link tableAlias="TE" relTableAlias="UL" relOptional="false">
             <key-map field-name="teacherPros" rel-field-name="userId"/>
+        </view-link>
+        <view-link tableAlias="UL" relOptional="false" relTableAlias="UIF">
+            <key-map field-name="userId" rel-field-name="userId"/>
         </view-link>
     </view-entity>
 
@@ -80,6 +85,19 @@
         </column>
         <column alias="disabledStartTime">
             <describtion>禁用的开始时间</describtion>
+        </column>
+        <primary-key alias="userId"/>
+    </entity>
+    <entity tableName="user_info" tableAlias="userInfo">
+        <describetion>用户信息表</describetion>
+        <column alias="userId">
+            <describtion>用户ID</describtion>
+        </column>
+        <column alias="userName">
+            <describtion>用户名</describtion>
+        </column>
+        <column alias="userAge">
+            <describtion>用户年龄</describtion>
         </column>
         <primary-key alias="userId"/>
     </entity>

@@ -81,7 +81,7 @@ public class DemoApplicationTests {
 	@Test
 	public void test6(){
 			List<Map<String,Object>> ls=new ArrayList<>();
-		Map map = MapUtil.toMap("teacherId", "10009");
+		Map map = MapUtil.toMap("teacherID", "10009");
 		map.put("userPassword", "12345");
 		Map map1 = MapUtil.toMap("teacherId", "10003");
 		//map1.put("teacher_pros", "119");
@@ -110,8 +110,10 @@ public class DemoApplicationTests {
 		lsOne.add(map2);
 		lsOne.add(map3);
 		lsOne.add(map4);
+		Map<String, ColumnProperty> columns = EntityMap.getNoExcludeColumns("TeacherUserView");
+		System.out.println(11);
 		//baseService.insertAll("Teacher", lsOne);
-		baseService.updateAll("Teacher", lsOne);
+		//baseService.updateAll("Teacher", lsOne);
 		//baseService.delSelect("Teacher", lsOne);
 		//baseService.findAll(entity,new ConditionEntity());
 		//baseService.findByPK("Teacher", map);

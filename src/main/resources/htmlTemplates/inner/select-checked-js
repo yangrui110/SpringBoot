@@ -13,7 +13,7 @@ apiClient.findAll({
                 str += "<option value='" + k.dicId + "'";
                  if(editorData.columnAlias-yangrui==k.dicId)
                     str+=" selected ";
-                 str+=">"+ k.dic_value + "</option>"
+                 str+=">"+ k.dicValue + "</option>"
             }
             htmlElement.innerHTML = str;
             form.render('select')

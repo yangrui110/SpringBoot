@@ -24,7 +24,7 @@ public class FindEntity {
     private Integer end;
     private List<COrderBy> orderBy;
     //传入的数据
-    private Map data;
+    private Map data = new HashMap();
 
     private String cons; //增删改时的条件
 

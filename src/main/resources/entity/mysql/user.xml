@@ -2,7 +2,7 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <model>
 
-    <entity tableName="user_info" tableAlias="userInfo">
+    <!--<entity tableName="user_info" tableAlias="userInfo">
         <column name="user_id">
             <describtion>用户ID</describtion>
         </column>
@@ -16,7 +16,7 @@
             <describtion>用户和群组的区分标志，默认是yh</describtion>
         </column>
         <primary-key name="user_id"/>
-    </entity>
+    </entity>-->
     <view-entity tableAlias="userLoginView">
         <member-entity tableAlias="userLogin" alias="UL"/>
         <member-entity tableAlias="User" alias="UO"/>

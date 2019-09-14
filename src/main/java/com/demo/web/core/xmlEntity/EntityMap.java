@@ -557,8 +557,14 @@ public class EntityMap {
             throw new BaseException(304, "实体不能为空");
         }
     }
+
+    public static Map<String,ColumnProperty> getNoExcludeColumns(String entityName){
+        Element element = getElement(entityName);
+        return getNoExcludeColumns(element);
+    }
     public static Map<String,ColumnProperty> getNoExcludeColumns(Element element){
         Map result = new HashMap();
+        List<Element> elements = element.elements();
         if("view-entity".equals(element.getName())){
             Map<String, String> memberMap = getMemberMap(element);
             //获取每一个的实体定义
@@ -583,6 +589,18 @@ public class EntityMap {
         }else {
             throw new BaseException(304, "实体不能为空");
         }
+        //替换掉每一个alia的列
+        for(Element k:elements){
+            if("alias".equals(k.getName())){
+                String cloumn= k.attributeValue("column");
+                String alias = k.attributeValue("alias");
+                ColumnProperty o = (ColumnProperty) result.get(cloumn);
+                o.setAlias(alias);
+                result.remove(cloumn);
+                result.put(alias, o);
+            }
+        }
+
         return result;
     }
 
@@ -664,7 +682,7 @@ public class EntityMap {
         Element element=getElement(entityName);
         return getViewColumns(element);
     }
-    /** 驼峰转下划线,效率比上面高 */
+    /**转换成下划线*/
     public static String humpToUnderline(String str) {
         Matcher matcher = humpPattern.matcher(str);
         StringBuffer sb = new StringBuffer();
@@ -688,17 +706,17 @@ public class EntityMap {
                 String alias=el.attributeValue("alias");
                 String name=el.attributeValue("column");
                 String aliasTable=el.attributeValue("referTable");
-                name=name==null?humpToUnderline(alias):name;
+                //name=name==null?humpToUnderline(alias):name;
                 ColumnProperty property=new ColumnProperty();
                 property.setAlias(alias);
-                property.setColumn(name);
+                //property.setColumn(name);
                 property.setTableMemberAlias(aliasTable);
                 property.setTableAlias(keyMap.get(aliasTable));
                 property.setTableName(getTableName(keyMap.get(aliasTable)));
                 //获取关联表的属性
                 Map<String, ColumnProperty> columns = getAllColumns(keyMap.get(aliasTable));
-                property.setDescribetion(columns.get(alias).getDescribetion());
-
+                property.setDescribetion(columns.get(name).getDescribetion());
+                property.setColumn(columns.get(name).getColumn());
                 if(alias!=null)
                     keys.put(alias, property);
             }else if("alias-all".equals(el.getName())){

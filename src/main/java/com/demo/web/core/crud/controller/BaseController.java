@@ -4,11 +4,13 @@ import com.demo.config.advice.ResultEntity;
 import com.demo.config.advice.ResultEnum;
 import com.demo.config.util.MapUtil;
 import com.demo.web.core.crud.centity.ConditionEntity;
+import com.demo.web.core.crud.centity.DelEntity;
 import com.demo.web.core.crud.centity.DelSelectEntity;
 import com.demo.web.core.crud.centity.FindEntity;
 import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.core.xmlEntity.ColumnProperty;
 import com.demo.web.core.xmlEntity.EntityMap;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -45,8 +47,8 @@ public class BaseController {
 
     @ResponseBody
     @PostMapping("delete")
-    public ResultEntity delete(@RequestBody FindEntity entity){
-        baseService.delete(entity);
+    public ResultEntity delete(@RequestBody DelEntity delEntity){
+        baseService.delete(delEntity.getEntityName(),delEntity.getMapDatas());
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 
@@ -63,25 +65,40 @@ public class BaseController {
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 
+    /**
+     * 获取视图表和实体表之间的对应关系
+     * **/
     @ResponseBody
     @GetMapping("getPK")
     public ResultEntity getPK(@RequestParam("viewEntityName") String viewEntityName
             ,@RequestParam("entityName")String entityName){
-        /*Map<String, Object> primaryKey = EntityMap.getPrimaryKey(entityName);
-        Map<String, ColumnProperty> allColumns = EntityMap.getAllColumns(viewEntityName);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
         Map result=new HashMap();
-        allColumns.forEach((k,v)->{
-            primaryKey.forEach((s,l)->{
-                if(v.getColumn().equals(s))
-                    result.put(k, v.getColumn());
-            });
-        });*/
-        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(viewEntityName);
+        //获取到当前视图的所有alias标签
+        primaryKey.forEach((k,v)->{
+            result.put(k, k);
+        });
+        Element element = EntityMap.getElement(viewEntityName);
+        for(Element el: element.elements()){
+            if("alias".equals(el.getName())){
+                String column = el.attributeValue("column");
+                String alias = el.attributeValue("alias");
+                if(primaryKey.containsKey(column)){
+                    result.put(column, alias);
+                }
+            }
+        }
+        //反转key和value
+        Map mapOne=new HashMap();
+        result.forEach((k,v)->{
+            mapOne.put(v, k);
+        });
+        /*Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(viewEntityName);
         Map<String,String> result=new HashMap<>();
         primaryKey.forEach((k,v)->{
             result.put(k, v.getColumn());
-        });
-        return new ResultEntity(ResultEnum.OK,result);
+        });*/
+        return new ResultEntity(ResultEnum.OK,mapOne);
     }
 
     /**

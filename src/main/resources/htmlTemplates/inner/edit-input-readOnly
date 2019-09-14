@@ -1,5 +1,5 @@
 
-    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4 label-left">
         label-yangrui：
     </div>
     <div class="layui-col-xs8 layui-col-sm8 layui-col-md8">

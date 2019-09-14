@@ -121,7 +121,7 @@ public class FileController {
         response.setHeader("Content-Length", "" + bs.length);
         // 获取响应的对象流
         OutputStream outputStream1 = response.getOutputStream();
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.setHeader("Content-Type","application/vnd.ms-excel;charset=utf-8");
         BufferedOutputStream toOut = new BufferedOutputStream(outputStream1);
         toOut.write(bs);
         toOut.flush();

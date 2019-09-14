@@ -95,10 +95,20 @@ public class BaseServiceImpl implements ApplicationContextAware {
         });
         baseDao.insert(entity.getEntityName(),parseData);
     }
-    public void delete(FindEntity entity){
-        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+    public void delete(String entityName,Map<String,Object> mapDatas){
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
+        Map result =new HashMap<>();
+        mapDatas.forEach((k,v)->{
+            if(primaryKey.containsKey(k)){
+                result.put(primaryKey.get(k).getColumn(), v);
+            }
+        });
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        baseDao.delete(entity.getEntityName(),entity.getCondition());
+        if(result.size()<=0){
+            throw new BaseException(505, "删除条件不能为空");
+        }
+        baseDao.delete(entityName,result);
     }
 
     public int totalNum(FindEntity findEntity,ConditionEntity entity){
@@ -142,14 +152,30 @@ public class BaseServiceImpl implements ApplicationContextAware {
         if(infoOfEntity.isView()){
             infoOfEntity = EntityMap.getMainTable(entityName).getInfoOfEntity();
         }
-        Map<String, List<Object>> result = getResult(infoOfEntity, mapDatas);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
+        //剔除掉不是主键中的列
+        List<Map<String,Object>> ls= new ArrayList<>();
+        for(Map<String,Object> map:mapDatas){
+            Map one = new HashMap();
+            primaryKey.forEach((k,v)->{
+                if(map.containsKey(k)){
+                    one.put(k, map.get(k));
+                }
+            });
+            if(one.size()>0){
+                ls.add(one);
+            }
+        }
+        Map<String, List<Object>> result = getResult(infoOfEntity, ls);
         Map aliasResult =new HashMap();
         result.forEach((k,v)->{
-            aliasResult.put(columns.get(k), v);
+            aliasResult.put(columns.get(k).getColumn(), v);
         });
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(infoOfEntity.getConfig().getDaoBaseClassName());
 
-        baseDao.deleteAll(entityName, result);
+        if(aliasResult.size()<=0)
+            throw new BaseException(504, "删除条件不能为空");
+        baseDao.deleteAll(entityName, aliasResult);
         //baseDao.(entityName,keys, result);
     }
 
