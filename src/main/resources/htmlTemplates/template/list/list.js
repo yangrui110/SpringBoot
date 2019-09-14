@@ -103,20 +103,22 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
                 layer.msg("请选择需要删除的数据行");
                 return;
             } else {
-                var result = [];
-                for (var v of data) {
-                    var r1 = {};
-                    for (var k in pk) {
-                        r1[pk[k]] = v[k];
+                layer.confirm("您确定要删除已选择的数据吗？",function () {
+                    var result = [];
+                    for (var v of data) {
+                        var r1 = {};
+                        for (var k in pk) {
+                            r1[pk[k]] = v[k];
+                        }
+                        result.push(r1);
                     }
-                    result.push(r1);
-                }
-                apiClient.delSelect({
-                    entityName: viewName,
-                    datas: result
-                }, function (data) {
-                    layer.msg("删除成功");
-                    table.reload('data');
+                    apiClient.delSelect({
+                        entityName: viewName,
+                        datas: result
+                    }, function (data) {
+                        layer.msg("删除成功");
+                        table.reload('data');
+                    })
                 })
             }
         }
@@ -145,18 +147,13 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
             })
         } else if (obj.event === 'del') {
             layer.confirm('删除该记录值？', function (index) {
-                var conditionList = [];
+                var param = {};
                 for (var k in parseData) {
-                    var ob = {};
-                    ob.left = pk[k];
-                    ob.right = parseData[k];
-                    conditionList.push(ob);
+                    param[pk[k]] = parseData[k];
                 }
                 apiClient.delete({
                     entityName: entityName,
-                    condition: {
-                        conditionList: conditionList
-                    }
+                    mapDatas:param
                 }, function (data) {
                     layer.msg("删除成功");
                     obj.del();
