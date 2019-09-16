@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.*;
@@ -32,7 +33,15 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
         response.setHeader("Access-Control-Allow-Headers", "*");
         filterChain.doFilter(servletRequest, response);
     }
-
+    @Override
+     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+         registry.addResourceHandler("swagger-ui.html")
+         .addResourceLocations("classpath:/META-INF/resources/");
+         registry.addResourceHandler("/webjars/**")
+         .addResourceLocations("classpath:/META-INF/resources/webjars/");
+         super.addResourceHandlers(registry);
+     }
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         StringHttpMessageConverter messageConverter=new StringHttpMessageConverter();

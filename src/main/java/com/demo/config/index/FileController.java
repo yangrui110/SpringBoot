@@ -3,6 +3,8 @@ package com.demo.config.index;
 import com.demo.config.properties.UploadFileProperties;
 import com.demo.config.util.Util;
 import com.demo.web.util.file.FileUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("file")
+@Api(description = "文件上传接口",value = "File API")
 public class FileController {
 
     Logger logger=LoggerFactory.getLogger(FileController.class);
@@ -32,6 +35,7 @@ public class FileController {
     @Autowired
     private UploadFileProperties uploadFileProperties;
 
+    @ApiOperation( value = "文件上传")
     @ResponseBody
     @PostMapping("upload")
     public Map uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
@@ -102,6 +106,7 @@ public class FileController {
     }
 
 
+    @ApiOperation("文件下载")
     @ResponseBody
     @GetMapping("download")
     public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {

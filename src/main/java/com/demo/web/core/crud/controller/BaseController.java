@@ -3,13 +3,12 @@ package com.demo.web.core.crud.controller;
 import com.demo.config.advice.ResultEntity;
 import com.demo.config.advice.ResultEnum;
 import com.demo.config.util.MapUtil;
-import com.demo.web.core.crud.centity.ConditionEntity;
-import com.demo.web.core.crud.centity.DelEntity;
-import com.demo.web.core.crud.centity.DelSelectEntity;
-import com.demo.web.core.crud.centity.FindEntity;
+import com.demo.web.core.crud.centity.*;
 import com.demo.web.core.crud.service.BaseServiceImpl;
 import com.demo.web.core.xmlEntity.ColumnProperty;
 import com.demo.web.core.xmlEntity.EntityMap;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +25,7 @@ import java.util.Map;
  * @date 2019/6/6 13:49
  * @describetion 通用的增删改查的控制器接口
  */
+@Api(description = "通用的增删改查")
 @Controller
 @RequestMapping("common")
 public class BaseController {
@@ -33,18 +33,21 @@ public class BaseController {
     @Autowired
     private BaseServiceImpl baseService;
 
+    @ApiOperation("带分页的通用查找方法")
     @ResponseBody
     @PostMapping("findAll")
     public ResultEntity findAll(@RequestBody FindEntity entity){
         return new ResultEntity(ResultEnum.OK, baseService.findAll(entity, new ConditionEntity()),baseService.totalNum(entity, new ConditionEntity()));
     }
 
+    @ApiOperation("不带分页的通用查找方法")
     @ResponseBody
     @PostMapping("findAllNoPage")
     public ResultEntity findAllNoPage(@RequestBody FindEntity entity){
         return new ResultEntity(ResultEnum.OK, baseService.findAllNoPage(entity, new ConditionEntity()),baseService.totalNum(entity, new ConditionEntity()));
     }
 
+    @ApiOperation("删除单个数据")
     @ResponseBody
     @PostMapping("delete")
     public ResultEntity delete(@RequestBody DelEntity delEntity){
@@ -52,12 +55,14 @@ public class BaseController {
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 
+    @ApiOperation("更新单个数据")
     @ResponseBody
     @PostMapping("update")
     public ResultEntity update(@RequestBody FindEntity entity){
         baseService.update(entity);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
+    @ApiOperation("插入一条数据")
     @ResponseBody
     @PostMapping("insert")
     public ResultEntity insert(@RequestBody FindEntity entity){
@@ -68,6 +73,7 @@ public class BaseController {
     /**
      * 获取视图表和实体表之间的对应关系
      * **/
+    @ApiOperation("获取主键视图和实体的主键对应关系")
     @ResponseBody
     @GetMapping("getPK")
     public ResultEntity getPK(@RequestParam("viewEntityName") String viewEntityName
@@ -104,7 +110,7 @@ public class BaseController {
     /**
      * 删除选择的数据
      * */
-
+    @ApiOperation("批量删除数据")
     @ResponseBody
     @PostMapping("delSelect")
     public ResultEntity delSelect(@RequestBody DelSelectEntity delSelectEntity){
@@ -112,10 +118,25 @@ public class BaseController {
         baseService.delSelect(delSelectEntity.getEntityName(), datas);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
-    @ResponseBody
-    @PostMapping("object")
-    public ResultEntity object(@RequestBody Object os){
-        return new ResultEntity(ResultEnum.OK, MapUtil.toMap("result", true));
-    }
 
+    /**
+     * 批量更新
+     * */
+    @ApiOperation("批量更新")
+    @ResponseBody
+    @PostMapping("updateAll")
+    public ResultEntity updateAll(@RequestBody UpdateAllEntity entity){
+        baseService.updateAll(entity.getEntityName(), entity.getMapDatas());
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", "true"));
+    }
+    /**
+     * 批量插入
+     * */
+    @ApiOperation("批量插入")
+    @ResponseBody
+    @PostMapping("insertAll")
+    public ResultEntity insertAll(@RequestBody UpdateAllEntity entity){
+        baseService.updateAll(entity.getEntityName(), entity.getMapDatas());
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", "true"));
+    }
 }
