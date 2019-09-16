@@ -20,9 +20,9 @@
                 dao-base-class-name="com.demo.web.core.crud.dao.sql.SqlAjaxCrudDao"
                 sourceType="sql"
     />
-    <datasource url="jdbc:h2:~/test"
+    <datasource url="jdbc:h2:./runtime/h2/database"
                 name="sa"
-                password="1234"
+                password="1234qwer!"
                 source-dao-path="com.demo.web.core.crud.dao.h2"
                 source-dao-xml-path="classpath:mapper/h2/*.xml"
                 source-bean-xml-path="classpath:entity/h2/*.xml"
