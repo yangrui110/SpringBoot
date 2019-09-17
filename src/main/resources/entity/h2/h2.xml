@@ -3,4 +3,22 @@
 <!--tableName属性不支持驼峰命名规则-->
 <model>
 
+    <entity tableName="chat_group" tableAlias="chatGroup">
+        <column alias="groupId">
+            <describtion>群组Id</describtion>
+        </column>
+        <column alias="groupName">
+            <describtion>群组名</describtion>
+        </column>
+        <column alias="createTime">
+            <describtion>创建时间</describtion>
+        </column>
+        <column alias="groupIcon">
+            <describtion>群组的头像地址</describtion>
+        </column>
+        <column alias="groupType">
+            <describtion>群组、用户的区分标志，默认群组</describtion>
+        </column>
+        <primary-key alias="groupId"/>
+    </entity>
 </model>

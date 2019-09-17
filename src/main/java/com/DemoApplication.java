@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 
 import java.nio.charset.Charset;
-
-@SpringBootApplication(exclude = {DruidDataSourceAutoConfigure.class, DataSourceAutoConfiguration.class})
+//DruidDataSourceAutoConfigure.class,
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class DemoApplication {
 
 	public static void main(String[] args) {

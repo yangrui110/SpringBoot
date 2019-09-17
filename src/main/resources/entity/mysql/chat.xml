@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <model>
-    <entity tableName="chat_group" tableAlias="chatGroup">
-        <column name="group_id">
-            <describtion>群组Id</describtion>
-        </column>
-        <column name="group_name">
-            <describtion>群组名</describtion>
-        </column>
-        <column name="create_time">
-            <describtion>创建时间</describtion>
-        </column>
-        <column name="group_icon">
-            <describtion>群组的头像地址</describtion>
-        </column>
-        <column name="group_type">
-            <describtion>群组、用户的区分标志，默认群组</describtion>
-        </column>
-        <primary-key name="group_id"/>
-    </entity>
     <entity tableName="user_friend_group" tableAlias="userFriendGroup">
         <column name="user_id">
             <describtion>用户主键</describtion>
