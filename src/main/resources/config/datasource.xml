@@ -20,7 +20,7 @@
                 dao-base-class-name="com.yangframe.web.core.crud.dao.sql.SqlAjaxCrudDao"
                 sourceType="sql"
     />
-    <datasource url="jdbc:h2:~/database"
+    <datasource url="jdbc:h2:file:/runtime/database"
                 name="sa"
                 password="1234"
                 source-dao-path="com.yangframe.web.core.crud.dao.h2"
