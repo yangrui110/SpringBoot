@@ -11,7 +11,7 @@
                 sourceType="mysql"
     />
 
-    <datasource url="jdbc:sqlserver://118.24.153.227;databaseName =srpingsysSql"
+    <datasource url="jdbc:sqlserver://118.24.153.227;databaseName =springsysSql"
                 name="sa"
                 password="1234qwer!"
                 source-dao-path="com.yangframe.web.core.crud.dao.sql"
@@ -22,7 +22,7 @@
     />
     <datasource url="jdbc:h2:file:/runtime/database"
                 name="sa"
-                password="1234"
+                password="1234qwer!"
                 source-dao-path="com.yangframe.web.core.crud.dao.h2"
                 source-dao-xml-path="classpath:mapper/h2/*.xml"
                 source-bean-xml-path="classpath:entity/h2/*.xml"
