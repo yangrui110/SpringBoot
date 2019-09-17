@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.demo.web.core.crud.dao.mysql.MysqlAjaxCrudDao">
+<mapper namespace="com.yangframe.web.core.crud.dao.mysql.MysqlAjaxCrudDao">
 
     <!--通过主键查找对应的一条数据-->
     <select id="findByPK" resultType="java.util.Map">
