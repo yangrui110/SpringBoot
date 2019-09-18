@@ -1,23 +1,18 @@
 package com.yangframe.config.applicationEvent;
 
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import com.yangframe.config.quartz.SchedulerManager;
+import org.quartz.Scheduler;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 
 /**
  * @autor 杨瑞
  * @date 2019/5/18 15:56
  */
-public class ApplicationListenerStart implements ApplicationListener<ApplicationPreparedEvent > {
+public class ApplicationListenerStart implements ApplicationListener<ApplicationStartedEvent > {
 
     @Override
-    public void onApplicationEvent(ApplicationPreparedEvent applicationStartingEvent) {
-        /*try {
-            EntityMap.readXmlIntoMap();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }*/
-        System.out.println("初始化加载完毕");
+    public void onApplicationEvent(ApplicationStartedEvent applicationStartingEvent) {
+        //System.out.println("初始化加载完毕");
     }
 }

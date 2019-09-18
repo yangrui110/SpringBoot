@@ -3,4 +3,86 @@
 <!--tableName属性不支持驼峰命名规则-->
 <model>
 
+    <!--定时任务的保存类-->
+    <entity tableName="yang_job" tableAlias="yangJob">
+        <describetion>定时任务的保存类</describetion>
+        <column alias="schedulerJobId">
+            <describtion>定义为jobName_jobGroup</describtion>
+        </column>
+        <column alias="schedulerJobClass">
+            <describtion>定时任务的类名</describtion>
+        </column>
+        <column alias="schedulerJobName">
+            <describtion>任务名</describtion>
+        </column>
+        <column alias="schedulerJobGroup">
+            <describtion>任务组</describtion>
+        </column>
+        <column alias="schedulerDesc">
+            <describtion>任务的描述信息</describtion>
+        </column>
+        <column alias="schedulerJobDataMap">
+            <describtion>任务的参数配置</describtion>
+        </column>
+        <column alias="schedulerDurable">
+            <describtion>当没有活跃的trigger与之关联的时候，会被自动地从scheduler中删除</describtion>
+        </column>
+        <column alias="schedulerRequestsRecovery">
+            <describtion>出错时下次可以继续执行</describtion>
+        </column>
+        <column alias="schedulerTriggerId">
+            <describtion>关联到的trigger</describtion>
+        </column>
+        <primary-key alias="schedulerJobId"/>
+    </entity>
+    <entity tableName="yang_trigger" tableAlias="yangTrigger">
+        <describetion>定义触发器</describetion>
+        <column alias="schedulerTriggerId">
+            <describtion>主键，定义为triggerName_trigger_groupName</describtion>
+        </column>
+        <column alias="schedulerTriggerName">
+            <describtion>触发器的名字</describtion>
+        </column>
+        <column alias="schedulerTriggerGroup">
+            <describtion>触发器的组</describtion>
+        </column>
+        <column alias="schedulerTriggerDesc">
+            <describtion>触发器的描述信息</describtion>
+        </column>
+        <column alias="schedulerStartTime">
+            <describtion>设置trigger第一次触发的时间</describtion>
+        </column>
+        <column alias="schedulerEndTime">
+            <describtion>trigger失效的时间点</describtion>
+        </column>
+        <column alias="schedulerPriority">
+            <describtion>优先级（默认值为5）</describtion>
+        </column>
+        <column alias="schedulerNextFireTime">
+            <describtion>下一次执行的时间</describtion>
+        </column>
+        <column alias="schedulerPreviousFireTime">
+            <describtion>上一次执行的时间</describtion>
+        </column>
+        <column alias="schedulerRepeatCount">
+            <describtion>重复执行的次数</describtion>
+        </column>
+        <column alias="schedulerRepeatInterval">
+            <describtion>循环周期(毫秒单位)</describtion>
+        </column>
+        <column alias="schedulerCronExpression">
+            <describtion>cron表达式</describtion>
+        </column>
+        <primary-key alias="schedulerTriggerId"/>
+    </entity>
+
+    <view-entity tableAlias="JobTriggers">
+        <member-entity tableAlias="yangJob" alias="YJB"/>
+        <member-entity tableAlias="yangTrigger" alias="YTG"/>
+        <alias-all referTable="YJB"></alias-all>
+        <alias-all referTable="YTG"/>
+        <view-link tableAlias="YJB" relTableAlias="YTG">
+            <key-map field-name="schedulerTriggerId" rel-field-name="schedulerTriggerId"/>
+        </view-link>
+    </view-entity>
 </model>
