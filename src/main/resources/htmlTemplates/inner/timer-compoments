@@ -1,4 +1,5 @@
 laydate.render({
     elem: '#layDateId-yangrui'
     ,type: 'datetime'
+    ,trigger : 'click'
   });

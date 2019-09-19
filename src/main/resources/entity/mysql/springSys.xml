@@ -33,6 +33,9 @@
         <column alias="schedulerTriggerId">
             <describtion>关联到的trigger</describtion>
         </column>
+        <column alias="schedulerJobStatus">
+            <describtion>目前设置两种状态，已完成（finished），按照计划执行(pending)</describtion>
+        </column>
         <primary-key alias="schedulerJobId"/>
     </entity>
     <entity tableName="yang_trigger" tableAlias="yangTrigger">
@@ -68,7 +71,7 @@
             <describtion>重复执行的次数</describtion>
         </column>
         <column alias="schedulerRepeatInterval">
-            <describtion>循环周期(毫秒单位)</describtion>
+            <describtion>循环周期(单位秒)</describtion>
         </column>
         <column alias="schedulerCronExpression">
             <describtion>cron表达式</describtion>

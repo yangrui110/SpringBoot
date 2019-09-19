@@ -69,14 +69,20 @@
         <foreach collection="data" separator="," item="value" index="key">
             a.${key} = #{value}
         </foreach>
-        where
-        ${whereCondition}
+        <trim prefix="where" prefixOverrides="and" >
+            <foreach collection="cons" separator="," item="value" index="key">
+                a.${key} = #{value}
+            </foreach>
+        </trim>
     </update>
 
     <delete id="delete">
-        delete * from ${entityName}
-        where
-        ${whereCondition}
+        delete from ${entityName} a
+        <trim prefix="where" prefixOverrides="and" >
+            <foreach collection="cons" separator="," item="value" index="key">
+                a.${key} = #{value}
+            </foreach>
+        </trim>
     </delete>
 
     <insert id="insertAll">

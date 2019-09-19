@@ -22,7 +22,7 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
     initSelect();
 
     function initSelect() {
-        selectCompoments - yangrui
+        selectCompoments-yangrui
     }
 
     //第一个实例
@@ -58,7 +58,7 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
         }
         , cols: [[ //表头
             {type: 'checkbox'}
-            fields - yangrui
+            fields-yangrui
             , {title: '操作', align: 'center', toolbar: '#operator'}
         ]]
 
@@ -180,5 +180,5 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
             })
         }
     });
-    timerCompoments - yangrui
+    timerCompoments-yangrui
 });

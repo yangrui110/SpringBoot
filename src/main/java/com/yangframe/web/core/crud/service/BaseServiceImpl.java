@@ -95,6 +95,22 @@ public class BaseServiceImpl implements ApplicationContextAware {
         });
         baseDao.insert(entity.getEntityName(),parseData);
     }
+    public void insertOrUpdate(FindEntity entity){
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+        Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
+        Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        Map<String,Object> record = findByPK(entity.getEntityName(),pkData);
+        Map parseData = new HashMap();
+        entity.getData().forEach((k,v)->{
+            parseData.put(columns.get(k).getColumn(), v);
+        });
+        if(record==null){
+            baseDao.insert(entity.getEntityName(),parseData);
+        }else{
+            baseDao.update(entity.getEntityName(),parseData,entity.getCondition());
+        }
+    }
     public void delete(String entityName,Map<String,Object> mapDatas){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);

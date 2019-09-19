@@ -112,21 +112,10 @@ public class MakePageController {
         //插入postParam数据表中
         FindEntity entity=new FindEntity();
         entity.setEntityName("postParam");
-        Map data = MapUtil.toMap("postParam", jsonObject.getJSONObject("columns").toString());
-        data.put("postEntity", jsonObject.getString("entityName"));
-        entity.setData(data);
-        Map os=new HashMap();
-        Map os1=new HashMap();
-        os1.put("left", "postEntity");
-        os1.put("right", jsonObject.getString("entityName"));
-        List ls=new ArrayList();
-        ls.add(os1);
-        os.put("conditionList", ls);
-        entity.setCondition(os);
-        int totalNum = baseService.totalNum(entity, new ConditionEntity());
-        if(totalNum==0)
-            baseService.insert(entity);
-        else baseService.update(entity);
+        Map toMap = MapUtil.toMap("postParam", jsonObject.getJSONObject("columns").toString());
+        toMap.put("postEntity", jsonObject.getString("entityName"));
+        entity.setData(toMap);
+        baseService.insertOrUpdate(entity);
         //在系统的文件夹下生成压缩文件
         String listHtml = MakeFile.makeListHtml(jsonObject.getJSONObject("columns"));
         System.out.println("替换后："+listHtml);
