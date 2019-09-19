@@ -130,7 +130,7 @@ public class MakeFile {
     /**
      * 制作增加界面的列
      * */
-    public static String makeAddList(Map columns) throws IOException {
+    public static String makeAddList(JSONObject columns) throws IOException {
         ClassPathResource tableResource = new ClassPathResource("htmlTemplates/inner/add-input");
         String pattern = FileUtil.getFileString(tableResource.getFile());
         StringBuilder builder=new StringBuilder();
@@ -144,7 +144,6 @@ public class MakeFile {
         Map<String,String> map=new HashMap<>();
         map.put("pattern", pattern);
         map.put("patternSelect", patternSelect);
-
         Iterator iterator = columns.values().iterator();
         while (iterator.hasNext()){
             JSONObject os = (JSONObject) iterator.next();
@@ -217,19 +216,20 @@ public class MakeFile {
     public static void compress(Map condition,ZipOutputStream outputStream) throws IOException {
         ClassPathResource resource=new ClassPathResource("htmlTemplates/template");
         File[] files = resource.getFile().listFiles();
-        String params = (String) condition.get("postParam");
-        Map<String,String> compoments = registerTimerCompoments(JSONObject.parseObject(params));
-        String orderBy = getOrderByString(JSONObject.parseObject(params));
+        JSONObject postParam = JSONObject.parseObject((String) condition.get("postParam"));
+        JSONObject columns = postParam.getJSONObject("columns");
+        Map<String,String> compoments = registerTimerCompoments(columns);
+        String orderBy = getOrderByString(columns);
         for(File file:files){
             if("add".equals(file.getName())){
-                String addList = makeAddList(JSONObject.parseObject(params));
+                String addList = makeAddList(columns);
                 compressHtml(condition, outputStream, file,addList,compoments);
             }else if("edit".equals(file.getName())){
                 Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey((String) condition.get("postEntity"));
-                String editList = makeEditList(JSONObject.parseObject(params),primaryKey);
+                String editList = makeEditList(columns,primaryKey);
                 compressHtml(condition, outputStream, file, editList,compoments);
             }else if("view".equals(file.getName())){
-                String viewList = makeViewList(JSONObject.parseObject(params));
+                String viewList = makeViewList(columns);
                 compressHtml(condition,outputStream ,file ,viewList,compoments);
             }else if("list".equals(file.getName())){
                 compressList(condition,outputStream,file,compoments,orderBy);
@@ -239,9 +239,10 @@ public class MakeFile {
 
     public static void compressList(Map condition, ZipOutputStream outputStream,File file,Map<String,String> compoments,String orderBy) throws IOException {
         String entityName= (String) condition.get("postEntity");
-        String params= (String) condition.get("postParam");
-        String listHtml = makeListHtml(JSONObject.parseObject(params));
-        String tableList = makeTableList(JSONObject.parseObject(params));
+        JSONObject postParam = JSONObject.parseObject((String) condition.get("postParam"));
+        JSONObject columns = postParam.getJSONObject("columns");
+        String listHtml = makeListHtml(columns);
+        String tableList = makeTableList(columns);
         MainTableInfo mainTable = EntityMap.getMainTable(entityName);
         File[] files = file.listFiles();
         for(File f:files){
@@ -252,6 +253,7 @@ public class MakeFile {
                 String result=fileString.replaceAll("rows-yangrui", listHtml);
                 result=result.replaceAll("entityName-yangrui", mainTable.getTableAlias());
                 result = result.replaceAll("aliasName-yangrui", entityName);
+                result = result.replaceAll("tableTitle-yangrui", postParam.getString("tableTitle"));
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".js")){
                 String result = fileString.replaceAll("entityName-yangrui", mainTable.getTableAlias());//增加界面使用主表替换
@@ -280,6 +282,8 @@ public class MakeFile {
      * */
     public static void compressHtml(Map condition, ZipOutputStream outputStream,File file,String rows,Map<String,String> compoments) throws IOException {
         String entityName= (String) condition.get("postEntity");
+        JSONObject postParam = JSONObject.parseObject((String) condition.get("postParam"));
+
         MainTableInfo mainTable = EntityMap.getMainTable((String) condition.get("postEntity"));
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(mainTable.getTableAlias());
         File[] files = file.listFiles();
@@ -291,6 +295,7 @@ public class MakeFile {
                 String result=fileString.replaceAll("rows-yangrui", rows);
                 result=result.replaceAll("entityName-yangrui", mainTable.getTableAlias());
                 result=result.replaceAll("aliasName-yangrui", entityName);
+                result=result.replaceAll("tableTitle-yangrui", postParam.getString("tableTitle"));
                 Compress.compressString(result, outputStream, builder.toString());
             }else if(f.getName().endsWith(".js")){
                 String result = fileString.replaceAll("entityName-yangrui", mainTable.getTableAlias());//增加界面使用主表替换

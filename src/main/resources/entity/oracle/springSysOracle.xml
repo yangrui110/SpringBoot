@@ -49,6 +49,7 @@
     </entity>
     <!--定义第一个member-entity为主表-->
     <view-entity  tableAlias="TeacherUserView">
+        <describetion>教师学生关联表</describetion>
         <member-entity alias="TE" tableAlias="Teacher"/>
         <member-entity alias="UL" tableAlias="userLogin"/>
         <member-entity alias="UIF" tableAlias="userInfo"/>

@@ -2,10 +2,9 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
-
     <!--定时任务的保存类-->
     <entity tableName="yang_job" tableAlias="yangJob">
-        <describetion>定时任务的保存类</describetion>
+        <describetion>定时任务的执行类</describetion>
         <column alias="schedulerJobId">
             <describtion>定义为jobName_jobGroup</describtion>
         </column>
@@ -30,18 +29,12 @@
         <column alias="schedulerRequestsRecovery">
             <describtion>出错时下次可以继续执行</describtion>
         </column>
-        <column alias="schedulerTriggerId">
-            <describtion>关联到的trigger</describtion>
-        </column>
-        <column alias="schedulerJobStatus">
-            <describtion>目前设置两种状态，已完成（finished），按照计划执行(pending)</describtion>
-        </column>
         <primary-key alias="schedulerJobId"/>
     </entity>
     <entity tableName="yang_trigger" tableAlias="yangTrigger">
         <describetion>定义触发器</describetion>
         <column alias="schedulerTriggerId">
-            <describtion>主键，定义为triggerName_trigger_groupName</describtion>
+            <describtion>主键，定义为triggerName_triggerGroupName</describtion>
         </column>
         <column alias="schedulerTriggerName">
             <describtion>触发器的名字</describtion>
@@ -76,16 +69,22 @@
         <column alias="schedulerCronExpression">
             <describtion>cron表达式</describtion>
         </column>
+        <column alias="schedulerTriggerJobId">
+            <describtion>关联到的jobId</describtion>
+        </column>
+        <column alias="schedulerTriggerStatus">
+            <describtion>定时器状态</describtion>
+        </column>
         <primary-key alias="schedulerTriggerId"/>
     </entity>
 
-    <view-entity tableAlias="JobTriggers">
-        <member-entity tableAlias="yangJob" alias="YJB"/>
+    <view-entity tableAlias="TriggerJobs">
         <member-entity tableAlias="yangTrigger" alias="YTG"/>
+        <member-entity tableAlias="yangJob" alias="YJB"/>
         <alias-all referTable="YJB"></alias-all>
         <alias-all referTable="YTG"/>
-        <view-link tableAlias="YJB" relTableAlias="YTG">
-            <key-map field-name="schedulerTriggerId" rel-field-name="schedulerTriggerId"/>
+        <view-link tableAlias="YTG" relTableAlias="YJB">
+            <key-map field-name="schedulerTriggerJobId" rel-field-name="schedulerJobId"/>
         </view-link>
     </view-entity>
 </model>

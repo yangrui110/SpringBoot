@@ -18,6 +18,7 @@ import com.yangframe.web.util.http.HeaderType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -28,10 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -79,14 +77,21 @@ public class MakePageController {
     @ResponseBody
     @GetMapping("getFromPostEntity")
     public ResultEntity getFromPostEntity(String entityName){
+        Element element = EntityMap.getElement(entityName);
         Map<String, Object> condition = MakeConditionUtil.makeCondition("postEntity", entityName);
         FindEntity findEntity=new FindEntity();
         findEntity.setEntityName("postParam");
         findEntity.setData(condition);
         List<Map<String, Object>> list = baseService.findAllNoPage(findEntity, new ConditionEntity());
-        Map<String,Object> result=new HashMap<>();
-        if(list.size()>0){
-            result=list.get(0);
+        Map<String,Object> result= new HashMap<>();
+        Element element1 = element.elements().stream().filter((k) -> {
+            if ("describetion".equals(k.getName())) return true;
+            return false;
+        }).findFirst().orElse(null);
+        if(list.size()>0) {
+            result= list.get(0);
+        }else{
+            result.put("postParam",MapUtil.toMap("tableTitle",element1==null?"":element1.getText()));
         }
         return new ResultEntity(ResultEnum.OK,result);
     }
@@ -112,25 +117,10 @@ public class MakePageController {
         //插入postParam数据表中
         FindEntity entity=new FindEntity();
         entity.setEntityName("postParam");
-        Map toMap = MapUtil.toMap("postParam", jsonObject.getJSONObject("columns").toString());
+        Map toMap = MapUtil.toMap("postParam", params);
         toMap.put("postEntity", jsonObject.getString("entityName"));
         entity.setData(toMap);
         baseService.insertOrUpdate(entity);
-        //在系统的文件夹下生成压缩文件
-        String listHtml = MakeFile.makeListHtml(jsonObject.getJSONObject("columns"));
-        System.out.println("替换后："+listHtml);
-
-        String tableList = MakeFile.makeTableList(jsonObject.getJSONObject("columns"));
-        System.out.println("表格显示："+tableList);
-
-        MainTableInfo mainTable = EntityMap.getMainTable(jsonObject.getString("entityName"));
-        System.out.println("主表："+mainTable);
-
-        String addList = MakeFile.makeAddList(jsonObject.getJSONObject("columns"));
-        System.out.println("增加的列："+addList);
-
-        String viewList = MakeFile.makeViewList(jsonObject.getJSONObject("columns"));
-        System.out.println("查看的列："+viewList);
 
         return new ResultEntity(ResultEnum.OK, MapUtil.toMap("result", true));
 
@@ -149,7 +139,8 @@ public class MakePageController {
         }
         Map map = (allNoPage.get(0));
         JSONObject params=JSONObject.parseObject((String) map.get("postParam"));
-        String viewList = MakeFile.makeViewList(params);
+        JSONObject columns = params.getJSONObject("columns");
+        String viewList = MakeFile.makeViewList(columns);
         System.out.println("查看的列：" + viewList);
 
         //

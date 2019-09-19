@@ -39,7 +39,7 @@ public class SchedulerManager implements ApplicationContextAware, ApplicationRun
         Scheduler scheduler = applicationContext.getBean(Scheduler.class);
         BaseServiceImpl baseService = applicationContext.getBean(BaseServiceImpl.class);
         //1.获取到所有的jobs
-        List<Map<String, Object>> jobTriggers = baseService.findAllNoPage(new FindEntityUtil().newInstance().makeEntityName("JobTriggers").getFindEntity(), new ConditionEntity());
+        List<Map<String, Object>> jobTriggers = baseService.findAllNoPage(new FindEntityUtil().newInstance().makeEntityName("TriggerJobs").getFindEntity(), new ConditionEntity());
         for (Map<String,Object> job: jobTriggers) {
             if(QuartzJobStatus.FINISHED.equals(job.get("schedulerJobStatus")))
                 continue;
