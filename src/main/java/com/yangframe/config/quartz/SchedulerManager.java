@@ -41,7 +41,8 @@ public class SchedulerManager implements ApplicationContextAware, ApplicationRun
         //1.获取到所有的jobs
         List<Map<String, Object>> jobTriggers = baseService.findAllNoPage(new FindEntityUtil().newInstance().makeEntityName("TriggerJobs").getFindEntity(), new ConditionEntity());
         for (Map<String,Object> job: jobTriggers) {
-            if(QuartzJobStatus.FINISHED.equals(job.get("schedulerJobStatus")))
+            Object jobStatus = job.get("schedulerTriggerStatus");
+            if(!Trigger.TriggerState.NORMAL.name().equals(jobStatus))
                 continue;
             try {
                 //构造job
@@ -127,6 +128,6 @@ public class SchedulerManager implements ApplicationContextAware, ApplicationRun
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initTask();
+        //initTask();
     }
 }

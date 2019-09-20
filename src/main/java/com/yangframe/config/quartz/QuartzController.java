@@ -4,10 +4,7 @@ import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -29,8 +26,7 @@ import java.util.Map;
 public class QuartzController {
 
     @Autowired
-    Scheduler scheduler;
-
+    private QuartzService quartzService;
     /**
      * @param mapData 传递过来的JobTriggers对象
      * */
@@ -38,9 +34,32 @@ public class QuartzController {
     @ResponseBody
     @PostMapping("startQuartz")
     public ResultEntity startQuartz(@RequestBody Map<String,Object> mapData) throws ClassNotFoundException, ParseException, SchedulerException {
-        JobDetail jobDetail = SchedulerManager.makeJob(mapData);
-        scheduler.pauseJob(jobDetail.getKey());
-        scheduler.resumeJob(jobDetail.getKey());
+        //JobDetail jobDetail = SchedulerManager.makeJob(mapData);
+        //scheduler.triggerJob(jobDetail.getKey());
+        /*JobDetail jobDetail = JobBuilder.newJob(QuartzTest.class)
+                .withDescription("新的jobDesc")
+                .withIdentity("job1", "group1")
+                .build();
+        SimpleScheduleBuilder builder = SimpleScheduleBuilder.simpleSchedule()
+                .withRepeatCount(4)
+                .withIntervalInSeconds(3);
+        SimpleTrigger trigger = TriggerBuilder.newTrigger()
+                .withDescription("新的trigger")
+                .startNow()
+                .withSchedule(builder)
+                .build();
+        scheduler.scheduleJob(jobDetail, trigger);*/
+        return new ResultEntity(ResultEnum.OK,null);
+    }
+
+    /**
+     * 添加一个定时任务
+     * */
+    @ApiOperation(value = "添加一个定时任务")
+    @ResponseBody
+    @PostMapping("addTask")
+    public ResultEntity addTask(@RequestBody QuartzEntity quartzEntity) throws ClassNotFoundException, ParseException, SchedulerException {
+        quartzService.addTask(quartzEntity);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 }

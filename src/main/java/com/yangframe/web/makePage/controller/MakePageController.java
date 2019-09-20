@@ -91,9 +91,9 @@ public class MakePageController {
         if(list.size()>0) {
             result= list.get(0);
         }else{
-            result.put("postParam",MapUtil.toMap("tableTitle",element1==null?"":element1.getText()));
+            result.put("postParam",JSONObject.toJSONString(MapUtil.toMap("tableTitle",element1==null?"":element1.getText())));
         }
-        return new ResultEntity(ResultEnum.OK,result);
+        return new ResultEntity(ResultEnum.OK,result,list.size());
     }
 
     /**

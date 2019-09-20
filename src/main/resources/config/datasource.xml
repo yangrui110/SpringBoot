@@ -4,7 +4,7 @@
     <datasource url="jdbc:mysql://118.24.153.227:3306/springsys?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;zeroDateTimeBehavior=convertToNull"
                 name="root"
                 password="1234qwer!"
-                source-dao-path="com.yangframe.web.core.crud.dao.mysql,com.yangframe.wanxidi.dao"
+                source-dao-path="com.yangframe.web.core.crud.dao.mysql,com.yangframe.web.dao.mysql"
                 source-dao-xml-path="classpath:mapper/mysql/*.xml"
                 source-bean-xml-path="classpath:entity/mysql/*.xml"
                 dao-base-class-name="com.yangframe.web.core.crud.dao.mysql.MysqlAjaxCrudDao"

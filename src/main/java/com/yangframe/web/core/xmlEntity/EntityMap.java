@@ -297,6 +297,8 @@ public class EntityMap {
                         .append(" = ")
                         .append(relation.getReferMemberAlias()).append(".").append(quote).append(relation.getReferColumn().get(i)).append(quote)
                         .append(" ");
+                if(i!=cols.size()-1)
+                    join.append(" and ");
             }
         }
         return join.toString();

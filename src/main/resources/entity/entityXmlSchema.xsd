@@ -16,11 +16,11 @@
                 <xs:element name="view-entity">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="describetion" type="xs:string"/>
                             <xs:element ref="member-entity"/>
                             <xs:element ref="alias-all"/>
                             <xs:element ref="alias"/>
                             <xs:element ref="view-link"/>
-                            <xs:element name="describetion" type="xs:string"/>
                         </xs:sequence>
                         <xs:attributeGroup ref="viewEntity.attrs"/>
                     </xs:complexType>
@@ -109,6 +109,7 @@
     <xs:attributeGroup name="viewLink.attrs">
         <xs:attribute name="tableAlias" type="xs:string"/>
         <xs:attribute name="relTableAlias" type="xs:string"/>
+        <!--true 是inner join; false 是left join-->
         <xs:attribute name="relOptional" type="xs:boolean"/>
     </xs:attributeGroup>
     <!--key-map标签的属性-->
