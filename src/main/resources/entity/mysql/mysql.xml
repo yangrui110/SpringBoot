@@ -3,23 +3,4 @@
 <!--tableName属性不支持驼峰命名规则-->
 <model>
 
-    <!--tableAlias属性区分在多数据源情况下，出现同名的数据表的情况-->
-    <entity tableName="user" tableAlias="User">
-        <!--alias标签是给该列取得别名-->
-        <column name="id">
-            <describtion>编号</describtion>
-        </column>
-        <column name="name">
-            <describtion>姓名</describtion>
-        </column>
-        <column name="age">
-            <describtion>年龄</describtion>
-        </column>
-        <column name="vip_time">
-            <describtion>成为会员时间</describtion>
-        </column>
-        <primary-key name="id"/>
-
-    </entity>
-
 </model>

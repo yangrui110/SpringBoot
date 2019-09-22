@@ -4,6 +4,7 @@ public enum ResultEnum {
 
 	OK(200,"调用成功"),
 	USER_NOT_LOGIN(305,"用户未登录"),
+	IP_REJECTED(900,"IP禁止登陆"),
 	ERROR(500,"系统内部错误");
 	public int getCode() {
 		return code;

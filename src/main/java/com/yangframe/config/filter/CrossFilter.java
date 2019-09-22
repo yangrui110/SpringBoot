@@ -3,10 +3,13 @@ package com.yangframe.config.filter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.yangframe.config.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -23,6 +26,10 @@ import java.util.List;
  */
 @Component
 public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
+
+    @Autowired
+    private LoginInterceptor loginInterceptor;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println("过滤器呀");
@@ -42,6 +49,17 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
          .addResourceLocations("classpath:/META-INF/resources/webjars/");
          super.addResourceHandlers(registry);
      }
+
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
+                .excludePathPatterns("/","/css/**","/js/**","/img/**","/static/**","/resources/**")
+                .excludePathPatterns("/v2/**")
+                .excludePathPatterns("/swagger-resources/**")
+                .excludePathPatterns("/webjars/**").excludePathPatterns("/csrf");
+        super.addInterceptors(registry);
+    }
+
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         StringHttpMessageConverter messageConverter=new StringHttpMessageConverter();
@@ -77,4 +95,5 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
         fastJsonHttpMessageConverter.setFastJsonConfig(config);
         converters.add(fastJsonHttpMessageConverter);
     }
+
 }
