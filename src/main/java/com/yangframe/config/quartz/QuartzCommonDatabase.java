@@ -1,54 +1,60 @@
 package com.yangframe.config.quartz;
 
+import com.alibaba.fastjson.JSONObject;
+import com.yangframe.config.util.ApplicationContextUtil;
+import com.yangframe.config.util.MapUtil;
+import com.yangframe.config.util.Util;
+import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
+import com.yangframe.web.core.util.MakeConditionUtil;
 import org.quartz.*;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @autor 杨瑞
  * @date 2019/9/18 22:18
  */
-public abstract class QuartzCommonDatabase implements Job, ApplicationContextAware {
-
-    private static ApplicationContext applicationContext;
+public abstract class QuartzCommonDatabase implements Job  {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        BaseServiceImpl baseService = applicationContext.getBean(BaseServiceImpl.class);
-        Trigger trigger = jobExecutionContext.getTrigger();
-        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String,Object> triggerMap=new HashMap<>();
         jobImp(jobExecutionContext);
-        triggerMap.put("schedulerTriggerId", trigger.getKey().getName()+"_"+trigger.getKey().getGroup());
-        if(trigger.getEndTime()!=null)
-            triggerMap.put("schedulerEndTime", dateFormat.format(trigger.getEndTime()));
-        triggerMap.put("schedulerPriority", ""+trigger.getPriority());
-        Date next = jobExecutionContext.getNextFireTime()==null?null:jobExecutionContext.getNextFireTime();
-        if(next!=null) {
-            triggerMap.put("schedulerNextFireTime", dateFormat.format(next));
-        }
+        JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
+        System.out.println(JSONObject.toJSONString(jobDataMap));
+        BaseServiceImpl baseService = ApplicationContextUtil.applicationContext.getBean(BaseServiceImpl.class);
+        JobKey jobKey = jobExecutionContext.getJobDetail().getKey();
+        Trigger trigger = jobExecutionContext.getTrigger();
+        Map toMap = MapUtil.toMap("jobName", jobKey.getName());
+        toMap.put("jobGroup", jobKey.getGroup());
         try {
-            triggerMap.put("schedulerTriggerStatus", jobExecutionContext.getScheduler().getTriggerState(trigger.getKey()).name());
+            Trigger.TriggerState triggerState = jobExecutionContext.getScheduler().getTriggerState(trigger.getKey());
+            System.out.println(triggerState);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
-        Date previous=jobExecutionContext.getPreviousFireTime()==null?null:jobExecutionContext.getPreviousFireTime();
-        if(previous!=null)
-        triggerMap.put("schedulerPreviousFireTime", dateFormat.format(previous));
-        baseService.update(FindEntity.newInstance().makeEntityName("yangTrigger").makeData(triggerMap));
+        List<Map<String, Object>> list = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName("quartzTaskView").makeData(MakeConditionUtil.makeCondition(toMap)), new ConditionEntity());
+        if(trigger.getNextFireTime()==null&&list.size()>0){
+            System.out.println("开始插入quarztRecords表");
+            Map map=list.get(0);
+            map.put("taskId", Util.getTimeId());
+            map.put("createTime",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            baseService.insert(FindEntity.newInstance().makeEntityName("quartzRecords").makeData(map));
+        }
+        System.out.println(list);
     }
     public abstract void jobImp(JobExecutionContext jobExecutionContext);
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext1) throws BeansException {
-        applicationContext= applicationContext1;
-    }
 }

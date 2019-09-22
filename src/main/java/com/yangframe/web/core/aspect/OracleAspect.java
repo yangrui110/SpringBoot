@@ -1,5 +1,6 @@
 package com.yangframe.web.core.aspect;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yangframe.config.datasource.type.DataSourceType;
 import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
@@ -14,9 +15,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -192,6 +192,17 @@ public class OracleAspect {
                 parseBlob((Map) data, k, v);
             }else if(v instanceof Clob){
                 parseClob((Map) data, k, v);
+            }else if(v instanceof byte[]) {
+                byte[] bytes = (byte[]) v;
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                try {
+                    Object readObject = new ObjectInputStream(inputStream).readObject();
+                    ((Map) data).put(k, JSONObject.toJSONString(readObject));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -199,8 +210,8 @@ public class OracleAspect {
         try {
             InputStream binaryStream = ((Blob) v).getBinaryStream();
             byte[] bytes = FileUtil.readFileToByte(binaryStream);
-            String bs = new String(bytes);
-            ((Map) data).put(k, bs);
+            String bs = new String(bytes, "utf-8");
+            data.put(k, bs);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }

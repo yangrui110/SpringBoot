@@ -27,9 +27,9 @@ import java.util.*;
  *
  */
 @Service
-public class BaseServiceImpl implements ApplicationContextAware {
+public class BaseServiceImpl{
 
-    WebApplicationContext currentWebApplicationContext;
+    static ApplicationContext currentWebApplicationContext;
 
     public Map<String,Object> findByPK(String entityName,Map<String,Object> pkDatas){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
@@ -322,8 +322,8 @@ public class BaseServiceImpl implements ApplicationContextAware {
         String result = builder.substring(0, builder.length() - 4);
         return result;
     }
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+
+    public static void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         currentWebApplicationContext= (WebApplicationContext) applicationContext;
     }
 }

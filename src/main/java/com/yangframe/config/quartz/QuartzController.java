@@ -1,19 +1,25 @@
 package com.yangframe.config.quartz;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
+import com.yangframe.web.core.crud.centity.DelEntity;
+import com.yangframe.web.core.crud.centity.DelSelectEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,39 +33,86 @@ public class QuartzController {
 
     @Autowired
     private QuartzService quartzService;
-    /**
-     * @param mapData 传递过来的JobTriggers对象
-     * */
-    @ApiOperation("开启某个定时器")
+
+    @ApiOperation("全部中止")
     @ResponseBody
-    @PostMapping("startQuartz")
-    public ResultEntity startQuartz(@RequestBody Map<String,Object> mapData) throws ClassNotFoundException, ParseException, SchedulerException {
-        //JobDetail jobDetail = SchedulerManager.makeJob(mapData);
-        //scheduler.triggerJob(jobDetail.getKey());
-        /*JobDetail jobDetail = JobBuilder.newJob(QuartzTest.class)
-                .withDescription("新的jobDesc")
-                .withIdentity("job1", "group1")
-                .build();
-        SimpleScheduleBuilder builder = SimpleScheduleBuilder.simpleSchedule()
-                .withRepeatCount(4)
-                .withIntervalInSeconds(3);
-        SimpleTrigger trigger = TriggerBuilder.newTrigger()
-                .withDescription("新的trigger")
-                .startNow()
-                .withSchedule(builder)
-                .build();
-        scheduler.scheduleJob(jobDetail, trigger);*/
-        return new ResultEntity(ResultEnum.OK,null);
+    @PostMapping("pauseAll")
+    public ResultEntity pauseAll() throws SchedulerException {
+        quartzService.pauseAll();
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", true));
+    }
+    @ApiOperation("全部恢复")
+    @ResponseBody
+    @PostMapping("resumeAll")
+    public ResultEntity resumeAll() throws SchedulerException {
+        quartzService.resumeAll();
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", true));
+    }
+    @ApiOperation("只触发某一个（不影响数据库）")
+    @ResponseBody
+    @PostMapping("triggerJob")
+    public ResultEntity triggerJob(@RequestBody Map<String,Object> data) throws SchedulerException {
+        String jsonString = JSON.toJSONString(data);
+        QuartzEntity quartzEntity = JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class);
+        quartzService.triggerJob(new JobKey(quartzEntity.getJobName(),quartzEntity.getJobGroup()));
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", true));
     }
 
+    @ApiOperation("中止单个任务")
+    @ResponseBody
+    @PostMapping("pauseTask")
+    public ResultEntity pauseTask(@RequestBody Map<String,Object> data) throws SchedulerException {
+        String jsonString = JSON.toJSONString(data);
+        QuartzEntity quartzEntity = JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class);
+        quartzService.pauseTask(quartzEntity);
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", true));
+    }
+    @ApiOperation("恢复单个任务")
+    @ResponseBody
+    @PostMapping("resumeTask")
+    public ResultEntity resumeTask(@RequestBody Map<String,Object> data) throws SchedulerException {
+        String jsonString = JSON.toJSONString(data);
+        QuartzEntity quartzEntity = JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class);
+        quartzService.resumeTask(quartzEntity);
+        return new ResultEntity(ResultEnum.OK,new ModelMap("result", true));
+    }
     /**
      * 添加一个定时任务
      * */
     @ApiOperation(value = "添加一个定时任务")
     @ResponseBody
-    @PostMapping("addTask")
-    public ResultEntity addTask(@RequestBody QuartzEntity quartzEntity) throws ClassNotFoundException, ParseException, SchedulerException {
-        quartzService.addTask(quartzEntity);
+    @PostMapping("addAndUpdateTask")
+    public ResultEntity addAndUpdateTask(@RequestBody Map<String,Object> data) throws ClassNotFoundException, ParseException, SchedulerException {
+        String jsonString = JSON.toJSONString(data);
+        QuartzEntity quartzEntity = JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class);
+        quartzService.addAndUpdateTask(quartzEntity);
+        return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
+    }
+    /**
+     * 添加一个定时任务
+     * */
+    @ApiOperation(value = "删除一个定时任务")
+    @ResponseBody
+    @PostMapping("deleteOneTask")
+    public ResultEntity deleteOneTask(@RequestBody Map<String,Object> data) throws ClassNotFoundException, ParseException, SchedulerException {
+        String jsonString = JSON.toJSONString(data);
+        QuartzEntity quartzEntity = JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class);
+        quartzService.deleteOneTask(quartzEntity);
+        return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
+    }
+    /**
+     * 添加一个定时任务
+     * */
+    @ApiOperation(value = "删除选择的任务")
+    @ResponseBody
+    @PostMapping("deleteSelectTasks")
+    public ResultEntity deleteSelectTasks(@RequestBody List<Map<String,Object>> mapDatas) throws ClassNotFoundException, ParseException, SchedulerException {
+        List<QuartzEntity> quartzEntities=new ArrayList<>();
+        for(Map<String,Object> mapOne : mapDatas){
+            String jsonString = JSON.toJSONString(mapOne);
+            quartzEntities.add(JSONObject.parseObject(jsonString).toJavaObject(QuartzEntity.class));
+        }
+        quartzService.deleteSelectTasks(quartzEntities);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 }

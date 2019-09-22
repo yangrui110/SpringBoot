@@ -62,8 +62,9 @@ public class AspectCrud implements ApplicationContextAware {
                         throw new BaseException(304,"视图表"+tableAlias+"不允许增删改操作");
                     }
                     //处理其它的操作
-
                     EntityMap.dealUpCondition(entity);
+                    //处理其中列转换问题
+                    EntityMap.dealUpData(entity);
                     EntityMap.yanzhengDataKey(entity.getData(), entity.getEntityName());
                     //EntityMap.yanzhengConditionKey(entity.getCondition(), entity.getEntityName());
                 }

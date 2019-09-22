@@ -49,6 +49,7 @@
     <xs:attributeGroup name="column.attrs">
         <xs:attribute name="name" type="xs:string" use="optional"/>
         <xs:attribute name="alias" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:attributeGroup>
     <!--view-entity标签下的子元素以及属性-->
     <xs:element name="member-entity">

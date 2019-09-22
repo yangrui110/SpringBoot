@@ -30,13 +30,16 @@ import java.util.Map;
  * @autor 杨瑞
  * @date 2019/6/11 18:44
  */
-@Configuration
-public class DynamicDataSource implements ApplicationContextAware , ResourceLoaderAware  {
+public class DynamicDataSource implements ResourceLoaderAware {
 
     private ApplicationContext applicationContext;
     private ResourceLoader resourceLoader;
 
     private static Map<String,InfoOfDruidDataSourceConfig> configMap = new HashMap<>();
+
+    public DynamicDataSource(ApplicationContext applicationContext) {
+        setApplicationContext(applicationContext);
+    }
 
     //主方法，在setApplicationContext方法中被调用
     public void makeFactroy() {
@@ -68,7 +71,8 @@ public class DynamicDataSource implements ApplicationContextAware , ResourceLoad
             e.printStackTrace();
         }
     }
-    @Override
+
+
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext=applicationContext;
         try {
@@ -79,7 +83,6 @@ public class DynamicDataSource implements ApplicationContextAware , ResourceLoad
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {

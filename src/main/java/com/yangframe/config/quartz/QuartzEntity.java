@@ -26,7 +26,6 @@ public class QuartzEntity {
     private Integer triggerPriority;
     private String triggerStartTime;
     private String triggerEndTime;
-    private Trigger.TriggerState triggerState;
     //cron触发器的具体属性
     private String cronTriggerExpression;
     //simple触发器的具体属性

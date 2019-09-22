@@ -35,7 +35,6 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
             , hash: 'fenye'
         } //开启分页
         , method: "post"
-        , limit: 2
         , contentType: 'application/json'
         , where: queryData
         , request: {
@@ -173,7 +172,7 @@ layui.use(['table', 'form', 'layer', 'laydate', 'upload'], function () {
             }
             layer.open({
                 type: 2,
-                title: "修改用户",
+                title: "tableTitle-yangrui",
                 content: "../aliasName-yangrui-edit/aliasName-yangrui-editor.html?param=" + encodeURIComponent(JSON.stringify(param)),
                 area: ['60%'],
                 skin: skin

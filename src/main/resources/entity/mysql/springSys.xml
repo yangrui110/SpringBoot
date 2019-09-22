@@ -2,89 +2,30 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
-    <!--定时任务的保存类-->
-    <entity tableName="yang_job" tableAlias="yangJob">
-        <describetion>定时任务的执行类</describetion>
-        <column alias="schedulerJobId">
-            <describtion>定义为jobName_jobGroup</describtion>
+    <entity tableName="post_param" tableAlias="postParam">
+        <column alias="postEntity">
+            <describtion>实体名</describtion>
         </column>
-        <column alias="schedulerJobClass">
-            <describtion>定时任务的类名</describtion>
+        <column alias="postParam">
+            <describtion>实体对应的参数</describtion>
         </column>
-        <column alias="schedulerJobName">
-            <describtion>任务名</describtion>
-        </column>
-        <column alias="schedulerJobGroup">
-            <describtion>任务组</describtion>
-        </column>
-        <column alias="schedulerDesc">
-            <describtion>任务的描述信息</describtion>
-        </column>
-        <column alias="schedulerJobDataMap">
-            <describtion>任务的参数配置</describtion>
-        </column>
-        <column alias="schedulerDurable">
-            <describtion>当没有活跃的trigger与之关联的时候，会被自动地从scheduler中删除</describtion>
-        </column>
-        <column alias="schedulerRequestsRecovery">
-            <describtion>出错时下次可以继续执行</describtion>
-        </column>
-        <primary-key alias="schedulerJobId"/>
-    </entity>
-    <entity tableName="yang_trigger" tableAlias="yangTrigger">
-        <describetion>定义触发器</describetion>
-        <column alias="schedulerTriggerId">
-            <describtion>主键，定义为triggerName_triggerGroupName</describtion>
-        </column>
-        <column alias="schedulerTriggerName">
-            <describtion>触发器的名字</describtion>
-        </column>
-        <column alias="schedulerTriggerGroup">
-            <describtion>触发器的组</describtion>
-        </column>
-        <column alias="schedulerTriggerDesc">
-            <describtion>触发器的描述信息</describtion>
-        </column>
-        <column alias="schedulerStartTime">
-            <describtion>设置trigger第一次触发的时间</describtion>
-        </column>
-        <column alias="schedulerEndTime">
-            <describtion>trigger失效的时间点</describtion>
-        </column>
-        <column alias="schedulerPriority">
-            <describtion>优先级（默认值为5）</describtion>
-        </column>
-        <column alias="schedulerNextFireTime">
-            <describtion>下一次执行的时间</describtion>
-        </column>
-        <column alias="schedulerPreviousFireTime">
-            <describtion>上一次执行的时间</describtion>
-        </column>
-        <column alias="schedulerRepeatCount">
-            <describtion>重复执行的次数</describtion>
-        </column>
-        <column alias="schedulerRepeatInterval">
-            <describtion>循环周期(单位秒)</describtion>
-        </column>
-        <column alias="schedulerCronExpression">
-            <describtion>cron表达式</describtion>
-        </column>
-        <column alias="schedulerTriggerJobId">
-            <describtion>关联到的jobId</describtion>
-        </column>
-        <column alias="schedulerTriggerStatus">
-            <describtion>定时器状态</describtion>
-        </column>
-        <primary-key alias="schedulerTriggerId"/>
+        <primary-key alias="postEntity"/>
     </entity>
 
-    <view-entity tableAlias="TriggerJobs">
-        <member-entity tableAlias="yangTrigger" alias="YTG"/>
-        <member-entity tableAlias="yangJob" alias="YJB"/>
-        <alias-all referTable="YJB"></alias-all>
-        <alias-all referTable="YTG"/>
-        <view-link tableAlias="YTG" relTableAlias="YJB">
-            <key-map field-name="schedulerTriggerJobId" rel-field-name="schedulerJobId"/>
-        </view-link>
-    </view-entity>
+    <entity tableName="work_book" tableAlias="workBook">
+        <describetion>字典表，存储系统内部的字典值</describetion>
+        <column alias="parentId">
+            <describtion>字典的父级</describtion>
+        </column>
+        <column alias="dicId">
+            <describtion>字典值，保持唯一性</describtion>
+        </column>
+        <column alias="dicValue">
+            <describtion>字典的文本描述</describtion>
+        </column>
+        <column alias="createTime">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key alias="dicValue"/>
+    </entity>
 </model>

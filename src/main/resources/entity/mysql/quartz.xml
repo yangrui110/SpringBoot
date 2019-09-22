@@ -4,9 +4,6 @@
 <model>
    <entity tableName="QRTZ_JOB_DETAILS" tableAlias="quartzJobDetail">
        <describetion>job的详情</describetion>
-       <column name="SCHED_NAME" alias="schedName">
-           <describtion>服务名字</describtion>
-       </column>
        <column alias="jobName" name="JOB_NAME">
            <describtion>jobName</describtion>
        </column>
@@ -39,9 +36,6 @@
    </entity>
     <entity tableName="QRTZ_TRIGGERS" tableAlias="quartzTriggers">
         <describetion>触发器表</describetion>
-        <column alias="schedTriggerName" name="SCHED_NAME">
-            <describtion>无</describtion>
-        </column>
         <column alias="triggerName" name="TRIGGER_NAME">
             <describtion>触发器名字</describtion>
         </column>
@@ -92,9 +86,6 @@
     </entity>
     <entity tableName="QRTZ_CRON_TRIGGERS" tableAlias="quartzCronTriggers">
         <describetion>cron触发器</describetion>
-        <column alias="schedCronTriggerName" name="SCHED_NAME">
-            <describtion>无</describtion>
-        </column>
         <column alias="cronTriggerName" name="TRIGGER_NAME">
             <describtion>cron的trigger名</describtion>
         </column>
@@ -110,11 +101,9 @@
         <primary-key alias="cronTriggerName"/>
         <primary-key alias="cronTriggerGroup"/>
     </entity>
+
     <entity tableName="QRTZ_SIMPLE_TRIGGERS" tableAlias="quartzSimpleTriggers">
         <describetion>简易的触发器</describetion>
-        <column alias="simpleSchedName" name="SCHED_NAME">
-            <describtion>无</describtion>
-        </column>
         <column alias="simpleTriggerName" name="TRIGGER_NAME">
             <describtion>简易的触发器名</describtion>
         </column>
@@ -133,6 +122,98 @@
         <primary-key alias="simpleTriggerName"/>
         <primary-key alias="simpleTriggerGroup"/>
     </entity>
+
+    <entity tableName="quartz_records" tableAlias="quartzRecords">
+        <describetion>quartz执行完毕后的记录表</describetion>
+        <column alias="taskId" name="TASK_ID">
+            <describtion>自己创建的ID</describtion>
+        </column>
+        <column alias="jobName" name="JOB_NAME">
+            <describtion>jobName</describtion>
+        </column>
+        <column alias="jobGroup" name="JOB_GROUP">
+            <describtion>job组名</describtion>
+        </column>
+        <column alias="jobDesc" name="DESCRIPTION">
+            <describtion>描述</describtion>
+        </column>
+        <column alias="jobClassName" name="JOB_CLASS_NAME">
+            <describtion>job类名</describtion>
+        </column>
+        <column alias="isDurable" name="IS_DURABLE">
+            <describtion>是否是可删除</describtion>
+        </column>
+        <column alias="isNonConcurrent" name="IS_NONCONCURRENT">
+            <describtion>无</describtion>
+        </column>
+        <column alias="isUpdateData" name="IS_UPDATE_DATA">
+            <describtion>更新数据</describtion>
+        </column>
+        <column alias="requestRecovery" name="REQUESTS_RECOVERY">
+            <describtion>出错可以恢复运行</describtion>
+        </column>
+        <column alias="jobData" name="JOB_DATA">
+            <describtion>运行数据</describtion>
+        </column>
+        <column alias="triggerName" name="TRIGGER_NAME">
+            <describtion>触发器名字</describtion>
+        </column>
+        <column alias="triggerGroup" name="TRIGGER_GROUP">
+            <describtion>触发器组</describtion>
+        </column>
+        <column alias="triggerDesc" name="DESCRIPTION">
+            <describtion>触发器描述</describtion>
+        </column>
+        <column alias="triggerNextFireTime" name="NEXT_FIRE_TIME">
+            <describtion>下一次执行的时间</describtion>
+        </column>
+        <column alias="triggerPrevFireTime" name="PREV_FIRE_TIME">
+            <describtion>上一次触发时间</describtion>
+        </column>
+        <column alias="triggerPriority" name="PRIORITY">
+            <describtion>优先级</describtion>
+        </column>
+        <column alias="triggerState" name="TRIGGER_STATE">
+            <describtion>触发器状态</describtion>
+        </column>
+        <column alias="triggerType" name="TRIGGER_TYPE">
+            <describtion>触发器类型</describtion>
+        </column>
+        <column alias="triggerStartTime" name="START_TIME">
+            <describtion>开始时间</describtion>
+        </column>
+        <column alias="triggerEndTime" name="END_TIME">
+            <describtion>结束时间</describtion>
+        </column>
+        <column alias="triggerCalendarName" name="CALENDAR_NAME">
+            <describtion>日历名</describtion>
+        </column>
+        <column alias="triggerMisfireInstr" name="MISFIRE_INSTR">
+            <describtion>错过执行的策略</describtion>
+        </column>
+
+        <column alias="cronTriggerExpression" name="CRON_EXPRESSION">
+            <describtion>cron表达式</describtion>
+        </column>
+        <column alias="cronTimeZoneId" name="TIME_ZONE_ID">
+            <describtion>时区Id</describtion>
+        </column>
+
+        <column alias="simpleRepeatCount" name="REPEAT_COUNT">
+            <describtion>重复次数</describtion>
+        </column>
+        <column alias="simpleRepeatInterval" name="REPEAT_INTERVAL">
+            <describtion>间隔</describtion>
+        </column>
+        <column alias="simpleTimesTriggered" name="TIMES_TRIGGERED">
+            <describtion>触发时间</describtion>
+        </column>
+        <column alias="createTime" name="CREATE_TIME">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key alias="taskId"/>
+    </entity>
+
     <view-entity tableAlias="quartzTaskView">
         <describetion>定时任务查询</describetion>
         <member-entity tableAlias="quartzJobDetail" alias="QJD"/>
@@ -140,9 +221,19 @@
         <member-entity tableAlias="quartzCronTriggers" alias="QCT"/>
         <member-entity tableAlias="quartzSimpleTriggers" alias="QST"/>
         <alias-all referTable="QJD"/>
-        <alias-all referTable="QTR"/>
-        <alias-all referTable="QCT"/>
-        <alias-all referTable="QST"/>
+        <alias-all referTable="QTR">
+            <exclude column="triggerJobName"/>
+            <exclude column="triggerJobGroup"/>
+            <exclude column="triggerJobData"/>
+        </alias-all>
+        <alias-all referTable="QCT">
+            <exclude column="cronTriggerName"/>
+            <exclude column="cronTriggerGroup"/>
+        </alias-all>
+        <alias-all referTable="QST">
+            <exclude column="simpleTriggerName"/>
+            <exclude column="simpleTriggerGroup"/>
+        </alias-all>
         <view-link tableAlias="QJD" relTableAlias="QTR" relOptional="true">
             <key-map field-name="jobName" rel-field-name="triggerJobName"/>
             <key-map field-name="jobGroup" rel-field-name="triggerJobGroup"/>

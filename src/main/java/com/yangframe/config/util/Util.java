@@ -1,5 +1,7 @@
 package com.yangframe.config.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -10,5 +12,10 @@ public class Util {
 
     public static String getRandUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    public static String getTimeId(){
+        SimpleDateFormat s = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        return s.format(new Date());
     }
 }

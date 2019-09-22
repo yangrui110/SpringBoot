@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -659,6 +660,7 @@ public class EntityMap {
             if("column".equals(el.getName())) {
                 String name = el.attributeValue("name");
                 String alias = el.attributeValue("alias");
+                String type = el.attributeValue("type");
                 if (alias==null)
                     throw new BaseException(304, "该标签" + el.getName() + "的name属性不能为空");
                 ColumnProperty property=new ColumnProperty();
@@ -667,6 +669,7 @@ public class EntityMap {
                 property.setTableMemberAlias("");
                 property.setTableAlias(table);
                 property.setTableName(tableName);
+                property.setColumnType(type==null?ColumnType.STRING:ColumnType.valueOf(type));
                 Element describtion = el.element("describtion");
                 if(describtion!=null)
                     property.setDescribetion(describtion.getText());
@@ -708,15 +711,16 @@ public class EntityMap {
                 String alias=el.attributeValue("alias");
                 String name=el.attributeValue("column");
                 String aliasTable=el.attributeValue("referTable");
+                Map<String, ColumnProperty> columns = getAllColumns(keyMap.get(aliasTable));
                 //name=name==null?humpToUnderline(alias):name;
                 ColumnProperty property=new ColumnProperty();
                 property.setAlias(alias);
+                property.setColumnType(columns.get(name).getColumnType());
                 //property.setColumn(name);
                 property.setTableMemberAlias(aliasTable);
                 property.setTableAlias(keyMap.get(aliasTable));
                 property.setTableName(getTableName(keyMap.get(aliasTable)));
                 //获取关联表的属性
-                Map<String, ColumnProperty> columns = getAllColumns(keyMap.get(aliasTable));
                 property.setDescribetion(columns.get(name).getDescribetion());
                 property.setColumn(columns.get(name).getColumn());
                 if(alias!=null)
@@ -732,6 +736,7 @@ public class EntityMap {
                     property.setTableAlias(keyMap.get(aliasTable));
                     property.setTableMemberAlias(aliasTable);
                     property.setAlias(k);
+                    property.setColumnType(v.getColumnType());
                     property.setColumn(v.getColumn());
                     property.setDescribetion(v.getDescribetion());
                     keys.put(k, property);
@@ -799,6 +804,27 @@ public class EntityMap {
             cons.put(v.getColumn(),data.get(k));
         });
         findEntity.setCondition(cons);
+        //findEntity.setCons(makeWhereCondition(findEntity.getCondition(), columnMap));
+    }
+
+    /**
+     * 处理更新、删除、插入的数据列操作
+     * */
+    public static void dealUpData(FindEntity findEntity){
+        //Map<String, ColumnProperty> columnMap = getColumnMap(findEntity.getEntityName());
+        //parseWhereCondition(columnMap,findEntity.getEntityName());
+        Map<String, ColumnProperty> columns = getAllColumns(findEntity.getEntityName());
+        Map data = findEntity.getData();
+        columns.forEach((k,v)->{
+            if(ColumnType.BYTE.equals(v.getColumnType())&&data.containsKey(k)&&!(data.get(k) instanceof byte[])){
+                //转换为byte[]数组存储
+                if(data.get(k) instanceof String){
+                    String parse = (String) data.get(k);
+                    data.put(k,parse.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+        });
+        findEntity.setData(data);
         //findEntity.setCons(makeWhereCondition(findEntity.getCondition(), columnMap));
     }
 

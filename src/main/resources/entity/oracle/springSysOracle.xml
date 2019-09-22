@@ -2,32 +2,6 @@
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <!--tableName属性不支持驼峰命名规则-->
 <model>
-    <entity tableName="post_param" tableAlias="postParam">
-        <column alias="postEntity">
-            <describtion>实体名</describtion>
-        </column>
-        <column alias="postParam">
-            <describtion>实体对应的参数</describtion>
-        </column>
-        <primary-key alias="postEntity"/>
-    </entity>
-
-    <entity tableName="work_book" tableAlias="workBook">
-        <describetion>字典表，存储系统内部的字典值</describetion>
-        <column alias="parentId">
-            <describtion>字典的父级</describtion>
-        </column>
-        <column alias="dicId">
-            <describtion>字典值，保持唯一性</describtion>
-        </column>
-        <column alias="dicValue">
-            <describtion>字典的文本描述</describtion>
-        </column>
-        <column alias="createTime">
-            <describtion>创建时间</describtion>
-        </column>
-        <primary-key alias="dicValue"/>
-    </entity>
 
     <!--下面都是测试表-->
     <entity tableName="teacher" tableAlias="Teacher">
