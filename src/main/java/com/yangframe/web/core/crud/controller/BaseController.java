@@ -4,6 +4,7 @@ import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
 import com.yangframe.web.core.crud.centity.*;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
+import com.yangframe.web.core.crud.service.BaseServiceExternal;
 import com.yangframe.web.core.xmlEntity.ColumnProperty;
 import com.yangframe.web.core.xmlEntity.EntityMap;
 import io.swagger.annotations.Api;
@@ -31,6 +32,9 @@ public class BaseController {
     @Autowired
     private BaseServiceImpl baseService;
 
+    @Autowired
+    private BaseServiceExternal baseServiceInner;
+
     @ApiOperation("带分页的通用查找方法")
     @ResponseBody
     @PostMapping("findAll")
@@ -49,7 +53,7 @@ public class BaseController {
     @ResponseBody
     @PostMapping("delete")
     public ResultEntity delete(@RequestBody DelEntity delEntity){
-        baseService.delete(delEntity.getEntityName(),delEntity.getMapDatas());
+        baseService.delete(delEntity.getEntityName(),delEntity.getData());
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }
 
@@ -124,7 +128,7 @@ public class BaseController {
     @ResponseBody
     @PostMapping("updateAll")
     public ResultEntity updateAll(@RequestBody UpdateAllEntity entity){
-        baseService.updateAll(entity.getEntityName(), entity.getMapDatas());
+        baseService.updateAll(entity.getEntityName(), entity.getData());
         return new ResultEntity(ResultEnum.OK,new ModelMap("result", "true"));
     }
     /**
@@ -134,7 +138,40 @@ public class BaseController {
     @ResponseBody
     @PostMapping("insertAll")
     public ResultEntity insertAll(@RequestBody UpdateAllEntity entity){
-        baseService.updateAll(entity.getEntityName(), entity.getMapDatas());
+        baseService.updateAll(entity.getEntityName(), entity.getData());
         return new ResultEntity(ResultEnum.OK,new ModelMap("result", "true"));
     }
+
+    /**
+     * 批量更新或者删除
+     * */
+    @ApiOperation("批量更新或者插入")
+    @ResponseBody
+    @PostMapping("storeAll")
+    public ResultEntity storeAll(@RequestBody UpdateAllEntity entity){
+        baseServiceInner.storeAll(entity.getEntityName(), entity.getData());
+        return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
+    }
+    /**
+     * 携带关联表查询方法
+     * */
+    @ApiOperation("携带关联表查询")
+    @ResponseBody
+    @PostMapping("referFindAll")
+    public ResultEntity referFindAll(@RequestBody FindEntity findEntity){
+        List<Map<String, Object>> findAll = baseServiceInner.referFindAll(findEntity);
+        return new ResultEntity(ResultEnum.OK, findAll);
+    }
+
+    /**
+     * 携带关联表查询方法
+     * */
+    @ApiOperation("更新多对多的关联表")
+    @ResponseBody
+    @PostMapping("updateManyToManyTable")
+    public ResultEntity updateManyToManyTable(@RequestBody OneToManyEntity oneToManyEntity){
+        baseServiceInner.updateManyToManyTable(oneToManyEntity.getEntityName(), oneToManyEntity.getData(), oneToManyEntity.getMainColumns());
+        return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
+    }
+
 }

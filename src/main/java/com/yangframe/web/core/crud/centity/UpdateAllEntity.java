@@ -12,5 +12,5 @@ import java.util.Map;
 @Data
 public class UpdateAllEntity {
     String entityName;
-    List<Map<String,Object>> mapDatas;
+    List<Map<String,Object>> data;
 }

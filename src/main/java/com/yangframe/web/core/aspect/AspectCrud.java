@@ -1,4 +1,4 @@
-package com.yangframe.web.core.aspect.mysql;
+package com.yangframe.web.core.aspect;
 
 import com.yangframe.config.advice.BaseException;
 import com.yangframe.config.datasource.dynamic.SelfTransaction;
@@ -26,9 +26,9 @@ import java.util.Map;
  */
 @Component
 @Aspect
-public class AspectCrud implements ApplicationContextAware {
+public class AspectCrud {
 
-    private ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
     /***
      * 切面拦截mysql操作
      */
@@ -79,6 +79,7 @@ public class AspectCrud implements ApplicationContextAware {
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entityName);
         DataSourceTransactionManager manager = (DataSourceTransactionManager) applicationContext.getBean(entity1.getConfig().getSourceBeanName()+"manager");
         TransactionStatus status = SelfTransaction.begin(manager);
+
         Object os= null;
         try {
             os = point.proceed(args);
@@ -91,9 +92,8 @@ public class AspectCrud implements ApplicationContextAware {
         return os;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext=applicationContext;
+    public static void setApplicationContext(ApplicationContext applicationContext1) throws BeansException {
+        applicationContext=applicationContext1;
     }
 
     /***

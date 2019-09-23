@@ -11,7 +11,7 @@ import java.util.Map;
 public class DelSelectEntity {
 
     private String entityName;
-    private List<Map<String,Object>> datas =new ArrayList<>();
+    private List<Map<String,Object>> data =new ArrayList<>();
 
     public String getEntityName() {
         return entityName;
@@ -22,10 +22,10 @@ public class DelSelectEntity {
     }
 
     public List<Map<String, Object>> getDatas() {
-        return datas;
+        return data;
     }
 
     public void setDatas(List<Map<String, Object>> datas) {
-        this.datas = datas;
+        this.data = datas;
     }
 }

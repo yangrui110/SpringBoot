@@ -8,6 +8,7 @@ import com.yangframe.web.core.crud.centity.CombineOperator;
 import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
+import com.yangframe.web.core.crud.service.BaseServiceExternal;
 import com.yangframe.web.core.util.MakeConditionUtil;
 import com.yangframe.web.core.xmlEntity.ColumnProperty;
 import com.yangframe.web.core.xmlEntity.EntityMap;
@@ -33,6 +34,8 @@ public class DemoApplicationTests {
 	@Autowired
 	private BaseServiceImpl baseService;
 
+	@Autowired
+	private BaseServiceExternal baseServiceInner;
 	@Autowired
 	private ChatService chatService;
 		@Test
@@ -113,5 +116,21 @@ public class DemoApplicationTests {
 		//baseService.delSelect("Teacher", lsOne);
 		//baseService.findAll(entity,new ConditionEntity());
 		//baseService.findByPK("Teacher", map);
+	}
+
+	@Test
+	public void test7(){
+			String entityName ="userRole";
+			Map<String,Object> data1 = MapUtil.toMap("userLoginId", "111");
+			data1.put("roleId", "1000");
+			data1.put("userRoleCreateTime", "2019-01-02 09:00:00");
+		Map<String,Object> data2 = MapUtil.toMap("userLoginId", "111");
+		data2.put("roleId","1004");
+		List ls = new ArrayList();
+		ls.add(data1);
+		ls.add(data2);
+		List<String> mm = new ArrayList<>();
+		mm.add("userLoginId");
+		baseServiceInner.updateManyToManyTable(entityName, ls,mm);
 	}
 }

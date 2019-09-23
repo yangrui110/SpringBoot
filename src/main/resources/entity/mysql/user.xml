@@ -118,14 +118,19 @@
         <member-entity tableAlias="UserLogin" alias="UL"/>
         <member-entity tableAlias="role" alias="RL"/>
         <member-entity tableAlias="userRole" alias="UR"/>
+        <member-entity tableAlias="UserLoginInfo" alias="ULI"/>
         <alias-all referTable="UL"/>
         <alias-all referTable="RL"/>
         <alias-all referTable="UR"/>
+        <alias-all referTable="ULI" />
         <view-link tableAlias="UL" relTableAlias="UR" relOptional="true">
             <key-map field-name="userLoginId" rel-field-name="userLoginId"/>
         </view-link>
         <view-link tableAlias="UR" relTableAlias="RL" relOptional="true">
             <key-map field-name="roleId" rel-field-name="roleId"/>
+        </view-link>
+        <view-link tableAlias="UL" relTableAlias="ULI">
+            <key-map field-name="userLoginId" rel-field-name="userLoginInfoId"/>
         </view-link>
     </view-entity>
 

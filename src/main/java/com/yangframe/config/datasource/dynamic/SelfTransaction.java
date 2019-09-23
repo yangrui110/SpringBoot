@@ -22,7 +22,7 @@ public class SelfTransaction {
      * 提交事务
      * */
     public static void commit(DataSourceTransactionManager manager,TransactionStatus status){
-        manager.commit(status);
+        if(!status.hasSavepoint()) manager.commit(status);
     }
 
     /**

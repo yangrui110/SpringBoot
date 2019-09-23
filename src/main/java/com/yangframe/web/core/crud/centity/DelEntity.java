@@ -11,5 +11,5 @@ import java.util.Map;
 @Data
 public class DelEntity {
     private String entityName;
-    private Map<String,Object> mapDatas;
+    private Map<String,Object> data;
 }

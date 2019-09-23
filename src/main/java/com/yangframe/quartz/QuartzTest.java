@@ -1,13 +1,7 @@
 package com.yangframe.quartz;
 
-import com.yangframe.config.advice.BaseException;
 import com.yangframe.config.quartz.QuartzCommonDatabase;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-
-import java.util.Date;
-import java.util.logging.SimpleFormatter;
 
 /**
  * @autor 杨瑞
