@@ -20,6 +20,13 @@ public class MakeConditionUtil {
         return parseLast(ls);
     }
 
+    public static Map<String,Object> makeCondition(Map<String,Object> param,String operator){
+        List ls=new ArrayList<>();
+        param.forEach((k,v)->{
+            ls.add(parseOne(k, v, operator));
+        });
+        return parseLast(ls);
+    }
     private static Map<String,Object> parseOne(String key,Object value){
         HashMap map=new HashMap();
         map.put("left",key);

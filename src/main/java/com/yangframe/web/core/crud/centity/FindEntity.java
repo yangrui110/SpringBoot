@@ -28,6 +28,17 @@ public class FindEntity {
 
     private String cons; //增删改时的条件
 
+    //关联表名称
+    private String referTableName;
+
+    public String getReferTableName() {
+        return referTableName;
+    }
+
+    public void setReferTableName(String referTableName) {
+        this.referTableName = referTableName;
+    }
+
     public String getCons() {
         return cons;
     }
