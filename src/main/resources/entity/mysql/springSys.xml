@@ -28,4 +28,24 @@
         </column>
         <primary-key alias="dicValue"/>
     </entity>
+    <entity tableAlias="ipBlackList" tableName="ip_black_list">
+        <describetion>IP黑名单</describetion>
+        <column alias="ip">
+            <describtion>ip地址</describtion>
+        </column>
+        <column alias="ipCreateTime">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key alias="ip"/>
+    </entity>
+    <entity tableName="path_white_list" tableAlias="pathWhiteList">
+        <describetion>配置可以通过的访问路径</describetion>
+        <column alias="path">
+            <describtion>路径信息</describtion>
+        </column>
+        <column alias="pathCreateTime">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key alias="path"/>
+    </entity>
 </model>

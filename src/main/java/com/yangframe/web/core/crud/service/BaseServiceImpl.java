@@ -170,18 +170,8 @@ public class BaseServiceImpl{
         }
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
         //剔除掉不是主键中的列
-        List<Map<String,Object>> ls= new ArrayList<>();
-        for(Map<String,Object> map:mapDatas){
-            Map one = new HashMap();
-            primaryKey.forEach((k,v)->{
-                if(map.containsKey(k)){
-                    one.put(k, map.get(k));
-                }
-            });
-            if(one.size()>0){
-                ls.add(one);
-            }
-        }
+        List ls=excludeNotInPks(mapDatas,primaryKey);
+        //获取主键对应的值集合
         Map<String, List<Object>> result = getResult(infoOfEntity, ls);
         Map aliasResult =new HashMap();
         result.forEach((k,v)->{
@@ -195,6 +185,21 @@ public class BaseServiceImpl{
         //baseDao.(entityName,keys, result);
     }
 
+    private List<Map<String,Object>> excludeNotInPks(List<Map<String,Object>> data,Map primaryKey){
+        List<Map<String,Object>> ls= new ArrayList<>();
+        for(Map<String,Object> map:data){
+            Map one = new HashMap();
+            primaryKey.forEach((k,v)->{
+                if(map.containsKey(k)){
+                    one.put(k, map.get(k));
+                }
+            });
+            if(one.size()>0){
+                ls.add(one);
+            }
+        }
+        return ls;
+    }
     //获取主键对应的值集合
     private Map<String,List<Object>> getResult(InfoOfEntity infoOfEntity,List<Map<String,Object>> mapDatas){
         Map<String, ColumnProperty> pks = EntityMap.getPrimaryKey(infoOfEntity.getEntityAlias());
@@ -279,9 +284,12 @@ public class BaseServiceImpl{
         });
         Map ol=new HashMap();
         condition.forEach((k,v)->{
+            if(v!=null)
             ol.put(columns.get(k).getColumn(), v);
         });
-        baseDao.updateAll(entityName, aliasResult,ol);
+        if(ol.size()>0)
+        //需要排除的场景，ol的value值不能只有一个Null
+            baseDao.updateAll(entityName, aliasResult,ol);
 
     }
 

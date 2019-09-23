@@ -53,11 +53,11 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
-        /*registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
                 .excludePathPatterns("/","/css/**","/js/**","/img/**","/static/**","/resources/**")
                 .excludePathPatterns("/v2/**")
                 .excludePathPatterns("/swagger-resources/**")
-                .excludePathPatterns("/webjars/**").excludePathPatterns("/csrf");*/
+                .excludePathPatterns("/webjars/**").excludePathPatterns("/csrf");
         super.addInterceptors(registry);
     }
 

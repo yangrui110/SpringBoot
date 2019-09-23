@@ -160,7 +160,7 @@ public class BaseController {
     @PostMapping("referFindAll")
     public ResultEntity referFindAll(@RequestBody FindEntity findEntity){
         List<Map<String, Object>> findAll = baseServiceInner.referFindAll(findEntity);
-        return new ResultEntity(ResultEnum.OK, findAll);
+        return new ResultEntity(ResultEnum.OK, findAll,baseService.totalNum(findEntity,new ConditionEntity()));
     }
 
     /**

@@ -4,7 +4,11 @@ import com.yangframe.config.advice.BaseException;
 import com.yangframe.config.advice.ResultEnum;
 import com.yangframe.config.util.IpUtils;
 import com.yangframe.config.whiteList.WhiteList;
+import com.yangframe.web.core.crud.centity.ConditionEntity;
+import com.yangframe.web.core.crud.centity.FindEntity;
+import com.yangframe.web.core.crud.service.BaseServiceImpl;
 import com.yangframe.web.util.file.FileUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -17,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @autor 杨瑞
@@ -25,10 +30,17 @@ import java.util.List;
 @Component
 public class LoginInterceptor  implements HandlerInterceptor {
 
+    @Autowired
+    private BaseServiceImpl baseService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        List<String> pathWhiteLists = WhiteList.getPathWhiteLists();
-        List<String> ipWhiteLists = WhiteList.getIpWhiteLists();
+        List<Map<String, Object>> ipBlackList = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName("ipBlackList"), new ConditionEntity());
+        List<Map<String, Object>> pathWhiteList = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName("pathWhiteList"), new ConditionEntity());
+        //转换成List<String>
+
+        List<String> pathWhiteLists = parseToStringList(pathWhiteList,"path");
+        List<String> ipWhiteLists = parseToStringList(ipBlackList,"ip");
         //
         System.out.println("path="+request.getServletPath()+"------IP:"+request.getRemoteAddr()+"---"+ IpUtils.getIpAddr(request));
         //如果IP是在黑名单中
@@ -46,9 +58,16 @@ public class LoginInterceptor  implements HandlerInterceptor {
         return true;
     }
 
+    private List<String> parseToStringList(List<Map<String,Object>> mapDatas,String key){
+        List<String> list =new ArrayList<>();
+        for(Map<String,Object> one: mapDatas){
+            list.add((String) one.get(key));
+        }
+        return list;
+    }
     private boolean checkIpIsOk(String ip,List<String> ips){
         for(String one :ips){
-            if(one.equals(ip)){
+            if(ip.equals(one)){
                 return false;
             }
         }
