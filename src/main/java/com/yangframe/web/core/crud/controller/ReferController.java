@@ -42,7 +42,20 @@ public class ReferController {
         Map<String, ColumnProperty> source = EntityMap.getPrimaryKey(findEntity.getEntityName());
         Map<String, ColumnProperty> referAllColumns = EntityMap.getAllColumns(findEntity.getEntityName());
         List<Map<String, Object>> allNoPage = baseService.findAll(findEntity, new ConditionEntity());
+        //获取到两个表之间的关联
+        Map<String, Object> alias = getRefreColumn(source, referAllColumns);
+        //给关联列设置查到的值
+        setDataForAlias(alias,allNoPage);
+        //根据上面的条件，从关联表查询数据
+        Map<String, Object> objectMap = MakeConditionUtil.makeCondition(alias, Operator.IN);
+        List<Map<String, Object>> serviceAllNoPage = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName(findEntity.getReferTableName()).makeData(objectMap), new ConditionEntity());
+        //将查询到的关联表结果，赋值到主表的查询结果中去
+        parseReferDataToMain(allNoPage,source,serviceAllNoPage,alias);
 
+        return new ResultEntity(ResultEnum.OK,allNoPage);
+    }
+
+    private Map<String,Object> getRefreColumn(Map<String,ColumnProperty> source,Map<String,ColumnProperty> referAllColumns){
         Map<String,Object> alias = new HashMap<>();
         source.forEach((k,v)->{
             referAllColumns.forEach((m,n)->{
@@ -51,7 +64,10 @@ public class ReferController {
                 }
             });
         });
-        //遍历完毕后，获取两个表之间的主键关联
+        return alias;
+    }
+
+    void setDataForAlias(Map<String,Object> alias,List<Map<String,Object>> allNoPage){
         alias.forEach((k,v)->{
             List<Object> ls =new ArrayList<>();
             for(Map<String,Object> one :allNoPage){
@@ -62,21 +78,21 @@ public class ReferController {
             if(ls.size()>0)
                 alias.put(k, ls);
         });
-        Map<String, Object> objectMap = MakeConditionUtil.makeCondition(alias, Operator.IN);
-        List<Map<String, Object>> serviceAllNoPage = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName(findEntity.getReferTableName()).makeData(objectMap), new ConditionEntity());
 
-        //合并两者
+    }
+
+    void parseReferDataToMain(List<Map<String,Object>> allNoPage,Map<String,ColumnProperty> mainPrimaryKey,List<Map<String,Object>> referData,Map<String,Object> referAlias){
         for(Map<String,Object> one:allNoPage){
             StringBuilder builder = new StringBuilder();
-            source.forEach((m,n)->{
+            mainPrimaryKey.forEach((m,n)->{
                 builder.append(one.get(m)).append("_");
             });
             String key = builder.substring(0, builder.length()-1);
             List<Object> ls =new ArrayList<>();
-            for(Map<String,Object> service : serviceAllNoPage){
+            for(Map<String,Object> service : referData){
 
                 StringBuilder builders = new StringBuilder();
-                alias.forEach((m,n)->{
+                referAlias.forEach((m,n)->{
                     builders.append(service.get(m)).append("_");
                 });
                 String referKey = builders.substring(0, builders.length()-1);
@@ -87,7 +103,5 @@ public class ReferController {
             one.put("referAll", ls);
         }
 
-        return new ResultEntity(ResultEnum.OK,allNoPage);
     }
-
 }
