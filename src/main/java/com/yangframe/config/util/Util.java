@@ -18,4 +18,18 @@ public class Util {
         SimpleDateFormat s = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return s.format(new Date());
     }
+
+    public static String getTimeRandId(){
+        SimpleDateFormat s = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        return s.format(new Date())+getRand();
+    }
+
+    private static String getRand(){
+        StringBuilder builder = new StringBuilder();
+        for(int i=0;i<5;i++){
+            builder.append(Math.random()*10);
+        }
+
+        return builder.toString();
+    }
 }

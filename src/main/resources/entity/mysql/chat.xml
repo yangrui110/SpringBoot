@@ -1,5 +1,95 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE model SYSTEM "../entityXmlSchema.xsd">
 <model>
-
+    <entity tableName="ims_user_friend" tableAlias="imsUserFriend">
+        <describetion>好友关系表</describetion>
+        <column alias="imsFriendId">
+            <describtion>好友的Id</describtion>
+        </column>
+        <column alias="imsUserLoginId">
+            <describtion>用户的登陆ID</describtion>
+        </column>
+        <column alias="imsUserFriendCreateTime">
+            <describtion>值的创建时间</describtion>
+        </column>
+        <column alias="imsFriendType">
+            <describtion>好友的类型</describtion>
+        </column>
+        <column alias="imsFriendAlias">
+            <describtion>好友的别称</describtion>
+        </column>
+        <primary-key alias="imsFriendId"/>
+        <primary-key alias="imsUserLoginId"/>
+    </entity>
+    <entity tableName="ims_user_group" tableAlias="imsUserGroup">
+        <describetion>群组用户关系表</describetion>
+        <column alias="imsGroupId">
+            <describtion>群组Id</describtion>
+        </column>
+        <column alias="imsUserLoginId">
+            <describtion>用户的Id</describtion>
+        </column>
+        <column alias="imsUserGroupCreateTime">
+            <describtion>值的创建时间</describtion>
+        </column>
+        <primary-key alias="imsGroupId"/>
+        <primary-key alias="imsUserLoginId"/>
+    </entity>
+    <entity tableName="ims_msg" tableAlias="imsMsg">
+        <describetion>消息表</describetion>
+        <column alias="imsMsgId">
+            <describtion>消息主键</describtion>
+        </column>
+        <column alias="imsMsgContent">
+            <describtion>消息内容</describtion>
+        </column>
+        <column alias="imsMsgType">
+            <describtion>消息类型</describtion>
+        </column>
+        <column alias="imsMsgCreateTime">
+            <describtion>消息的创建时间</describtion>
+        </column>
+        <column alias="imsMsgSendUserLoginId">
+            <describtion>发送者的Id</describtion>
+        </column>
+        <column alias="imsMsgReceiveId">
+            <describtion>接收者的Id</describtion>
+        </column>
+        <primary-key alias="imsMsgId"/>
+    </entity>
+    <entity tableName="ims_chat" tableAlias="imsChat">
+        <describetion>会话表</describetion>
+        <column alias="imsChatId">
+            <describtion>会话ID</describtion>
+        </column>
+        <column alias="imsChatCreateTime">
+            <describtion>会话的创建时间</describtion>
+        </column>
+        <column alias="imsChatLastReadTime">
+            <describtion>会话的最后阅读时间</describtion>
+        </column>
+        <column alias="imsChatLastMsgId">
+            <describtion>会话最后的消息ID</describtion>
+        </column>
+        <column alias="imsChatSendUserLoginId">
+            <describtion>会话的发送者Id</describtion>
+        </column>
+        <column alias="imsChatToReceiveId">
+            <describtion>会话的接收者ID</describtion>
+        </column>
+        <primary-key alias="imsChatId"/>
+    </entity>
+    <entity tableName="ims_group" tableAlias="imsGroup">
+        <describetion>群组资料表</describetion>
+        <column alias="imsGroupId">
+            <describtion>群组Id</describtion>
+        </column>
+        <column alias="imsGroupName">
+            <describtion>群组名称</describtion>
+        </column>
+        <column alias="imsGroupCreateTime">
+            <describtion>创建时间</describtion>
+        </column>
+        <primary-key alias="imsGroupId"/>
+    </entity>
 </model>
