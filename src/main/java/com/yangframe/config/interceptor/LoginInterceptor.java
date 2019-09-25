@@ -35,6 +35,10 @@ public class LoginInterceptor  implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //不拦截OPTIONS请求
+        if(request.getMethod().equals("OPTIONS")){
+            return true;
+        }
         List<Map<String, Object>> ipBlackList = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName("ipBlackList"), new ConditionEntity());
         List<Map<String, Object>> pathWhiteList = baseService.findAllNoPage(FindEntity.newInstance().makeEntityName("pathWhiteList"), new ConditionEntity());
         //转换成List<String>
