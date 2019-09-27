@@ -1,6 +1,8 @@
 package com.yangframe.chat.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yangframe.chat.SendMsgAdapter;
+import com.yangframe.chat.entity.HistoryEntity;
 import com.yangframe.chat.service.ChatService;
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,10 +48,32 @@ public class ChatController {
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("userId", "2");
         jsonObject.put("content", "服务器的内容");
-        webSocketChat.sendMsg("10001", "我给客户发消息啦！");
+        Map<String,Object> msgUp = new HashMap<>();
+        msgUp.put("imsMsgId", "99990");
+        msgUp.put("imsMsgContent","我是啊啊哈华盛顿巴适得很把进度表");
+        msgUp.put("imsMsgType", "text");
+        msgUp.put("imsMsgCreateTime", "2019-01-08 00:00:00");
+        msgUp.put("imsMsgSendUserLoginId", "10001");
+        msgUp.put("imsMsgReceiveId", "10002");
+        webSocketChat.sendMsg("10001", SendMsgAdapter.parseNewMsg(msgUp).toJSONString());
         //chatService.sendMsg(data);
         //ChatSocketHandler.sendMsg(jsonObject.toJSONString());
         return new ResultEntity(ResultEnum.OK, MapUtil.toMap("result", true));
     }
 
+    @ApiOperation("获取会话列表的接口")
+    @GetMapping("getChatLists")
+    @ResponseBody
+    public ResultEntity getChatLists(@RequestParam String userLoginId){
+
+        return new ResultEntity(ResultEnum.OK, chatService.getChatList(userLoginId));
+    }
+
+    @ApiOperation("获取历史消息")
+    @PostMapping("getHistoryMsg")
+    @ResponseBody
+    public ResultEntity getHistoryMsg(@RequestBody HistoryEntity historyEntity){
+
+        return new ResultEntity(ResultEnum.OK, chatService.getHistoryMsg(historyEntity));
+    }
 }

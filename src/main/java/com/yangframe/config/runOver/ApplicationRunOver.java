@@ -15,7 +15,7 @@ public class ApplicationRunOver implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initDatabase();
+       // initDatabase();
         initBaseService();
         initAspect();
         //初始化白名单设置

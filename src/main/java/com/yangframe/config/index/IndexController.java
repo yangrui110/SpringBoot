@@ -9,6 +9,7 @@ import com.yangframe.config.util.MapUtil;
 import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
+import com.yangframe.web.core.util.MakeConditionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class IndexController {
         Map condition = MapUtil.toMap("userLoginId", userId);
         condition.put("userLoginPassword", password);
 
-        FindEntity findEntity = FindEntity.newInstance().makeEntityName("UserLogin").makeCondition(condition);
+        FindEntity findEntity = FindEntity.newInstance().makeEntityName("UserLogin").makeData(MakeConditionUtil.makeCondition(condition));
         Object all = baseService.findAllNoPage(findEntity, new ConditionEntity());
         if(((List)all).size()<=0){
             throw new BaseException(304, "用户名或者密码不正确");
@@ -63,7 +64,7 @@ public class IndexController {
         //获取用户权限信息
         Map instance = MapUtil.newInstance();
         instance.put("userLoginId", userId);
-        FindEntity permissions = FindEntity.newInstance().makeEntityName("userPermissions").makeCondition(instance);
+        FindEntity permissions = FindEntity.newInstance().makeEntityName("userPermissionsView").makeCondition(instance);
         FindEntity roles = FindEntity.newInstance().makeEntityName("userRoleView").makeCondition(instance);
         List<Map<String, Object>> pes = baseService.findAllNoPage(permissions, new ConditionEntity());
         List<String> rs=new ArrayList<>();

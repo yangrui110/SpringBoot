@@ -17,11 +17,10 @@ public class JoinRelation {
     private String tableName;
     private String tableAlias;
     private String tableMemberAlias;
-    private List<String> column =new ArrayList<>();  // 和referColumn是一对一的关系
 
     private String referTable;
     private String referTableAlias;
     private String referMemberAlias;
-    private List<String> referColumn =new ArrayList<>();
 
+    private List<ReferColumnEntity> referColumnEntities =new ArrayList<>();
 }

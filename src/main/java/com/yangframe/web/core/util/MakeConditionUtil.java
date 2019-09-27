@@ -117,5 +117,4 @@ public class MakeConditionUtil {
         return parseLast(ls,combine);
     }
 
-
 }

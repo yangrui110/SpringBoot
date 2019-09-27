@@ -117,6 +117,7 @@
     <xs:attributeGroup name="keyMap.attrs">
         <xs:attribute name="field-name" type="xs:string"/>
         <xs:attribute name="rel-field-name" type="xs:string"/>
+        <xs:attribute name="operator" type="xs:string"/>
     </xs:attributeGroup>
     <!--exclude标签的属性-->
     <xs:attributeGroup name="exclude.attrs">

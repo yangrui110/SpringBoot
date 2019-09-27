@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yangframe.web.dao.mysql.ChatDao">
+    <select id="getChatList" resultType="java.util.Map">
+        SELECT
+        count(1) as notReadNum,ICH.ims_chat_to_receive_id as imsReceiveId
+        FROM
+        ims_chat ICH
+        LEFT JOIN ims_msg IMG ON ICH.ims_chat_last_read_time &lt; IMG.ims_msg_create_time
+           AND ICH.ims_chat_send_user_login_id = IMG.ims_msg_send_user_login_id
+           and ICH.ims_chat_send_user_login_id = #{userLoginId}
+           AND ICH.ims_chat_to_receive_id = IMG.ims_msg_receive_id
+           GROUP BY ICH.ims_chat_to_receive_id
+    </select>
+
+    <select id="getHistoryMsg" resultType="java.util.Map">
+        SELECT
+        c.ims_msg_receive_id as imsMsgReceiveId,
+        c.ims_msg_send_user_login_id as imsMsgSendUserLoginId,
+        c.ims_msg_id as imsMsgId,
+        c.ims_msg_create_time as imsMsgCreateTime,
+        c.ims_msg_content as imsMsgContent,
+        c.ims_msg_type as imsMsgType
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                    ims_msg a
+                WHERE
+                    a.ims_msg_send_user_login_id = #{historyEntity.userLoginId}
+                AND a.ims_msg_receive_id = #{historyEntity.receiveId}
+                UNION ALL
+                SELECT
+                    *
+                FROM
+                    ims_msg b
+                WHERE
+                    b.ims_msg_send_user_login_id = #{historyEntity.receiveId}
+                AND b.ims_msg_receive_id = #{historyEntity.userLoginId}
+            ) c
+        ORDER BY
+            c.ims_msg_create_time ASC
+        <if test="historyEntity.start!=null and historyEntity.end !=null">
+            limit ${historyEntity.start},${historyEntity.end}
+        </if>
+    </select>
+</mapper>

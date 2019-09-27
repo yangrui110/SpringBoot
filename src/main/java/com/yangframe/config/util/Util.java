@@ -27,7 +27,7 @@ public class Util {
     private static String getRand(){
         StringBuilder builder = new StringBuilder();
         for(int i=0;i<5;i++){
-            builder.append(Math.random()*10);
+            builder.append(Math.floor(Math.random())*10);
         }
 
         return builder.toString();

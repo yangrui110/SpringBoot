@@ -292,13 +292,14 @@ public class EntityMap {
             JoinRelation relation = relations.get(m);
             join.append(relation.getJoin()).append(" ").append(quote).append(relation.getReferTable()).append(quote).append(" ").append(relation.getReferMemberAlias())
                     .append(" on ");
-            List<String> cols=relation.getColumn();
-            for (int i = 0; i < cols.size(); i++) {
-                join.append(relation.getTableMemberAlias()).append(".").append(quote).append(cols.get(i)).append(quote)
-                        .append(" = ")
-                        .append(relation.getReferMemberAlias()).append(".").append(quote).append(relation.getReferColumn().get(i)).append(quote)
+            List<ReferColumnEntity> referColumnEntities = relation.getReferColumnEntities();
+            for (int i = 0; i < referColumnEntities.size(); i++) {
+                ReferColumnEntity vs = referColumnEntities.get(i);
+                join.append(relation.getTableMemberAlias()).append(".").append(quote).append(vs.getColumn()).append(quote)
+                        .append(vs.getOperator())
+                        .append(relation.getReferMemberAlias()).append(".").append(quote).append(vs.getReferColumn()).append(quote)
                         .append(" ");
-                if(i!=cols.size()-1)
+                if(i!=referColumnEntities.size()-1)
                     join.append(" and ");
             }
         }
@@ -421,8 +422,12 @@ public class EntityMap {
                 elements1.forEach((v)->{
                     String fieldName=v.attributeValue("field-name");
                     String relFieldName=v.attributeValue("rel-field-name");
-                    relation.getColumn().add(allColumns.get(fieldName).getColumn());
-                    relation.getReferColumn().add(allColumns.get(relFieldName).getColumn());
+                    String operator=v.attributeValue("operator")==null?" = ":v.attributeValue("operator");
+                    ReferColumnEntity entity =new ReferColumnEntity();
+                    entity.setColumn(allColumns.get(fieldName).getColumn());
+                    entity.setOperator(operator);
+                    entity.setReferColumn(allColumns.get(relFieldName).getColumn());
+                    relation.getReferColumnEntities().add(entity);
                 });
                 relationMap.put(relTable, relation);
             }

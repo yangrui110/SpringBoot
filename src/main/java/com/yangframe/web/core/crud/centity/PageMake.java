@@ -1,5 +1,6 @@
 package com.yangframe.web.core.crud.centity;
 
+import com.yangframe.chat.entity.HistoryEntity;
 import com.yangframe.config.datasource.type.DataSourceType;
 
 /**
@@ -13,6 +14,15 @@ public class PageMake {
      * 制作mysql的分页参数
      * */
     public static void makeMysqlPage(ConditionEntity entity){
+        if(entity.getStart()!=null&&entity.getEnd()!=null) {
+            entity.setStart((entity.getStart() - 1)*entity.getEnd());
+            entity.setEnd(entity.getEnd());
+        }
+    }
+    /**
+     * 制作mysql的分页参数
+     * */
+    public static void makeMysqlPage(HistoryEntity entity){
         if(entity.getStart()!=null&&entity.getEnd()!=null) {
             entity.setStart((entity.getStart() - 1)*entity.getEnd());
             entity.setEnd(entity.getEnd());

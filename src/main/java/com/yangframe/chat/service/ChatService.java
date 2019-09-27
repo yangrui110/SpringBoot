@@ -1,10 +1,17 @@
 package com.yangframe.chat.service;
 
+import com.yangframe.chat.entity.HistoryEntity;
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
+import com.yangframe.config.util.ApplicationContextUtil;
+import com.yangframe.config.util.MapUtil;
 import com.yangframe.config.util.Util;
+import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
+import com.yangframe.web.core.crud.centity.PageMake;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
+import com.yangframe.web.core.util.MakeConditionUtil;
+import com.yangframe.web.dao.mysql.ChatDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -12,6 +19,7 @@ import org.springframework.util.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,10 +70,33 @@ public class ChatService {
     }
 
     /**
-     * @param findEntity 查找的是和哪个的历史消息
+     * @param historyEntity 查找的是和哪个的历史消息
      * */
-    public ResultEntity getHistoryMsg(FindEntity findEntity){
+    public List<Map<String,Object>> getHistoryMsg(HistoryEntity historyEntity){
+        //转换分页参数
+        PageMake.makeMysqlPage(historyEntity);
+        //查询结果
+        return ApplicationContextUtil.applicationContext.getBean(ChatDao.class).getHistoryMsg(historyEntity);
+    }
 
-        return new ResultEntity(ResultEnum.OK, null);
+    /**
+     * @param userId 用户的Id
+     * */
+    public List getChatList(String userId){
+        List<Map<String, Object>> unReads = ApplicationContextUtil.applicationContext.getBean(ChatDao.class).getChatList(userId);  //统计未读的消息数量
+        Map condition = MapUtil.toMap("imsChatSendUserLoginId", userId);
+        List imsChat = baseService.findAll(FindEntity.newInstance().makeEntityName("imsChatMsgView").makeData(condition), new ConditionEntity());
+        //转换数据
+        for (Object chat: imsChat){
+            Map<String,Object> chatOne = (Map<String, Object>) chat;
+            Object num=0;
+            for(Map<String,Object> unread: unReads){
+                if(unread.get("imsReceiveId").equals(chatOne.get("imsChatToReceiveId"))){
+                    num= unread.get("notReadNum");
+                }
+            }
+            ((Map<String, Object>) chat).put("notReadNum", num);
+        }
+        return imsChat;
     }
 }

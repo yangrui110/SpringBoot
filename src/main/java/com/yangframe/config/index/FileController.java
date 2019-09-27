@@ -1,5 +1,7 @@
 package com.yangframe.config.index;
 
+import com.yangframe.config.advice.ResultEntity;
+import com.yangframe.config.advice.ResultEnum;
 import com.yangframe.config.properties.UploadFileProperties;
 import com.yangframe.config.util.Util;
 import com.yangframe.web.util.file.FileUtil;
@@ -37,7 +39,7 @@ public class FileController {
     @ApiOperation( value = "文件上传")
     @ResponseBody
     @PostMapping("upload")
-    public Map uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResultEntity uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
         String originName=file.getOriginalFilename();
         Map<String,Object> mapData=ensureFile(originName);
         String fileName= (String) mapData.get("relativePath");
@@ -55,7 +57,7 @@ public class FileController {
         Map<String,Object> map=new HashMap<>();
         map.put("filePath",fileName);
         map.put("fileOriginalName", originName);
-        return map;
+        return new ResultEntity(ResultEnum.OK, map);
     }
 
     public static void main(String[] args) throws IOException {

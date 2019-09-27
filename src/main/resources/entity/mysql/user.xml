@@ -20,6 +20,12 @@
         <column alias="userLoginInfoCreateTime">
             <describtion>创建时间</describtion>
         </column>
+        <column alias="userLoginInfoLabel">
+            <describtion>个性签名</describtion>
+        </column>
+        <column alias="userLoginInfoIcon">
+            <describtion>用户头像</describtion>
+        </column>
         <primary-key alias="userLoginInfoId"/>
     </entity>
 
