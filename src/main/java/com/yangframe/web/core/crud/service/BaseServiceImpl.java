@@ -96,6 +96,23 @@ public class BaseServiceImpl{
         });
         baseDao.insert(entity.getEntityName(),parseData);
     }
+    public void store(FindEntity entity){
+        InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
+        Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
+        Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
+        Map<String,Object> record = findByPK(entity.getEntityName(),pkData);
+        //开始存储
+        Map parseData = new HashMap();
+        entity.getData().forEach((k,v)->{
+            parseData.put(columns.get(k).getColumn(), v);
+        });
+        if(record!=null){
+            baseDao.update(entity.getEntityName(),parseData,entity.getCondition());
+        }else {
+            baseDao.insert(entity.getEntityName(),parseData);
+        }
+    }
     public void insertOrUpdate(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());

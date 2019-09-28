@@ -8,7 +8,7 @@
         count(1) as notReadNum,ICH.ims_chat_to_receive_id as imsReceiveId
         FROM
         ims_chat ICH
-        LEFT JOIN ims_msg IMG ON ICH.ims_chat_last_read_time &lt; IMG.ims_msg_create_time
+        inner JOIN ims_msg IMG ON ICH.ims_chat_last_read_time &lt; IMG.ims_msg_create_time
            AND ICH.ims_chat_send_user_login_id = IMG.ims_msg_send_user_login_id
            and ICH.ims_chat_send_user_login_id = #{userLoginId}
            AND ICH.ims_chat_to_receive_id = IMG.ims_msg_receive_id
@@ -42,7 +42,7 @@
                 AND b.ims_msg_receive_id = #{historyEntity.userLoginId}
             ) c
         ORDER BY
-            c.ims_msg_create_time ASC
+            c.ims_msg_create_time desc
         <if test="historyEntity.start!=null and historyEntity.end !=null">
             limit ${historyEntity.start},${historyEntity.end}
         </if>

@@ -17,5 +17,10 @@ public class SendMsgAdapter {
         os.put("data", msg);
         return os;
     }
-
+    public static JSONObject parseNewChat(Map msg){
+        JSONObject os =new JSONObject();
+        os.put("key", "newChat");
+        os.put("data", msg);
+        return os;
+    }
 }

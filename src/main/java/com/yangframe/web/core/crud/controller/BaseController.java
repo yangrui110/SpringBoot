@@ -2,6 +2,7 @@ package com.yangframe.web.core.crud.controller;
 
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
+import com.yangframe.config.util.MapUtil;
 import com.yangframe.web.core.crud.centity.*;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
 import com.yangframe.web.core.crud.service.BaseServiceExternal;
@@ -107,6 +108,14 @@ public class BaseController {
             result.put(k, v.getColumn());
         });*/
         return new ResultEntity(ResultEnum.OK,mapOne);
+    }
+
+    @ApiOperation("更新或者是插入")
+    @ResponseBody
+    @PostMapping("store")
+    public ResultEntity store(@RequestBody FindEntity entity){
+        baseService.store(entity);
+        return new ResultEntity(ResultEnum.OK, MapUtil.toMap("result",true));
     }
 
     /**

@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @autor 杨瑞
@@ -76,7 +73,9 @@ public class ChatService {
         //转换分页参数
         PageMake.makeMysqlPage(historyEntity);
         //查询结果
-        return ApplicationContextUtil.applicationContext.getBean(ChatDao.class).getHistoryMsg(historyEntity);
+        List<Map<String, Object>> historyMsg = ApplicationContextUtil.applicationContext.getBean(ChatDao.class).getHistoryMsg(historyEntity);
+        Collections.reverse(historyMsg);
+        return historyMsg;
     }
 
     /**

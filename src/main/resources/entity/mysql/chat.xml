@@ -109,14 +109,19 @@
         <member-entity tableAlias="imsChat" alias="ICH"/>
         <member-entity tableAlias="imsMsg" alias="IMG"/>
         <member-entity tableAlias="UserLoginInfo" alias="USINFO"/>
+        <member-entity tableAlias="imsGroup" alias="IGP"/>
         <alias-all referTable="IMG"/>
         <alias-all referTable="ICH"/>
         <alias-all referTable="USINFO"/>
+        <alias-all referTable="IGP"/>
         <view-link tableAlias="ICH" relTableAlias="IMG">
             <key-map field-name="imsChatLastMsgId" rel-field-name="imsMsgId"/>
         </view-link>
         <view-link tableAlias="ICH" relTableAlias="USINFO">
             <key-map field-name="imsChatToReceiveId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+        <view-link tableAlias="ICH" relTableAlias="IGP">
+            <key-map field-name="imsChatToReceiveId" rel-field-name="imsGroupId"/>
         </view-link>
     </view-entity>
     <entity tableName="ims_group" tableAlias="imsGroup">
