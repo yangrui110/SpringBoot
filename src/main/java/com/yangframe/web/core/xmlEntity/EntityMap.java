@@ -424,9 +424,9 @@ public class EntityMap {
                     String relFieldName=v.attributeValue("rel-field-name");
                     String operator=v.attributeValue("operator")==null?" = ":v.attributeValue("operator");
                     ReferColumnEntity entity =new ReferColumnEntity();
-                    entity.setColumn(allColumns.get(fieldName).getColumn());
+                    entity.setColumn(allColumns.get(curTable+"_"+fieldName).getColumn());
                     entity.setOperator(operator);
-                    entity.setReferColumn(allColumns.get(relFieldName).getColumn());
+                    entity.setReferColumn(allColumns.get(relTable+"_"+relFieldName).getColumn());
                     relation.getReferColumnEntities().add(entity);
                 });
                 relationMap.put(relTable, relation);
@@ -579,7 +579,7 @@ public class EntityMap {
             Map finalResult = result;
             memberMap.forEach((k, v)->{
                 if(!k.startsWith("great")) {
-                    Map c = new HashMap();
+                    Map<String,ColumnProperty> c = new HashMap();
                     Element element1 = EntityMap.getElement(v);
                     if ("view-entity".equals(element1.getName())) {
                         c = getNoExcludeColumns(element1);
@@ -587,7 +587,8 @@ public class EntityMap {
                         c = getColumnMap(v);
                     }
                     c.forEach((m, n) -> {
-                        finalResult.put(m, n);
+                        n.setTableMemberAlias(k);
+                        finalResult.put(k+"_"+m, n);
                     });
                 }
             });
@@ -602,13 +603,12 @@ public class EntityMap {
             if("alias".equals(k.getName())){
                 String cloumn= k.attributeValue("column");
                 String alias = k.attributeValue("alias");
-                ColumnProperty o = (ColumnProperty) result.get(cloumn);
+                String memberAlias= k.attributeValue("referTable");
+                ColumnProperty o = (ColumnProperty) result.get(memberAlias+"_"+cloumn);
                 o.setAlias(alias);
-                result.remove(cloumn);
-                result.put(alias, o);
             }
         }
-
+        //去掉相同的列
         return result;
     }
 

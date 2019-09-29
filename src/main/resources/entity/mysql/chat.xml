@@ -140,4 +140,40 @@
         </column>
         <primary-key alias="imsGroupId"/>
     </entity>
+    <entity tableName="ims_ask_friend" tableAlias="imsAskFriend">
+        <describetion>好友申请列表</describetion>
+        <column alias="imsSendUserId">
+            <describtion>请求人ID</describtion>
+        </column>
+        <column alias="imsReceivedId">
+            <describtion>被请求的人ID</describtion>
+        </column>
+        <column alias="imsAskStatus">
+            <describtion>申请状态(agree,disAgree,asking)</describtion>
+        </column>
+        <column alias="imsAskCreateTime">
+            <describtion>申请的发起时间</describtion>
+        </column>
+        <column alias="imsAskReplyTime">
+            <describtion>申请的操作时间</describtion>
+        </column>
+        <primary-key alias="imsSendUserId"/>
+        <primary-key alias="imsReceivedId"/>
+    </entity>
+    <view-entity tableAlias="imsAskFriendView">
+        <describetion>获取好友申请列表的数据</describetion>
+        <member-entity tableAlias="imsAskFriend" alias="IAF"/>
+        <member-entity tableAlias="UserLoginInfo" alias="UL1"/>
+        <member-entity tableAlias="UserLoginInfo" alias="UL2"/>
+        <alias-all referTable="IAF"/>
+        <alias referTable="UL1" column="userLoginInfoName" alias="sendUserName"/>
+        <alias referTable="UL1" column="userLoginInfoIcon" alias="sendUserIcon"/>
+        <alias referTable="UL2" column="userLoginInfoName" alias="receiveUserName"/>
+        <view-link tableAlias="IAF" relTableAlias="UL1">
+            <key-map field-name="imsSendUserId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+        <view-link tableAlias="IAF" relTableAlias="UL2">
+            <key-map field-name="imsReceivedId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+    </view-entity>
 </model>
