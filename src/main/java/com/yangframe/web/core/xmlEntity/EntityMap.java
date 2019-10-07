@@ -471,9 +471,15 @@ public class EntityMap {
         Map<String,Object> returnData=new HashMap<>();
         Map<String, ColumnProperty> primaryKey = getPrimaryKey(entityName);
         primaryKey.forEach((k,v)->{
-            if(!entityData.containsKey(k)||StringUtils.isEmpty(entityData.get(k)))
-                throw new BaseException(304, "主键属性为空，请给主键赋值");
-            returnData.put(k, entityData.get(k));
+            if(v.isAutoIncrease()){
+                //不需要进行主键为空的判断
+                if(entityData.containsKey(k))
+                    returnData.put(k, entityData.get(k));
+            }else {
+                if (!entityData.containsKey(k) || StringUtils.isEmpty(entityData.get(k)))
+                    throw new BaseException(304, "主键属性为空，请给主键赋值");
+            }
+
         });
         return returnData;
     }
@@ -666,6 +672,7 @@ public class EntityMap {
                 String name = el.attributeValue("name");
                 String alias = el.attributeValue("alias");
                 String type = el.attributeValue("type");
+                String autoIncrease = el.attributeValue("autoIncrease");
                 if (alias==null)
                     throw new BaseException(304, "该标签" + el.getName() + "的name属性不能为空");
                 ColumnProperty property=new ColumnProperty();
@@ -674,6 +681,7 @@ public class EntityMap {
                 property.setTableMemberAlias("");
                 property.setTableAlias(table);
                 property.setTableName(tableName);
+                property.setAutoIncrease(autoIncrease=="true"?true:false);
                 property.setColumnType(type==null?ColumnType.STRING:ColumnType.valueOf(type));
                 Element describtion = el.element("describtion");
                 if(describtion!=null)

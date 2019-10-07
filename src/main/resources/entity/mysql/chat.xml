@@ -40,6 +40,9 @@
         <column alias="imsUserLoginId">
             <describtion>用户的Id</describtion>
         </column>
+        <column alias="imsJobTitle">
+            <describtion>用户在群里面的职位</describtion>
+        </column>
         <column alias="imsUserGroupCreateTime">
             <describtion>值的创建时间</describtion>
         </column>
@@ -58,7 +61,7 @@
         <view-link tableAlias="IUG" relTableAlias="ULI">
             <key-map field-name="imsUserLoginId" rel-field-name="userLoginInfoId"/>
         </view-link>
-        <view-link tableAlias="IUG" relTableAlias="IG">
+        <view-link tableAlias="IUG" relTableAlias="IG" relOptional="true">
             <key-map field-name="imsGroupId" rel-field-name="imsGroupId"/>
         </view-link>
     </view-entity>
@@ -120,13 +123,13 @@
         <view-link tableAlias="ICH" relTableAlias="USINFO">
             <key-map field-name="imsChatToReceiveId" rel-field-name="userLoginInfoId"/>
         </view-link>
-        <view-link tableAlias="ICH" relTableAlias="IGP">
+        <view-link tableAlias="ICH" relTableAlias="IGP" relOptional="true">
             <key-map field-name="imsChatToReceiveId" rel-field-name="imsGroupId"/>
         </view-link>
     </view-entity>
     <entity tableName="ims_group" tableAlias="imsGroup">
         <describetion>群组资料表</describetion>
-        <column alias="imsGroupId">
+        <column alias="imsGroupId" autoIncrease = "true">
             <describtion>群组Id</describtion>
         </column>
         <column alias="imsGroupName">
@@ -135,11 +138,55 @@
         <column alias="imsGroupIcon">
             <describtion>群组的头像</describtion>
         </column>
+        <column alias="imsGroupLabel">
+            <describtion>群组标签</describtion>
+        </column>
+        <column alias="imsGroupDesc">
+            <describtion>群组描述</describtion>
+        </column>
         <column alias="imsGroupCreateTime">
             <describtion>创建时间</describtion>
         </column>
         <primary-key alias="imsGroupId"/>
     </entity>
+    <entity tableName="ims_ask_group" tableAlias="imsAskGroup">
+        <describetion>群组的申请信息</describetion>
+        <column alias="imsGroupId">
+            <describtion>群组ID</describtion>
+        </column>
+        <column alias="imsUserLoginId">
+            <describtion>用户ID</describtion>
+        </column>
+        <column alias="imsAskStatus">
+            <describtion>申请状态（agree,disAgree,asking）</describtion>
+        </column>
+        <column alias="imsAskReason">
+            <describtion>申请理由</describtion>
+        </column>
+        <column alias="imsAskGroupCreateTime">
+            <describtion>申请的发起时间</describtion>
+        </column>
+        <column alias="imsAskReplyTime">
+            <describtion>申请的回应时间</describtion>
+        </column>
+        <primary-key alias="imsGroupId"/>
+        <primary-key alias="imsUserLoginId"/>
+    </entity>
+    <view-entity tableAlias="imsAskGroupView">
+        <describetion>申请表的视图</describetion>
+        <member-entity tableAlias="imsAskGroup" alias="IGP"/>
+        <member-entity tableAlias="imsGroup" alias="IG"/>
+        <member-entity tableAlias="UserLoginInfo" alias="ULI"/>
+        <alias-all referTable="IGP"/>
+        <alias-all referTable="IG"/>
+        <alias-all referTable="ULI"/>
+        <view-link tableAlias="IGP" relTableAlias="IG" relOptional="true">
+            <key-map field-name="imsGroupId" rel-field-name="imsGroupId"/>
+        </view-link>
+        <view-link tableAlias="IGP" relTableAlias="ULI">
+            <key-map field-name="imsUserLoginId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+    </view-entity>
     <entity tableName="ims_ask_friend" tableAlias="imsAskFriend">
         <describetion>好友申请列表</describetion>
         <column alias="imsSendUserId">

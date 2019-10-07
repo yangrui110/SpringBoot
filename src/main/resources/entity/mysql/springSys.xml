@@ -48,4 +48,14 @@
         </column>
         <primary-key alias="path"/>
     </entity>
+    <entity tableAlias="autoPk" tableName="auto_pk">
+        <describetion>自增长主键</describetion>
+        <column alias="tableAlias">
+            <describtion>表别名</describtion>
+        </column>
+        <column alias="primaryKeyValue">
+            <describtion>主键值</describtion>
+        </column>
+        <primary-key alias="tableAlias"/>
+    </entity>
 </model>

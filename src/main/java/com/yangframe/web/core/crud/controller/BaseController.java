@@ -1,5 +1,6 @@
 package com.yangframe.web.core.crud.controller;
 
+import com.yangframe.config.advice.BaseException;
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
 import com.yangframe.config.util.MapUtil;
@@ -126,6 +127,9 @@ public class BaseController {
     @PostMapping("delSelect")
     public ResultEntity delSelect(@RequestBody DelSelectEntity delSelectEntity){
         List<Map<String,Object>> datas = delSelectEntity.getDatas();
+        if(datas.size()==0){
+            throw new BaseException(507,"删除条件不能为空");
+        }
         baseService.delSelect(delSelectEntity.getEntityName(), datas);
         return new ResultEntity(ResultEnum.OK, new ModelMap("result", true));
     }

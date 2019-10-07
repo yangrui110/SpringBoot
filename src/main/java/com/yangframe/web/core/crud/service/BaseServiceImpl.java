@@ -3,6 +3,7 @@ package com.yangframe.web.core.crud.service;
 import com.yangframe.config.advice.BaseException;
 import com.yangframe.config.advice.ExceptionEntity;
 import com.yangframe.config.datasource.type.DataSourceType;
+import com.yangframe.config.util.MapUtil;
 import com.yangframe.web.core.crud.centity.ConditionEntity;
 import com.yangframe.web.core.crud.centity.FindEntity;
 import com.yangframe.web.core.crud.centity.Operator;
@@ -86,22 +87,54 @@ public class BaseServiceImpl{
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
         Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entity.getEntityName());
+        if(pkData.size()<=0){
+            pushAutoPkData(entity1.getEntityName(),primaryKey,entity.getData());
+        }
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        Map<String,Object> record = findByPK(entity.getEntityName(),pkData);
-        if(record!=null)
-            throw new BaseException(504, "主键已经存在于数据库中");
+
         Map parseData = new HashMap();
         entity.getData().forEach((k,v)->{
             parseData.put(columns.get(k).getColumn(), v);
         });
         baseDao.insert(entity.getEntityName(),parseData);
     }
+    //
+    private void pushAutoPkData(String entityName,Map<String,ColumnProperty> primaryKey,Map<String,Object> pushData){
+        if(primaryKey.size()>1){
+            throw new BaseException(507,"请传入主键");
+        }else if(primaryKey.size()==1) {
+            //获取到第一个
+            Collection<ColumnProperty> values = primaryKey.values();
+            for(ColumnProperty value:values){
+                if(value.isAutoIncrease()){
+                    //获取到自增长的主键
+                    String primaryKeyValue = getAutoPk(entityName);
+                    Iterator<String> iterator = primaryKey.keySet().iterator();
+                    while (iterator.hasNext()){
+                        String next = iterator.next();
+                        pushData.put(next,primaryKeyValue);
+                    }
+
+                }
+            }
+
+        }else {
+            throw new BaseException(507,"请给实体定义主键");
+        }
+    }
     public void store(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
         Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
-        Map<String,Object> record = findByPK(entity.getEntityName(),pkData);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entity.getEntityName());
+        Map<String,Object> record=null;
+        if(pkData.size()<=0){
+            pushAutoPkData(entity1.getEntityName(),primaryKey,entity.getData());
+        }else {
+            record = findByPK(entity.getEntityName(),pkData);
+        }
         //开始存储
         Map parseData = new HashMap();
         entity.getData().forEach((k,v)->{
@@ -112,6 +145,26 @@ public class BaseServiceImpl{
         }else {
             baseDao.insert(entity.getEntityName(),parseData);
         }
+    }
+    private String getAutoPk(String entityName){
+        int primaryKeyValue =100000;
+        //从主键表中获取主键
+        InfoOfEntity autoPk = EntityMap.getAndJugeNotEmpty("autoPk");
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(autoPk.getConfig().getDaoBaseClassName());
+        Map byPK = baseDao.findByPK("autoPk", MapUtil.toMap("table_alias", entityName));
+
+        if(byPK==null){
+            //代表值没有，插入一条记录值进去，
+            Map auOne = MapUtil.toMap("table_alias", entityName);
+            auOne.put("primary_key_value","100000");
+            baseDao.insert("autoPk",auOne);
+        }else {
+            primaryKeyValue= Integer.parseInt((String) byPK.get("primary_key_value"));
+            primaryKeyValue++;
+            Map auOne = MapUtil.toMap("table_alias", entityName);
+            baseDao.update("autoPk",MapUtil.toMap("primary_key_value",primaryKeyValue),auOne);
+        }
+        return ""+primaryKeyValue;
     }
     public void insertOrUpdate(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());

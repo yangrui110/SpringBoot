@@ -16,6 +16,7 @@ public class ColumnProperty {
     private String tableAlias;
     private String tableMemberAlias;
 
+    private boolean autoIncrease;
     //列描述信息
     private String describetion;
     private ColumnType columnType;

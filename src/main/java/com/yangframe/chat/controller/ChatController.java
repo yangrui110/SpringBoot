@@ -76,4 +76,40 @@ public class ChatController {
 
         return new ResultEntity(ResultEnum.OK, chatService.getHistoryMsg(historyEntity));
     }
+
+    @ApiOperation("获取群组详情")
+    @GetMapping("getDetailGroup")
+    @ResponseBody
+    public ResultEntity getDetailGroup(@RequestParam  String groupId){
+        return new ResultEntity(ResultEnum.OK,chatService.getDetailGroup(groupId));
+    }
+
+    @ApiOperation("处理入群申请")
+    @PostMapping("judeGroup")
+    @ResponseBody
+    public ResultEntity judeGroup(@RequestBody Map<String,Object> mapData){
+        chatService.judeGroup(mapData);
+        return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
+    }
+    @ApiOperation("处理好友申请")
+    @PostMapping("judeFriend")
+    @ResponseBody
+    public ResultEntity judeFriend(@RequestBody Map<String,Object> mapData){
+        chatService.judeFriend(mapData);
+        return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
+    }
+    @ApiOperation("删除好友以及会话")
+    @PostMapping("delFriend")
+    @ResponseBody
+    public ResultEntity delFriend(@RequestBody Map<String,Object> mapData){
+        chatService.delFriend(mapData);
+        return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
+    }
+    @ApiOperation("退群以及删除会话")
+    @PostMapping("delUserGroup")
+    @ResponseBody
+    public ResultEntity delUserGroup(@RequestBody Map<String,Object> mapData){
+        chatService.delUserGroup(mapData);
+        return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
+    }
 }
