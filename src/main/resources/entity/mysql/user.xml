@@ -57,11 +57,11 @@
 
     <view-entity tableAlias="userLoginView">
         <member-entity tableAlias="UserLogin" alias="UL"/>
-        <member-entity tableAlias="userLoginInfo" alias="UO"/>
+        <member-entity tableAlias="UserLoginInfo" alias="UO"/>
         <alias-all referTable="UL"/>
         <alias-all referTable="UO" />
         <view-link tableAlias="UL" relTableAlias="UO" relOptional="true">
-            <key-map rel-field-name="userLoginId" field-name="userLoginInfoId"/>
+            <key-map field-name="userLoginId" rel-field-name="userLoginInfoId" />
         </view-link>
     </view-entity>
 

@@ -18,6 +18,9 @@
         <column alias="imsFriendAlias">
             <describtion>好友的别称</describtion>
         </column>
+        <column alias="imsLastReadTime">
+            <describtion>最后的阅读时间</describtion>
+        </column>
         <primary-key alias="imsFriendId"/>
         <primary-key alias="imsUserLoginId"/>
     </entity>
@@ -45,6 +48,9 @@
         </column>
         <column alias="imsUserGroupCreateTime">
             <describtion>值的创建时间</describtion>
+        </column>
+        <column alias="imsLastReadTime">
+            <describtion>最后的阅读时间</describtion>
         </column>
         <primary-key alias="imsGroupId"/>
         <primary-key alias="imsUserLoginId"/>
@@ -87,13 +93,10 @@
         </column>
         <primary-key alias="imsMsgId"/>
     </entity>
-    <entity tableName="ims_chat" tableAlias="imsChat">
+    <entity tableName="ims_friend_chat" tableAlias="imsFriendChat">
         <describetion>会话表</describetion>
         <column alias="imsChatCreateTime">
             <describtion>会话的创建时间</describtion>
-        </column>
-        <column alias="imsChatLastReadTime">
-            <describtion>会话的最后阅读时间</describtion>
         </column>
         <column alias="imsChatLastMsgId">
             <describtion>会话最后的消息ID</describtion>
@@ -107,7 +110,71 @@
         <primary-key alias="imsChatSendUserLoginId"/>
         <primary-key alias="imsChatToReceiveId"/>
     </entity>
-    <view-entity tableAlias="imsChatMsgView">
+    <entity tableName="ims_group_chat" tableAlias="imsGroupChat">
+        <describetion>会话表</describetion>
+        <column alias="imsChatCreateTime">
+            <describtion>会话的创建时间</describtion>
+        </column>
+        <column alias="imsChatLastMsgId">
+            <describtion>会话最后的消息ID</describtion>
+        </column>
+        <column alias="imsChatSendUserLoginId">
+            <describtion>会话的发送者Id</describtion>
+        </column>
+        <column alias="imsChatToReceiveId">
+            <describtion>会话的接收者ID</describtion>
+        </column>
+        <primary-key alias="imsChatToReceiveId"/>
+    </entity>
+    <view-entity tableAlias="imsFriendChatMsgView">
+        <describetion>好友会话消息表</describetion>
+        <member-entity tableAlias="imsFriendChat" alias="IFC"/>
+        <member-entity tableAlias="imsMsg" alias="IMG"/>
+        <member-entity tableAlias="UserLoginInfo" alias="USINFO"/>
+        <member-entity tableAlias="imsUserFriend" alias="IUF"/>
+        <member-entity tableAlias="UserLoginInfo" alias="USINFO1"/>
+        <alias-all referTable="IFC"/>
+        <alias-all referTable="IMG"/>
+        <alias-all referTable="USINFO"/>
+        <alias-all referTable="IUF"/>
+        <alias referTable="USINFO1" column="userLoginInfoName" alias="sendUserInfoName"></alias>
+        <alias referTable="USINFO1" column="userLoginInfoId" alias="sendUserLoginId"></alias>
+        <view-link tableAlias="IFC" relTableAlias="IMG">
+            <key-map field-name="imsChatLastMsgId" rel-field-name="imsMsgId"/>
+        </view-link>
+        <view-link tableAlias="IFC" relTableAlias="USINFO">
+            <key-map field-name="imsChatToReceiveId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+        <view-link tableAlias="IFC" relTableAlias="USINFO1">
+            <key-map field-name="imsChatSendUserLoginId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+        <view-link tableAlias="IFC" relTableAlias="IUF">
+            <key-map field-name="imsChatSendUserLoginId" rel-field-name="imsUserLoginId"/>
+            <key-map field-name="imsChatToReceiveId" rel-field-name="imsFriendId"/>
+        </view-link>
+    </view-entity>
+    <view-entity tableAlias="imsGroupChatMsgView">
+        <describetion>群组会话消息表</describetion>
+        <member-entity tableAlias="imsGroupChat" alias="IGC"/>
+        <member-entity tableAlias="imsMsg" alias="IMG"/>
+        <member-entity tableAlias="imsGroup" alias="IGP"/>
+        <member-entity tableAlias="imsUserGroup" alias="IUG"/>
+        <alias-all referTable="IGC"/>
+        <alias-all referTable="IMG"/>
+        <alias-all referTable="IGP"/>
+        <alias-all referTable="IUG"/>
+        <view-link tableAlias="IGC" relTableAlias="IMG">
+            <key-map field-name="imsChatLastMsgId" rel-field-name="imsMsgId"/>
+        </view-link>
+        <view-link tableAlias="IGC" relTableAlias="IGP" relOptional="true">
+            <key-map field-name="imsChatToReceiveId" rel-field-name="imsGroupId"/>
+        </view-link>
+        <view-link tableAlias="IGC" relTableAlias="IUG">
+            <key-map field-name="imsChatToReceiveId" rel-field-name="imsGroupId"/>
+            <key-map field-name="imsChatSendUserLoginId" rel-field-name="imsUserLoginId"/>
+        </view-link>
+    </view-entity>
+    <!--<view-entity tableAlias="imsChatMsgView">
         <describetion>获取所有的会话统计列表</describetion>
         <member-entity tableAlias="imsChat" alias="ICH"/>
         <member-entity tableAlias="imsMsg" alias="IMG"/>
@@ -126,7 +193,7 @@
         <view-link tableAlias="ICH" relTableAlias="IGP" relOptional="true">
             <key-map field-name="imsChatToReceiveId" rel-field-name="imsGroupId"/>
         </view-link>
-    </view-entity>
+    </view-entity>-->
     <entity tableName="ims_group" tableAlias="imsGroup">
         <describetion>群组资料表</describetion>
         <column alias="imsGroupId" autoIncrease = "true">

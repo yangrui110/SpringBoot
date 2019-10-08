@@ -18,6 +18,12 @@ spring:
     console:
       path: /h2-console
       enabled: true
+  mail:
+    username: 1341672184@qq.com
+    password: iigiviqhhitggjhj
+    host: smtp.qq.com
+    protocol: smtp
+    port: 25
 uploadFile:
   path: C:\\FileUpload\\
 ---
