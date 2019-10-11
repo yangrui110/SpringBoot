@@ -19,7 +19,7 @@ public class ApplicationRunOver implements ApplicationRunner {
         initBaseService();
         initAspect();
         //初始化白名单设置
-        WhiteList.initWhiteLists();;
+        //WhiteList.initWhiteLists();;
     }
 
     /**

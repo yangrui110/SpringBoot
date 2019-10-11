@@ -13,4 +13,6 @@ public class Operator {
     public static final String NOE_EQUAL="!=";
 
     public static final String IN="in";
+
+    public static final String NOT_IN="not in";
 }

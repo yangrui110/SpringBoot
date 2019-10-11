@@ -330,7 +330,7 @@ public class EntityMap {
                             builder.append(property.getColumn()).append(" ") .append(operator==null?"=":operator).append(" ");
                             if(Operator.LIKE.equals(operator))
                                    builder.append("'%").append(right).append("%'").append(" ");
-                            else if(Operator.IN.equals(operator)){
+                            else if(Operator.IN.equals(operator)||Operator.NOT_IN.equals(operator)){
                                 StringBuilder bs=new StringBuilder();
                                 List lRight = (List) right;
                                  for(Object inner:lRight){
@@ -478,6 +478,7 @@ public class EntityMap {
             }else {
                 if (!entityData.containsKey(k) || StringUtils.isEmpty(entityData.get(k)))
                     throw new BaseException(304, "主键属性为空，请给主键赋值");
+                returnData.put(k, entityData.get(k));
             }
 
         });
@@ -681,7 +682,7 @@ public class EntityMap {
                 property.setTableMemberAlias("");
                 property.setTableAlias(table);
                 property.setTableName(tableName);
-                property.setAutoIncrease(autoIncrease=="true"?true:false);
+                property.setAutoIncrease("true".equals(autoIncrease)?true:false);
                 property.setColumnType(type==null?ColumnType.STRING:ColumnType.valueOf(type));
                 Element describtion = el.element("describtion");
                 if(describtion!=null)

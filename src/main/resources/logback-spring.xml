@@ -65,7 +65,7 @@
 		<appender-ref ref="errorAppender"/>
 	</logger>
 	
-	<root level="debug">
-		<appender-ref ref="consoleAppender"/>
+	<root level="info">
+		<appender-ref ref="infoAppender"/>
 	</root>
 </configuration>

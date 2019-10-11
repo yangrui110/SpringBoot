@@ -3,8 +3,11 @@ package com.yangframe.config.filter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.yangframe.config.applicationEvent.ApplicationStop;
 import com.yangframe.config.interceptor.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -14,10 +17,12 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -34,10 +39,21 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println("过滤器呀");
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "*");
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        Enumeration<String> headerNames = request.getHeaderNames();
+        StringBuilder builder=new StringBuilder();
+        while (headerNames.hasMoreElements()){
+            builder.append(headerNames.nextElement()).append(", ");
+        }
+        System.out.println("header:"+builder.toString().substring(0,builder.length()-1));
+        System.out.println("orign:"+request.getHeader("Origin"));
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "*");
+        //response.setHeader("Access-Control-Allow-Headers","*");
+        //response.setHeader("Access-Control-Allow-Headers", builder.toString().substring(0,builder.length()-1));
+        response.setHeader("Access-Control-Allow-Headers", "Host/Origin, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With,userId,token,Access-Control-Allow-Headers");
+        response.setHeader("Access-Control-Allow-Credentials","true");
         filterChain.doFilter(servletRequest, response);
     }
     @Override
@@ -97,4 +113,10 @@ public class CrossFilter extends WebMvcConfigurationSupport implements Filter {
         converters.add(fastJsonHttpMessageConverter);
     }
 
+    @Bean
+    public ServletListenerRegistrationBean registerListener(){
+        ServletListenerRegistrationBean bean = new ServletListenerRegistrationBean();
+        bean.setListener(new ApplicationStop());
+        return bean;
+    }
 }

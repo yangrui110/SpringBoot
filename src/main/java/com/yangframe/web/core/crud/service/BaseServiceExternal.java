@@ -100,7 +100,7 @@ public class BaseServiceExternal {
                 Iterator<String> iterator = primaryKey.keySet().iterator();
                 while (iterator.hasNext()) {
                     String key = iterator.next();
-                    if (k.get(key).equals(mapOne.get(key))) {
+                    if (k.get(key)!=null&&k.get(key).equals(mapOne.get(key))) {
                         count++;
                     }
                 }
@@ -121,12 +121,14 @@ public class BaseServiceExternal {
                 Iterator<String> iterator = primaryKey.keySet().iterator();
                 while (iterator.hasNext()) {
                     String key = iterator.next();
-                    if (k.get(key).equals(mapOne.get(key))) {
+                    if (k.get(key)!=null&&k.get(key).equals(mapOne.get(key))) {
                         count++;
                     }
                 }
                 if (count == primaryKey.size()) {
                     jude = true;
+                }else if(primaryKey.size()!=1){
+                    throw new BaseException(509,"请传入主键值");
                 }
             }
             return !jude;

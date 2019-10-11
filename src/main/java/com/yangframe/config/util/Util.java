@@ -21,13 +21,14 @@ public class Util {
 
     public static String getTimeRandId(){
         SimpleDateFormat s = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        return s.format(new Date())+getRand();
+        return s.format(new Date())+getRand(5);
     }
 
-    private static String getRand(){
+    public static String getRand(int len){
         StringBuilder builder = new StringBuilder();
-        for(int i=0;i<5;i++){
-            builder.append(Math.floor(Math.random())*10);
+        for(int i=0;i<len;i++){
+            int floor = (int)(Math.floor(Math.random() * 10));
+            builder.append(floor);
         }
 
         return builder.toString();

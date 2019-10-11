@@ -11,9 +11,17 @@ import java.util.Map;
  */
 public class SendMsgAdapter {
 
-    public static JSONObject parseNewMsg(Map msg){
+    public static JSONObject parseFriendNewMsg(Map msg){
         JSONObject os =new JSONObject();
         os.put("key", "newMsg");
+        msg.put("type","friend");
+        os.put("data", msg);
+        return os;
+    }
+    public static JSONObject parseGroupNewMsg(Map msg){
+        JSONObject os =new JSONObject();
+        os.put("key", "newMsg");
+        msg.put("type","group");
         os.put("data", msg);
         return os;
     }

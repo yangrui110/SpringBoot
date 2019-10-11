@@ -83,13 +83,13 @@ public class BaseServiceImpl{
         });
         baseDao.update(entity.getEntityName(),parseData,entity.getCondition());
     }
-    public void insert(FindEntity entity){
+    public Map insert(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
         Map<String, ColumnProperty> columns = EntityMap.getAllColumns(entity.getEntityName());
         Map<String, Object> pkData = EntityMap.yanzhengPKIsEmpty(entity.getEntityName(),entity.getData());//验证主键的值是否已经传入
         Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entity.getEntityName());
         if(pkData.size()<=0){
-            pushAutoPkData(entity1.getEntityName(),primaryKey,entity.getData());
+           pushAutoPkData(entity1.getEntityName(),primaryKey,entity.getData());
         }
         BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(entity1.getConfig().getDaoBaseClassName());
 
@@ -98,9 +98,11 @@ public class BaseServiceImpl{
             parseData.put(columns.get(k).getColumn(), v);
         });
         baseDao.insert(entity.getEntityName(),parseData);
+        return entity.getData();
     }
     //
-    private void pushAutoPkData(String entityName,Map<String,ColumnProperty> primaryKey,Map<String,Object> pushData){
+    private int pushAutoPkData(String entityName,Map<String,ColumnProperty> primaryKey,Map<String,Object> pushData){
+        int result = -1;
         if(primaryKey.size()>1){
             throw new BaseException(507,"请传入主键");
         }else if(primaryKey.size()==1) {
@@ -110,18 +112,22 @@ public class BaseServiceImpl{
                 if(value.isAutoIncrease()){
                     //获取到自增长的主键
                     String primaryKeyValue = getAutoPk(entityName);
+                    int c= Integer.parseInt(primaryKeyValue);
+                    c++;
                     Iterator<String> iterator = primaryKey.keySet().iterator();
                     while (iterator.hasNext()){
                         String next = iterator.next();
-                        pushData.put(next,primaryKeyValue);
+                        pushData.put(next,c);
                     }
-
+                    updatePk(entityName,c);
+                    result=c;
                 }
             }
 
         }else {
             throw new BaseException(507,"请给实体定义主键");
         }
+        return result;
     }
     public void store(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
@@ -160,11 +166,14 @@ public class BaseServiceImpl{
             baseDao.insert("autoPk",auOne);
         }else {
             primaryKeyValue= Integer.parseInt((String) byPK.get("primary_key_value"));
-            primaryKeyValue++;
-            Map auOne = MapUtil.toMap("table_alias", entityName);
-            baseDao.update("autoPk",MapUtil.toMap("primary_key_value",primaryKeyValue),auOne);
         }
         return ""+primaryKeyValue;
+    }
+    private void updatePk(String entityName,int c){
+        InfoOfEntity autoPk = EntityMap.getAndJugeNotEmpty("autoPk");
+        BaseDao baseDao= (BaseDao) currentWebApplicationContext.getBean(autoPk.getConfig().getDaoBaseClassName());
+        Map auOne = MapUtil.toMap("table_alias", entityName);
+        baseDao.update("autoPk",MapUtil.toMap("primary_key_value",c),auOne);
     }
     public void insertOrUpdate(FindEntity entity){
         InfoOfEntity entity1 = EntityMap.getAndJugeNotEmpty(entity.getEntityName());
@@ -208,6 +217,21 @@ public class BaseServiceImpl{
     public void insertAll(String entityName,List<Map<String,Object>> mapDatas){
         //根据entityName，将数据转换为完整的列集合
         InfoOfEntity infoOfEntity = EntityMap.getAndJugeNotEmpty(entityName);
+        Map<String, ColumnProperty> primaryKey = EntityMap.getPrimaryKey(entityName);
+        if (primaryKey.size() == 1) {
+            primaryKey.forEach((k,v)->{
+                if(v.isAutoIncrease()){
+                    //给每个mapDatas赋值
+                    String autoPk = getAutoPk(infoOfEntity.getEntityName());
+                    int c=Integer.parseInt(autoPk);
+                    for (Map<String, Object> map : mapDatas) {
+                        c++;
+                        map.put(v.getAlias(),c);
+                    }
+                    updatePk(entityName,c);
+                }
+            });
+        }
         if(infoOfEntity.isView()){
             throw new BaseException(new ExceptionEntity(506,"视图表不允许增改操作"));
         }

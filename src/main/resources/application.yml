@@ -23,7 +23,22 @@ spring:
     password: iigiviqhhitggjhj
     host: smtp.qq.com
     protocol: smtp
-    port: 25
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
 uploadFile:
   path: C:\\FileUpload\\
 ---

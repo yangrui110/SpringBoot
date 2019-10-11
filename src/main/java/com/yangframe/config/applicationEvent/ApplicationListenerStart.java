@@ -16,7 +16,7 @@ public class ApplicationListenerStart implements ApplicationListener<Application
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationStartingEvent) {
-        //System.out.println("初始化加载完毕");
+        System.out.println("正在初始化");
         if(applicationStartingEvent.getApplicationContext().getParent()==null) {
             ConfigurableApplicationContext applicationContext = applicationStartingEvent.getApplicationContext();
             new DynamicDataSource(applicationContext);

@@ -102,8 +102,9 @@ public class FindEntity {
         return orderBy;
     }
 
-    public void setOrderBy(List<COrderBy> orderBy) {
+    public FindEntity setOrderBy(List<COrderBy> orderBy) {
         this.orderBy = orderBy;
+        return this;
     }
 
     public Map getData() {

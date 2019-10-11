@@ -2,14 +2,14 @@ package com.yangframe.config.properties;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @autor 杨瑞
  * @date 2019/7/13 22:07
  */
 @Data
-@Component
+@Configuration
 public class UploadFileProperties {
 
     @Value("${uploadFile.path}")

@@ -10,6 +10,7 @@ import lombok.Data;
 public class HistoryEntity {
     private String userLoginId;
     private String receiveId;
+    private String receivedType;
     private Integer start;
     private Integer end;
 }

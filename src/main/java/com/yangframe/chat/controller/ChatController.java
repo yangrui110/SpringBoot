@@ -1,13 +1,11 @@
 package com.yangframe.chat.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yangframe.chat.SendMsgAdapter;
 import com.yangframe.chat.entity.HistoryEntity;
 import com.yangframe.chat.service.ChatService;
 import com.yangframe.config.advice.ResultEntity;
 import com.yangframe.config.advice.ResultEnum;
 import com.yangframe.config.util.MapUtil;
-import com.yangframe.config.websocket.WebSocketChat;
 import com.yangframe.web.core.crud.service.BaseServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,9 +34,6 @@ public class ChatController {
     private BaseServiceImpl baseService;
 
     @Autowired
-    private WebSocketChat webSocketChat;
-
-    @Autowired
     HttpServletRequest request;
 
     @ApiOperation("发送消息接口")
@@ -55,7 +50,7 @@ public class ChatController {
         msgUp.put("imsMsgCreateTime", "2019-01-08 00:00:00");
         msgUp.put("imsMsgSendUserLoginId", "10001");
         msgUp.put("imsMsgReceiveId", "10002");
-        webSocketChat.sendMsg("10001", SendMsgAdapter.parseNewMsg(msgUp).toJSONString());
+        //webSocketChat.sendMsg("10001", SendMsgAdapter.parseNewMsg(msgUp).toJSONString());
         //chatService.sendMsg(data);
         //ChatSocketHandler.sendMsg(jsonObject.toJSONString());
         return new ResultEntity(ResultEnum.OK, MapUtil.toMap("result", true));
@@ -110,6 +105,13 @@ public class ChatController {
     @ResponseBody
     public ResultEntity delUserGroup(@RequestBody Map<String,Object> mapData){
         chatService.delUserGroup(mapData);
+        return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
+    }
+    @ApiOperation("增加一个群组")
+    @PostMapping("addGroup")
+    @ResponseBody
+    public ResultEntity addGroup(@RequestBody Map<String,Object> mapData){
+        chatService.addGroup(mapData);
         return new ResultEntity(ResultEnum.OK,MapUtil.toMap("result",true));
     }
 }

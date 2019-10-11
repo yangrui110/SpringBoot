@@ -3,18 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yangframe.web.dao.mysql.ChatDao">
-    <select id="getChatList" resultType="java.util.Map">
+    <select id="getFriendNotReadNum" resultType="java.util.Map">
         SELECT
-        count(1) as notReadNum,ICH.ims_chat_to_receive_id as imsReceiveId
+            count( 1 ) AS notReadNum,
+            iuf.ims_user_login_id AS userLoginId,
+            iuf.ims_friend_id AS friendId
         FROM
-        ims_chat ICH
-        inner JOIN ims_msg IMG ON ICH.ims_chat_last_read_time &lt; IMG.ims_msg_create_time
-           AND ICH.ims_chat_send_user_login_id = IMG.ims_msg_send_user_login_id
-           and ICH.ims_chat_send_user_login_id = #{userLoginId}
-           AND ICH.ims_chat_to_receive_id = IMG.ims_msg_receive_id
-           GROUP BY ICH.ims_chat_to_receive_id
+            ims_user_friend iuf
+            INNER JOIN ims_msg img ON img.ims_msg_create_time &gt; iuf.ims_last_read_time
+            AND img.ims_msg_send_user_login_id = iuf.ims_friend_id
+            AND img.ims_msg_receive_id = iuf.ims_user_login_id
+        where
+            iuf.ims_user_login_id=#{userLoginId}
+        GROUP BY
+            iuf.ims_user_login_id,
+            iuf.ims_friend_id
     </select>
-
+    <select id="getGroupNotReadNum" resultType="java.util.Map">
+        SELECT
+            count( 1 ) AS notReadNum,
+            iug.ims_group_id AS groupId
+        FROM
+            ims_user_group iug
+        INNER JOIN ims_msg img ON img.ims_msg_create_time &gt; iug.ims_last_read_time
+            AND img.ims_msg_receive_id = iug.ims_group_id
+            and iug.ims_user_login_id = #{userLoginId}
+        where
+            iug.ims_group_id in
+            <foreach collection="groups" close=")" open="(" item="group" separator=",">
+                #{group}
+            </foreach>
+        GROUP BY
+            iug.ims_group_id
+    </select>
     <select id="getHistoryMsg" resultType="java.util.Map">
         SELECT
         c.ims_msg_receive_id as imsMsgReceiveId,
@@ -22,7 +43,9 @@
         c.ims_msg_id as imsMsgId,
         c.ims_msg_create_time as imsMsgCreateTime,
         c.ims_msg_content as imsMsgContent,
-        c.ims_msg_type as imsMsgType
+        c.ims_msg_type as imsMsgType,
+        m.user_login_info_icon as sendUserLoginInfoIcon,
+        n.user_login_info_icon as receivedUserLoginInfoIcon
         FROM
             (
                 SELECT
@@ -41,6 +64,8 @@
                     b.ims_msg_send_user_login_id = #{historyEntity.receiveId}
                 AND b.ims_msg_receive_id = #{historyEntity.userLoginId}
             ) c
+            left join user_login_info m on c.ims_msg_send_user_login_id = m.user_login_info_id
+            left join user_login_info n on c.ims_msg_receive_id = n.user_login_info_id
         ORDER BY
             c.ims_msg_create_time desc
         <if test="historyEntity.start!=null and historyEntity.end !=null">

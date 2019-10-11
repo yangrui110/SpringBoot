@@ -93,6 +93,21 @@
         </column>
         <primary-key alias="imsMsgId"/>
     </entity>
+    <view-entity tableAlias="imsMsgGroupView">
+        <describetion>携带每条消息的对应的群组头像</describetion>
+        <member-entity tableAlias="imsMsg" alias="IMG"/>
+        <member-entity tableAlias="imsGroup" alias="IGP"/>
+        <member-entity tableAlias="UserLoginInfo" alias="ULI"/>
+        <alias-all referTable="IMG"/>
+        <alias-all referTable="IGP"/>
+        <alias column="userLoginInfoIcon" alias="sendIcon" referTable="ULI"/>
+        <view-link tableAlias="IMG" relTableAlias="IGP">
+            <key-map rel-field-name="imsGroupId" field-name="imsMsgReceiveId"/>
+        </view-link>
+        <view-link tableAlias="IMG" relTableAlias="ULI">
+            <key-map field-name="imsMsgSendUserLoginId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+    </view-entity>
     <entity tableName="ims_friend_chat" tableAlias="imsFriendChat">
         <describetion>会话表</describetion>
         <column alias="imsChatCreateTime">
@@ -139,6 +154,7 @@
         <alias-all referTable="IUF"/>
         <alias referTable="USINFO1" column="userLoginInfoName" alias="sendUserInfoName"></alias>
         <alias referTable="USINFO1" column="userLoginInfoId" alias="sendUserLoginId"></alias>
+        <alias referTable="USINFO1" column="userLoginInfoIcon" alias="sendUserLoginInfoIcon"/>
         <view-link tableAlias="IFC" relTableAlias="IMG">
             <key-map field-name="imsChatLastMsgId" rel-field-name="imsMsgId"/>
         </view-link>
@@ -244,14 +260,19 @@
         <member-entity tableAlias="imsAskGroup" alias="IGP"/>
         <member-entity tableAlias="imsGroup" alias="IG"/>
         <member-entity tableAlias="UserLoginInfo" alias="ULI"/>
+        <member-entity tableAlias="imsUserGroup" alias="IUG"/>
         <alias-all referTable="IGP"/>
         <alias-all referTable="IG"/>
         <alias-all referTable="ULI"/>
+        <alias-all referTable="IUG"/>
         <view-link tableAlias="IGP" relTableAlias="IG" relOptional="true">
             <key-map field-name="imsGroupId" rel-field-name="imsGroupId"/>
         </view-link>
         <view-link tableAlias="IGP" relTableAlias="ULI">
             <key-map field-name="imsUserLoginId" rel-field-name="userLoginInfoId"/>
+        </view-link>
+        <view-link tableAlias="IGP" relTableAlias="IUG">
+            <key-map field-name="imsGroupId" rel-field-name="imsGroupId"/>
         </view-link>
     </view-entity>
     <entity tableName="ims_ask_friend" tableAlias="imsAskFriend">
