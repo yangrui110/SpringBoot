@@ -38,7 +38,6 @@ public class DemoApplicationTests {
     private BaseServiceExternal baseServiceInner;
     @Autowired
     private ChatService chatService;
-
     @Test
     public void contextLoads() {
 

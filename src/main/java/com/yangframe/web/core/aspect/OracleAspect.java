@@ -12,7 +12,9 @@ import com.yangframe.web.util.file.FileUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.dom4j.Element;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -29,6 +31,7 @@ import java.util.Map;
  * */
 @Component
 @Aspect
+@Order(10)
 public class OracleAspect {
 
     @Around(value = "execution( public * com.yangframe.web.core.crud.dao.BaseDao.findByPK(..))")
@@ -37,8 +40,6 @@ public class OracleAspect {
         aspectCommon(args);
         return parseResult(point.proceed(args));
     }
-
-
     @Around(value = "execution( public * com.yangframe.web.core.crud.dao.BaseDao.findAll*(..))")
     public Object aspectFindAll(ProceedingJoinPoint point) throws Throwable {
         Object[] args = point.getArgs();

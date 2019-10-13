@@ -9,6 +9,7 @@
                 source-bean-xml-path="classpath:entity/mysql/*.xml"
                 dao-base-class-name="com.yangframe.web.core.crud.dao.mysql.MysqlAjaxCrudDao"
                 sourceType="mysql"
+                source-bean-name="mysqlDataSource"
     />
 
     <datasource url="jdbc:sqlserver://118.24.153.227;databaseName =springsysSql"
@@ -19,8 +20,9 @@
                 source-bean-xml-path="classpath:entity/sql/*.xml"
                 dao-base-class-name="com.yangframe.web.core.crud.dao.sql.SqlAjaxCrudDao"
                 sourceType="sql"
+                source-bean-name="sqlDatasource"
     />
-    <datasource url="jdbc:h2:file:/runtime/database"
+    <datasource url="jdbc:h2:./runtime/database"
                 name="sa"
                 password="1234qwer!"
                 source-dao-path="com.yangframe.web.core.crud.dao.h2"
@@ -28,6 +30,7 @@
                 source-bean-xml-path="classpath:entity/h2/*.xml"
                 dao-base-class-name="com.yangframe.web.core.crud.dao.h2.H2AjaxCrudDao"
                 sourceType="h2"
+                source-bean-name="h2Datasource"
     />
     <datasource url="jdbc:oracle:thin:@118.24.153.227:1521:XE"
                 name="SPRING"
@@ -38,5 +41,6 @@
                 dao-base-class-name="com.yangframe.web.core.crud.dao.oracle.OracleAjaxCrudDao"
                 sourceType="oracle"
                 validation-query="select 1 FROM DUAL"
+                source-bean-name="oracleDatasource"
     />
 </base>

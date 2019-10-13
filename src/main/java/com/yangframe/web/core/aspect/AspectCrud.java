@@ -14,6 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @Component
 @Aspect
+@Order(10)
 public class AspectCrud {
 
     private static ApplicationContext applicationContext;
@@ -34,6 +36,7 @@ public class AspectCrud {
      */
     @Around(value="execution(public * com.yangframe.web.core.crud.service.BaseServiceImpl.*(..))")
     public Object doCheck(ProceedingJoinPoint point) throws Throwable {
+        System.out.println("我是二号");
         Object[] args=point.getArgs();
         System.out.println("方法名："+point.getSignature().getName());
         if("findAll".equals(point.getSignature().getName())||"findAllNoPage".equals(point.getSignature().getName())||"totalNum".equals(point.getSignature().getName())) {
@@ -84,11 +87,13 @@ public class AspectCrud {
         try {
             os = point.proceed(args);
         } catch (Throwable throwable) {
-            SelfTransaction.rollBack(manager, status);
+            if(status.isNewTransaction())
+                SelfTransaction.rollBack(manager, status);
             throwable.printStackTrace();
             throw throwable;
         }
-        SelfTransaction.commit(manager, status);
+        if(status.isNewTransaction())
+            SelfTransaction.commit(manager, status);
         return os;
     }
 

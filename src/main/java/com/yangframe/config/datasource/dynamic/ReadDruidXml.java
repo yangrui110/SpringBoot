@@ -36,13 +36,13 @@ public class ReadDruidXml {
         druidDataSource.setMinIdle(e.attributeValue("min-idle")==null?druidDataSource.getMinIdle():Integer.parseInt(e.attributeValue("min-idle")));
         InfoOfDruidDataSourceConfig config=new InfoOfDruidDataSourceConfig();
         config.setDruidDataSource(druidDataSource);
-        String value = e.attributeValue("source-bean-name");
-        String sourceType=e.attributeValue("sourceType")==null?"mysql":e.attributeValue("sourceType");
-        String key= sourceType+Util.getRandUUID();
+        String sourceBeanName = e.attributeValue("source-bean-name");
+        //String sourceType=e.attributeValue("sourceType")==null?"mysql":e.attributeValue("sourceType");
+        /*String key= sourceType+Util.getRandUUID();
         if(!StringUtils.isEmpty(value)){
             key=sourceType+value;
-        }
-        config.setSourceBeanName(key);
+        }*/
+        config.setSourceBeanName(sourceBeanName);
         config.setSourceDaoPath(e.attributeValue("source-dao-path").split(","));
         config.setSourceDaoXmlPath(e.attributeValue("source-dao-xml-path").split(","));
         config.setSourceBeanXmlPath(e.attributeValue("source-bean-xml-path"));

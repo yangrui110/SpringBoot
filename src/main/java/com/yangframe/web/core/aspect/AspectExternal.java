@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +20,7 @@ import org.springframework.transaction.TransactionStatus;
  */
 @Component
 @Aspect
+@Order(10)
 public class AspectExternal {
 
     private static ApplicationContext applicationContext;

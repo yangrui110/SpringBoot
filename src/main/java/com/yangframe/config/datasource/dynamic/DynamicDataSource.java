@@ -35,7 +35,7 @@ public class DynamicDataSource implements ResourceLoaderAware {
     private ApplicationContext applicationContext;
     private ResourceLoader resourceLoader;
 
-    private static Map<String,InfoOfDruidDataSourceConfig> configMap = new HashMap<>();
+    public static Map<String,InfoOfDruidDataSourceConfig> configMap = new HashMap<>();
 
     public DynamicDataSource(ApplicationContext applicationContext) {
         setApplicationContext(applicationContext);

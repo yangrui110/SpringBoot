@@ -19,11 +19,12 @@
         <xs:attribute name="source-bean-xml-path" type="xs:string" use="required"/>
         <xs:attribute name="dao-base-class-name" type="xs:string" use="required"/>
         <xs:attribute name="source-dao-path" type="xs:string" use="required"/>
-        <xs:attribute name="source-bean-name" type="xs:string"/>
+        <!--每个事物的唯一标识-->
+        <xs:attribute name="source-bean-name" type="xs:string" use="required"/>
         <xs:attribute name="sourceType" type="xs:string" default="mysql"/>
         <xs:attribute name="driverClassName" type="xs:string"/>
         <xs:attribute name="max-wait" type="xs:int" default="60000"/>
-        <xs:attribute name="max-active" type="xs:int" default="10"/>
+        <xs:attribute name="max-active" type="xs:int" default="100"/>
         <xs:attribute name="min-idle" type="xs:int" default="10"/>
         <xs:attribute name="test-on-borrow" type="xs:boolean" default="false"/>
         <xs:attribute name="test-while-idle" type="xs:boolean" default="false"/>
